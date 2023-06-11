@@ -64,11 +64,11 @@ class Presence:
             buttons=[
                 {
                     "label": "Get Overlay 📥", 
-                    "url": "https://discord.gg/xm9QX3Q"
+                    "url": "https://discord.polsu.xyz"
                 }, 
                 {
                     "label": "Discord Server", 
-                    "url": "https://discord.gg/xm9QX3Q"
+                    "url": "https://discord.polsu.xyz"
                 }
             ],
             large_image="polsu", 

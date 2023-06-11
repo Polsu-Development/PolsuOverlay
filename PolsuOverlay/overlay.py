@@ -34,6 +34,7 @@
 from PolsuOverlay import Menu, Rewards, Table, Presence, Notif, Settings, Logs, Player, loadThemes, Polsu, __version__
 from .components.theme import ThemeStyle
 from .components.timer import TimerBox, TimerIcon
+from .utils.path import resource_path
 
 from PyQt5.QtWidgets import QPushButton, QLabel, QWidget, QLineEdit
 from PyQt5.QtCore import Qt, QSize, QRectF, QEvent, QTimer
@@ -42,7 +43,7 @@ from PyQt5.QtWinExtras import QtWin
 from pyqt_frameless_window import FramelessMainWindow
 
 
-import os, sys
+import os
 import webbrowser
 import asyncio
 import json
@@ -71,8 +72,8 @@ class Overlay(FramelessMainWindow):
 
         self.POPUPWIDTH = 245
 
-        self.pathAssets = self.resource_path('assets')
-        self.pathThemes = self.resource_path('themes')
+        self.pathAssets = resource_path('PolsuOverlay/assets')
+        self.pathThemes = resource_path('PolsuOverlay/themes')
 
         # Load Settings
         self.settings = Settings(self)
@@ -475,7 +476,7 @@ class Overlay(FramelessMainWindow):
             menu = Mn(
                 MenuItem(
                     text=f"Polsu Overlay",
-                    action=lambda: webbrowser.open('https://discord.gg/xm9QX3Q'),
+                    action=lambda: webbrowser.open('https://discord.polsu.xyz'),
                     default=False,
                     visible=True,
                     enabled=False,
@@ -496,7 +497,7 @@ class Overlay(FramelessMainWindow):
                 ),
                 MenuItem(
                     text="Discord",
-                    action=lambda: webbrowser.open('https://discord.gg/xm9QX3Q'),
+                    action=lambda: webbrowser.open('https://discord.polsu.xyz'),
                     default=False,
                     visible=True
                 ),
@@ -617,15 +618,6 @@ class Overlay(FramelessMainWindow):
 
         self.searchBox.setEnabled(True)
         self.searchIcon.setEnabled(True)
-
-        
-    def resource_path(self, relative_path):
-        try:
-            base_path = sys._MEIPASS
-        except Exception:
-            base_path = os.path.abspath(".")
-
-        return os.path.join(base_path, relative_path)
 
 
     def paintEvent(self, event):

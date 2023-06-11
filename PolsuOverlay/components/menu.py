@@ -133,9 +133,9 @@ class Menu(QWidget):
 
         self.discordButton = QPushButton(self)
         self.discordButton.setIcon(QIcon(self.win.getIconPath("discord")))
-        self.discordButton.setToolTip('https://discord.gg/xm9QX3Q')
+        self.discordButton.setToolTip('https://discord.polsu.xyz')
         self.discordButton.setIconSize(QSize(24, 24))
-        self.discordButton.clicked.connect(lambda: webbrowser.open('https://discord.gg/xm9QX3Q'))
+        self.discordButton.clicked.connect(lambda: webbrowser.open('https://discord.polsu.xyz'))
 
 
         if self.win.height() >= 380:
