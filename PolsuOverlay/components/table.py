@@ -127,8 +127,7 @@ class Table(QTableWidget):
         self.count += 1
         self.insertRow(self.count)
 
-        if player.uuid:
-            self.skin.loadSkin(player)
+        self.skin.loadSkin(player)
 
         if player.bedwars.winstreak == -1:
             ws = f"§7-"
