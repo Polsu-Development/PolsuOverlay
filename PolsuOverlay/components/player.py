@@ -58,7 +58,7 @@ class Player:
         self.loading = []
 
 
-    def getPlayer(self, players: list):
+    def getPlayer(self, players: list, manual: bool = False):
         for p in players:
             if p != "":
                 if p not in self.loading:
@@ -75,7 +75,7 @@ class Player:
                         except:
                             self.loading.append(p)
 
-                            self.threads[p] = Worker(self.client, p)
+                            self.threads[p] = Worker(self.client, p, manual)
                             self.threads[p].playerObject.connect(self.update)
                             self.threads[p].start()
 
@@ -89,7 +89,11 @@ class Player:
         if cache:
             self.cache[player.username] = player
 
-        self.win.table.insert(player)
+        if player.manual:
+            if not player.username in self.win.logs.queue:
+                self.win.table.insert(player)
+        else:
+            self.win.table.insert(player)
 
 
     def loadTags(self):
@@ -99,15 +103,17 @@ class Player:
 class Worker(QThread):
     playerObject = pyqtSignal(object)
 
-    def __init__(self, client, query):
+    def __init__(self, client, query, manual):
         super(QThread, self).__init__()
         self.client = client
         self.query = query
+        self.manual = manual
  
 
     def run(self):
         try:
             player = asyncio.run(self.client.player.get(self.query))
+            player.manual = self.manual
             self.playerObject.emit(player)
         except:
             pass

@@ -31,7 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from PolsuOverlay import Menu, Rewards, Table, Presence, Notif, Settings, Logs, Player, loadThemes, Polsu, __version__
+from PolsuOverlay import Menu, Rewards, Table, Presence, Notif, Settings, Logs, Player, loadThemes, __version__
 from .components.theme import ThemeStyle
 from .components.timer import TimerBox, TimerIcon
 from .utils.path import resource_path
@@ -99,7 +99,7 @@ class Overlay(FramelessMainWindow):
         self.overlayTimer = 0
 
         self.loadClients()
-        
+
         if self.configRPC:
             self.startRPC()
         else:
@@ -301,7 +301,7 @@ class Overlay(FramelessMainWindow):
     def enterPress(self):
         self.searchBox.setDisabled(True)
 
-        self.player.getPlayer([self.searchBox.text()])
+        self.player.getPlayer([self.searchBox.text()], manual=True)
 
         self.searchBox.setText("")
         self.searchBox.setDisabled(False)

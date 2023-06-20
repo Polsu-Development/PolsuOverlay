@@ -49,29 +49,42 @@ class Logs:
         self.win = win
 
         self.oldString = ""
+        self.connected = False
+        self.timeIconIndex = 1
+        self.error_sent = False
+
         self.isInGame = False
+        self.timerCount = 0
+
         self.autoWho = False
         self.connecting = False
         self.passThrough = False
-        self.timerCount = 0
-        self.timeIconIndex = 1
-
-        self.error_sent = False
+        self.queue = []
 
 
     def reset(self) -> None:
         """
         Resets the player table
         """
-        if self.win.configPassThrough and self.passThrough:
-            self.win.flags(False)
+        #for player in self.win.player.threads:
+        #    self.win.player.threads[player].terminate()
+        
+        #for player in self.win.table.skin.threads:
+        #    self.win.table.skin.threads[player].terminate()
 
-        self.isInGame = False
+        #if self.win.configPassThrough and self.passThrough:
+        #    self.win.flags(False)
+
         self.passThrough = False
         self.autoWho = False
-        self.timerCount = 0
+        self.queue = []
 
         self.win.table.resetTable()
+
+
+    def leftGame(self):
+        self.isInGame = False
+        self.timerCount = 0
 
 
     def who(self) -> None:
@@ -79,6 +92,7 @@ class Logs:
         Runs /who
         """
         if not self.autoWho:
+            self.leftGame()
             self.reset()
 
             keyboard.press_and_release('t')
@@ -146,7 +160,7 @@ class Logs:
         line: str = self.readLogFile()
         lines = self.rawLine(line).splitlines()
 
-        for line in lines:
+        for idx, line in enumerate(lines):
             players = []
 
 
@@ -162,6 +176,7 @@ class Logs:
 
             # Detects when the client is closed
             elif '[Client thread/INFO]: Stopping!' in line:
+                self.leftGame()
                 self.reset()
 
             # If it's the first line after a player connects to Hypixel, the delivery command is executed
@@ -202,7 +217,11 @@ class Logs:
             # The second string is to avoid castle streaks messages (e.g. wither)
             elif "Sending you to" in line or "[Client thread/INFO]: [CHAT]                                      " \
             in line and not "                                                                              " in line:
+                self.leftGame()
                 self.reset()
+
+            elif "[CHAT]        " in line and  not "[CHAT]        " in lines[idx-1] and  not "[CHAT]        " in lines[idx+1]:
+                self.who()
 
             # Detects when a player joins a started game
             elif "To leave " in line:
@@ -238,7 +257,8 @@ class Logs:
             elif "Can't find a player by the name of '+" in line:
                 player = line.split("Can't find a player by the name of '+")[1].replace("'", "")
                 if isValidPlayer(player):
-                    players.append(player)
+                    self.queue.append(player)
+                    self.win.player.getPlayer([player])
 
 
             ###############################################
@@ -292,6 +312,7 @@ class Logs:
 
                 player = line.split(" was removed")[0].split(" ")[4]
 
+                self.queue.remove(player)
                 self.win.table.removePlayerFromName(player)
 
             # When a player leaves the party
@@ -300,6 +321,7 @@ class Logs:
 
                 player = line.split(" has left the party.")[0].split(" ")[4]
 
+                self.queue.remove(player)
                 self.win.table.removePlayerFromName(player)
 
             # Detects when /party list is executed, loads the party leader
@@ -345,9 +367,11 @@ class Logs:
             elif " has quit!" in line:
                 player = line.split(" has quit!")[0].split(" ")[4]
 
+                self.queue.remove(player)
                 self.win.table.removePlayerFromName(player)
 
 
             # If some players where detected, add them to the queue
             if players:
+                self.queue.extend(players)
                 self.win.player.getPlayer(players)

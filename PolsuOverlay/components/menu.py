@@ -194,9 +194,15 @@ class Menu(QWidget):
 
         
     def reload(self):
+        #for player in self.win.player.threads:
+        #    self.win.player.threads[player].terminate()
+        
+        #for player in self.win.table.skin.threads:
+        #    self.win.table.skin.threads[player].terminate()
+
         self.win.table.resetTable()
         self.win.open_menu()
-            
+
     
     def openInfo(self):
         if self.win._settingsMenuOpened:

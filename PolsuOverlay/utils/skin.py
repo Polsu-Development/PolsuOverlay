@@ -13,13 +13,13 @@ class SkinIcon():
     def __init__(self, table):
         self.table = table
 
-        self.workers = {}
+        self.threads = {}
 
 
     def loadSkin(self, player):
-        self.workers[player.username] = Worker(player)
-        self.workers[player.username].update.connect(self.setSkin)
-        self.workers[player.username].start()
+        self.threads[player.username] = Worker(player)
+        self.threads[player.username].update.connect(self.setSkin)
+        self.threads[player.username].start()
 
     
     def setSkin(self, icon, player):
