@@ -239,14 +239,27 @@ class Overlay(FramelessMainWindow):
 
     def setupComponents(self):
         self.menuButton = QPushButton(self)
-        self.menuButton.setIcon(QIcon(f"{self.pathAssets}/polsu/Polsu__.png"))
+
+        if self.themeStyle.icon == "custom":
+            count = 0
+            for theme in self.themes:
+                if theme[0] == self.configTheme:
+                    idx = count
+                count += 1
+
+            if self.themes[idx][1] != "":
+                self.menuButton.setIcon(QIcon(self.themes[idx][1]))
+            else:
+                self.menuButton.setIcon(QIcon(f"{self.pathAssets}/polsu/Polsu__.png"))
+        else:
+            self.menuButton.setIcon(QIcon(f"{self.pathAssets}/polsu/Polsu__.png"))
         self.menuButton.setToolTip('Menu')
         self.menuButton.setGeometry(4, 4, 30, 30)
         self.menuButton.setIconSize(QSize(25, 25))
         self.menuButton.clicked.connect(self.open_menu)
 
         self.overlayTitle = QLabel(self)
-        self.overlayTitle.setText("Polsu Overlay")
+        self.overlayTitle.setText(self.themeStyle.name)
         self.overlayTitle.setFont(self.minecraftFont)
         self.overlayTitle.setStyleSheet(self.themeStyle.titleStyle)
         self.overlayTitle.adjustSize()
@@ -390,6 +403,24 @@ class Overlay(FramelessMainWindow):
         self.exitbutton.setStyleSheet(self.themeStyle.closeButtonStyle)
         self.exitbutton.setIcon(QIcon(self.getIconPath("close")))
         self.exitbutton.update()
+
+        if self.themeStyle.icon == "custom":
+            count = 0
+            for theme in self.themes:
+                if theme[0] == self.configTheme:
+                    idx = count
+                count += 1
+
+            if self.themes[idx][1] != "":
+                self.menuButton.setIcon(QIcon(self.themes[idx][1]))
+            else:
+                self.menuButton.setIcon(QIcon(f"{self.pathAssets}/polsu/Polsu__.png"))
+        else:
+            self.menuButton.setIcon(QIcon(f"{self.pathAssets}/polsu/Polsu__.png"))
+        self.menuButton.update()
+
+        self.overlayTitle.setText(self.themeStyle.name)
+        self.overlayTitle.update()
 
         self.update()
 
