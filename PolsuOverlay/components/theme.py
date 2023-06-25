@@ -62,14 +62,18 @@ class ThemeStyle:
         self.switchOn = str(self.win.getIconPath('switch-on', self.path)).replace('\\', '/')
         self.switchOff = str(self.win.getIconPath('switch-off', self.path)).replace('\\', '/')
 
-
-        
-
-
         self.loadAllStyles()
 
 
     def loadAllStyles(self):
+        self.icon = self.config.get('overlay', {}).get('icon', 'Polsu_.png')
+        self.name = self.config.get('overlay', {}).get('name', 'Polsu Overlay')
+
+        if len(self.name) > len("Polsu Overlay") + 1:
+            self.name = "Polsu Overlay"
+        else:
+            self.name += "         "
+
         self.color = self.config.get('color', '#000000')
         self.border = self.config.get('border', '#000000')
         self.titleStyle = self.getTitleStyle()

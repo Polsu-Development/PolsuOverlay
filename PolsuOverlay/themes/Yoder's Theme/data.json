@@ -1,73 +1,73 @@
 {
     "overlay": {
-        "icon": "defaut",
-        "name": "Polsu Overlay"
+        "icon": "custom",
+        "name": "Polsu x Yoder"
     },
-    "color": "#ffffff",
+    "color": "#808080",
     "border": "#ffffff",
     "menu": {
         "text": {
-            "color": "black"
+            "color": "white"
         },
         "buttons-hover": {
-            "background-color": "#73737391",
-            "border-radius": "8px",
+            "background-color": "#21171AFF",
+            "border-radius": "4px",
             "disabled-color": "gray"
         },
         "smallButtons-hover": {
-            "background-color": "#73737391",
-            "border-radius": "8px",
-            "disabled-color": "#73737391"
+            "background-color": "#21171AFF",
+            "border-radius": "4px",
+            "disabled-color": "gray"
         }
     },
     "buttons-hover": {
-        "background-color": "#73737391",
-        "border-radius": "8px"
+        "background-color": "#21171AFF",
+        "border-radius": "4px"
     },
     "close-button": {
         "background-color": "red",
         "border-radius": "4px"
     },
     "searchBar": {
-        "color": "black",
-        "default": "black",
+        "color": "white",
+        "default": "white",
         "border-width": "2px",
-        "border-radius": "8px",
+        "border-radius": "4px",
         "border-style": "solid",
-        "border-color": "gray",
-        "hover-color": "#73737391",
+        "border-color": "darkgray",
+        "hover-color": "#21171AFF",
         "disabled-color": "gray"
     },
     "table": {
-        "color": "black",
+        "color": "white",
         "border": "white"
     },
     "scrollBar": {
-        "color": "gray",
+        "color": "#808080",
         "background": "lightgrey"
     },
     "toggleButton": {
-        "disabled-color": "white"
+        "disabled-color": "lightgrey"
     },
     "settings": {
         "menu": {
             "color": "white",
-            "border-color": "white",
-            "border-radius": "8px",
+            "border-color": "gray",
+            "border-radius": "4px",
             "border-style": "solid",
             "disabled-color": "gray",
             "hover": {
-                "background-color": "#73737391"
+                "background-color": "#21171AFF"
             }
         },
         "searchBar": {
-            "color": "black",
-            "default": "black",
+            "color": "white",
+            "default": "lightgrey",
             "border-width": "2px",
-            "border-radius": "8px",
+            "border-radius": "4px",
             "border-style": "solid",
-            "border-color": "white",
-            "hover-color": "#73737391",
+            "border-color": "gray",
+            "hover-color": "#21171AFF",
             "disabled-color": "gray"
         }
     }
