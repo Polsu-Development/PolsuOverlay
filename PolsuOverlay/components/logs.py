@@ -53,6 +53,8 @@ class Logs:
         self.timeIconIndex = 1
         self.error_sent = False
 
+        self.inAParty = False
+        
         self.isInGame = False
         self.timerCount = 0
 
@@ -91,7 +93,7 @@ class Logs:
         """
         Runs /who
         """
-        if not self.autoWho:
+        if self.win.configWho and not self.autoWho:
             self.leftGame()
             self.reset()
 
@@ -174,6 +176,8 @@ class Logs:
             if "Connecting to mc.hypixel.net" in line:
                 self.connecting = True
 
+                self.win.RPC.update("Polsulpicien", 388, "In a lobby")
+
             # Detects when the client is closed
             elif '[Client thread/INFO]: Stopping!' in line:
                 self.leftGame()
@@ -220,7 +224,8 @@ class Logs:
                 self.leftGame()
                 self.reset()
 
-            elif "[CHAT]        " in line and  not "[CHAT]        " in lines[idx-1] and  not "[CHAT]        " in lines[idx+1]:
+            elif "[CHAT]        " in line and not "[CHAT]        " in lines[idx-1] and not "[CHAT]        " in lines[idx+1] \
+                and not "[CHAT]                          " in line and not "[CHAT]              Select an Option or Sneak to Cancel." in line:
                 self.who()
 
             # Detects when a player joins a started game

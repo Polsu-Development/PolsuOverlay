@@ -689,7 +689,7 @@ class Info(QWidget):
         self.closeButton.setStyleSheet(self.win.themeStyle.sideBarSmallButtonsStyle)
         self.closeButton.clicked.connect(self.close_info)
 
-        label = QLabel(text2html(f"§fPolsu Overlay §7{__version__}", bold=True), self)
+        label = QLabel(text2html(f"§fPolsu Overlay §7v{__version__}", bold=True), self)
         label.setFont(self.win.minecraftFont)
         label.move(125, 10)
 
@@ -697,7 +697,7 @@ class Info(QWidget):
         label.setFont(self.win.minecraftFont)
         label.move(20, 40)
 
-        label = QLabel(text2html(f"§f(§9Polsulpicien#5020§f) and was entirely made"), self)
+        label = QLabel(text2html(f"§f(§9Polsulpicien#5020§f) and is entirely made"), self)
         label.setFont(self.win.minecraftFont)
         label.move(20, 60)
 

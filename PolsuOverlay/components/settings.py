@@ -12,7 +12,7 @@ CONFIG = {
     "client": "Vanilla",
     "logPath": f"C:\\Users\\{getuser()}\\AppData\\Roaming\\.minecraft\\logs\\latest.log",
     "theme": "Default Dark",
-    "opacity": 0.4,
+    "opacity": 0.5,
     "RPC": True,
     "who": True,
     "passThrough": True,
@@ -21,18 +21,20 @@ CONFIG = {
     "status": True,
     "sorting": [2, 0],
     "rqLevel": {
-        "1": "#AAAAAA",
-        "2": "#FFFFFF",
-        "3": "#FFFFFF",
-        "4": "#90EE90",
-        "5": "#90EE90",
-        "6": "#FF9340",
-        "7": "#FFFC40",
-        "8": "#FF8080",
-        "9": "#FC5353",
-        "10": "#FF1919",
-        "11": "#FFFFFF",
-        "12": "#C70000"
+        "-1": "AAAAAA",
+        "0": "AAAAAA",
+        "1": "55FF55",
+        "2": "55FF55",
+        "3": "FFFF55",
+        "4": "FFFF55",
+        "5": "FFAA00",
+        "6": "FFAA00",
+        "7": "FF5555",
+        "8": "FF5555",
+        "9": "AA0000",
+        "10": "AA0000",
+        "11": "5555FF",
+        "12": "FF55FF"
     }
 }
 
@@ -67,6 +69,7 @@ class Settings:
         except:
             with open(self.win.pathConfig, "w") as f:
                 json.dump(CONFIG, f, indent=6)
+            config = CONFIG
 
         self.win.configAPIKey = config.get("APIKey", CONFIG.get('APIKey'))
         self.win.configClient = config.get("client", CONFIG.get('client'))

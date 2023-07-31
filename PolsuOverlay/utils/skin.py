@@ -32,7 +32,7 @@ class SkinIcon():
 
             if _item and _item.value == player.username:
                 self.table.setCellWidget(row, 0, button)
-                self.table.setItem(row, 0, TableSortingItem(player.bedwars.requeue.index))
+                self.table.setItem(row, 0, TableSortingItem(player.bedwars.requeue.raw))
 
 
 class Worker(QThread):

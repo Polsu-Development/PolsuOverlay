@@ -33,16 +33,16 @@
 """
 from ..utils.text import text2html
 from ..utils.skin import SkinIcon
-from ..utils.quickbuy import QuickbuyImage
+from ..utils.quickbuy import QuickbuyWindow, QuickbuyImage
 from ..utils.sorting import TableSortingItem
 
 from ..PolsuAPI.objects.player import Player
 
 
-from PyQt5.QtWidgets import QMainWindow, QTableWidget, QAbstractItemView, QHeaderView, QScrollBar, QLabel, QPushButton
+from PyQt5.QtWidgets import QTableWidget, QAbstractItemView, QHeaderView, QScrollBar, QLabel, QPushButton
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFontMetrics, QIcon
-from PyQt5.QtWinExtras import QtWin
+
 
 import re
 
@@ -118,6 +118,7 @@ class Table(QTableWidget):
         self.count = -1
 
         self.skin = SkinIcon(self)
+        self.quickbuy = QuickbuyImage(self.win)
 
 
     def insert(self, player: Player):
@@ -198,7 +199,7 @@ class Table(QTableWidget):
             button = QPushButton(self)
             button.setIcon(QIcon(self.win.getIconPath("dots")))
             button.setStyleSheet(self.win.themeStyle.buttonsStyle)
-            button.clicked.connect(lambda: self.displayQuickbuy(self.win, player.bedwars.quickbuy))
+            button.clicked.connect(lambda: self.displayQuickbuy(player.username, player.bedwars.quickbuy))
             button.setProperty("name", "dots")
             self.setCellWidget(self.count, 11, button)
             self.setItem(self.count, 11, TableSortingItem(self.count))
@@ -228,12 +229,11 @@ class Table(QTableWidget):
         self.update()
     
 
-    def displayQuickbuy(self, win, url):
+    def displayQuickbuy(self, username, url):
         if self.win.quickbuyWindow is not None:
             self.win.quickbuyWindow.close()
 
-        self.win.quickbuyWindow = QuickbuyWindow(win, url)
-        self.win.quickbuyWindow.show()
+        self.win.quickbuyWindow = QuickbuyWindow(self.win, username, self.quickbuy, url)
 
 
     def removePlayerFromUUID(self, uuid):
@@ -268,35 +268,3 @@ class Table(QTableWidget):
 
     def sorting(self, column, order):
         self.win.settings.update("sorting", [column, order])
-
-
-
-class QuickbuyWindow(QMainWindow):
-    def __init__(self, window, url):
-        super().__init__()
-        self.win = window
-
-        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
-        QtWin.enableBlurBehindWindow(self)
-
-        self.setWindowTitle('Quickbuy of Polsulpicien')
-        self.setWindowIcon(QIcon(f"{self.win.pathAssets}/game-icons/Hypixel.png"))
-
-        self.setStyleSheet("background: transparent")
-        
-
-        label = QLabel(self)
-        self.pixmap = QuickbuyImage(url).pixmap
-        self.pixmap = self.pixmap.scaledToHeight(1000)
-        self.pixmap = self.pixmap.scaledToWidth(800)
-        label.setPixmap(self.pixmap)
-        label.setGeometry(0, 0, self.pixmap.size().width(), self.pixmap.size().height())
-
-        self.resize(self.pixmap.size().width(), self.pixmap.size().height())
-        self.setFixedSize(self.pixmap.size().width(), self.pixmap.size().height())
-
-
-    def closeEvent(self, event):
-        self.win.quickbuyWindow = None
-        event.accept()

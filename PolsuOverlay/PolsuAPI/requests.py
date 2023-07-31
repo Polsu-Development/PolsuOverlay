@@ -36,7 +36,7 @@ from ..utils.path import resource_path
 
 from .objects.key import APIKey
 from .objects.player import Player
-from .exception import APIError, InvalidAPIKeyError
+from .exception import APIError, InvalidAPIKeyError, NotLinkedError
 
 from aiohttp import ClientSession, ContentTypeError
 from json import load
@@ -70,6 +70,49 @@ class Polsu:
             raise APIError
         
 
+    async def login(self) -> Player:
+        """
+        Get the stats of the user using the Overlay
+
+        :return: An instance of Player
+
+
+    ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n
+    ┃                                                                                                              ┃\n
+    ┃                                               >> WARNING <<                                                  ┃\n
+    ┃                                                                                                              ┃\n
+    ┃  • The following endpoint, '/internal/overlay/login' is a private endpoint.                                  ┃\n
+    ┃                                                                                                              ┃\n
+    ┃  > IT IS STRICTLY FORBIDDEN TO USE IT OUTSIDE POLSU'S OFFICIAL OVERLAY.                                      ┃\n
+    ┃  > ANY USAGE OF THIS ENDPOINT FOR OTHER PROJECTS OR FORKS OF POLSU'S OVERLAY ISN'T ALLOWED!                  ┃\n
+    ┃                                                                                                              ┃\n
+    ┃  • If we notice any suspicious activity on this endpoint, following our Terms of Services, your api key and  ┃\n
+    ┃    therefore your Discord account, will get blacklisted from our Services!                                   ┃\n
+    ┃  > This means you won't be able to use any of our Services anymore, including Polsu and Polsu's Overlay.     ┃\n
+    ┃                                                                                                              ┃\n
+    ┃  • Note: This warning applies to all endpoints starting with: '/internal'                                    ┃\n
+    ┃  > You are only allowed to use the pulbic endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
+    ┃                                                                                                              ┃\n
+    ┃                                                                                                              ┃\n
+    ┃  • If you have any questions, don't hesitate to contact us on discord at: https://discord.polsu.xyz.         ┃\n
+    ┃                                                                                                              ┃\n
+    ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n
+        """
+        try:
+            async with ClientSession() as session:
+                async with session.get(f"{self.api}/internal/overlay/login?key={self.key}&overlay=true", headers=__header__) as response:
+                    json = await response.json()
+                    if not json["success"]:
+                        raise InvalidAPIKeyError(self.key)
+                    else:
+                        if json.get('data', {}) == {}:
+                            raise NotLinkedError()
+                        else:
+                            return Player(json.get('data'))
+        except ContentTypeError:
+            raise APIError
+        
+    
     async def get_stats(self, player) -> Player:
         """
         Get a Player Hypixel Stats
@@ -82,17 +125,17 @@ class Polsu:
     ┃                                                                                                              ┃\n
     ┃                                               >> WARNING <<                                                  ┃\n
     ┃                                                                                                              ┃\n
-    ┃  • The following endpoint, '/internal/player' is a private endpoint.                                         ┃\n
+    ┃  • The following endpoint, '/internal/overlay/player' is a private endpoint.                                 ┃\n
     ┃                                                                                                              ┃\n
     ┃  > IT IS STRICTLY FORBIDDEN TO USE IT OUTSIDE POLSU'S OFFICIAL OVERLAY.                                      ┃\n
     ┃  > ANY USAGE OF THIS ENDPOINT FOR OTHER PROJECTS OR FORKS OF POLSU'S OVERLAY ISN'T ALLOWED!                  ┃\n
     ┃                                                                                                              ┃\n
     ┃  • If we notice any suspicious activity on this endpoint, following our Terms of Services, your api key and  ┃\n
-    ┃    therefore your account Discord account, will get blacklisted from our Services!                           ┃\n
+    ┃    therefore your Discord account, will get blacklisted from our Services!                                   ┃\n
     ┃  > This means you won't be able to use any of our Services anymore, including Polsu and Polsu's Overlay.     ┃\n
     ┃                                                                                                              ┃\n
-    ┃  • Note: This warning applies to all endpoints starting with: '/intenal'                                     ┃\n
-    ┃  > You are allowed to use the other endpoints, listed in the documentation at: https://api.polsu.xyz         ┃\n
+    ┃  • Note: This warning applies to all endpoints starting with: '/internal'                                    ┃\n
+    ┃  > You are only allowed to use the pulbic endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
     ┃                                                                                                              ┃\n
     ┃                                                                                                              ┃\n
     ┃  • If you have any questions, don't hesitate to contact us on discord at: https://discord.polsu.xyz.         ┃\n
@@ -101,7 +144,7 @@ class Polsu:
         """
         try:
             async with ClientSession() as session:
-                async with session.get(f"{self.api}/internal/player?key={self.key}&player={player}&overlay=true", headers=__header__) as response:
+                async with session.get(f"{self.api}/internal/overlay/player?key={self.key}&player={player}&overlay=true", headers=__header__) as response:
                     json = await response.json()
                     if not json["success"]:
                         raise InvalidAPIKeyError(self.key)

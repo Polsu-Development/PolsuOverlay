@@ -60,11 +60,16 @@ class Presence:
 
 
     def update(self, player: str, stars: str, status: str):
+        if stars:
+            details = f"[{stars}✫] {player}"
+        else:
+            details = None
+
         self.RPC.update(
             buttons=[
                 {
                     "label": "Get Overlay 📥", 
-                    "url": "https://discord.polsu.xyz"
+                    "url": "https://overlay.polsu.xyz"
                 }, 
                 {
                     "label": "Discord Server", 
@@ -74,18 +79,11 @@ class Presence:
             large_image="polsu", 
             large_text="Polsu Overlay",
 
-            #small_image="hypixel", 
-            #small_text="Playing on Hypixel",
-
-            #details="[376✫] Polsulpicien",
-            # "Looking to Play", "Playing Solo", "In a Group"
-            #state=status,
-
-
             small_image="vscode", 
             small_text="Playing on VSCode",
-
-            details="In Development...",
+            
+            details=details, 
+            state=status,
 
             start=self.launch
         )

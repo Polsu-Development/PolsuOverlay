@@ -45,3 +45,19 @@ class InvalidAPIKeyError(Exception):
     def __init__(self, key):
         self.error = f"Invalid API Key: {key}"
         self.key = key
+
+
+class NotLinkedError(Exception):
+    """
+    A class representing an error when the user is not linked
+    """
+    def __init__(self):
+        self.error = "Minecraft Account not linked on Polsu."
+
+
+class NoAPIKeyError(Exception):
+    """
+    A class representing an error when the api key is not provided
+    """
+    def __init__(self):
+        self.error = "No API Key provided."
