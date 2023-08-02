@@ -52,8 +52,8 @@ from .components.menu import Menu
 from .components.reward import Rewards
 from .components.logs import Logs
 from .components.player import Player
+from .components.settings import Settings
 
 from .utils.text import text2html
-from .utils.settings import Settings
 from .utils.skin import SkinIcon
 from .utils.themes import loadThemes

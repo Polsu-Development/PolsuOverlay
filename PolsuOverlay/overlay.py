@@ -72,8 +72,8 @@ class Overlay(FramelessMainWindow):
 
         self.POPUPWIDTH = 245
 
-        self.pathAssets = resource_path('PolsuOverlay/assets')
-        self.pathThemes = resource_path('PolsuOverlay/themes')
+        self.pathAssets = resource_path('assets')
+        self.pathThemes = resource_path('themes')
 
         # Load Settings
         self.settings = Settings(self)

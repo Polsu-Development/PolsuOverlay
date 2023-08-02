@@ -31,7 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from .requests import Polsu as PolReq
+from .api import Polsu as PolReq
 from .objects.key import APIKey
 from .objects.player import Player as Pl
 from .exception import APIError
