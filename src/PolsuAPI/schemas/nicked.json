@@ -1,0 +1,36 @@
+{
+    "player": {
+        "username": "",
+        "uuid": "",
+        "rank": "",
+        "channel": "",
+        "level": 0
+    },
+    "stats": {
+        "Bedwars": {
+            "formatted": "§7[0@]",
+            "stars": 999999999,
+            "games_played": 0,
+            "winstreak": 0,
+            "kills": 0,
+            "deaths": 0,
+            "kdr": 0,
+            "fkills": 0,
+            "fdeaths": 0,
+            "fkdr": 0,
+            "wins": 0,
+            "losses": 0,
+            "wlr": 0,
+            "broken": 0,
+            "lost": 0,
+            "bblr": 0,
+            "rqlevel": {
+                "index": 10,
+                "level": "",
+                "text": "",
+                "colour": "",
+                "raw": 0
+            }
+        }
+    }
+}

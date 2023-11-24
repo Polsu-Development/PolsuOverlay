@@ -31,75 +31,52 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src.updater import Updater
-from src.overlay import Overlay
-from src.components.logger import Logger
-from src.utils.path import resource_path
+from re import findall, split
 
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+COLORS = {
+    "0": (0, 0, 0),
+    "1": (0, 0, 170),
+    "2": (0, 170, 0),
+    "3": (0, 170, 170),
+    "4": (170, 0, 0),
+    "5": (170, 0, 170),
+    "6": (255, 170, 0),
+    "7": (170, 170, 170),
+    "8": (85, 85, 85),
+    "9": (85, 85, 255),
+    "a": (85, 255, 85),
+    "b": (85, 255, 255),
+    "c": (255, 85, 85),
+    "d": (255, 85, 255),
+    "e": (255, 255, 85),
+    "f": (255, 255, 255),
+}
 
-
-import sys
-import os
-import traceback
-import datetime
-
-
-def run(window: Updater, logger: Logger) -> None:
+def text2html(text: str, size: int = 11, colour: str = None, bold: bool = False):
     """
-    Run the overlay, depending on the value of the Updater window
+    Transform a text with Minecraft color codes to HTML
     
-    :param window: The Updater window
-    :param logger: The logger
+    :param text: The text to transform
+    :param size: The size of the text
+    :param colour: The color of the text
+    :param bold: If the text is bold
+    :return: The HTML text
     """
-    if window.value:
-        window.close()
-        try:
-            Overlay(logger).show()
-        except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
+    if colour:
+        return f"<span style=\"color: #{colour}; font-size: {size}pt; {'font-weight: bold;' if bold else ''}\">{text}</span>"
     else:
-        window.close()
+        text = text.replace("§fYOUTUBE§c", "§fYT§c")
 
+        colors = findall('§.', text)
+        
+        if len(colors) == 0:
+            return text
+        else:
+            res = split('§.', text)
 
-if __name__ == '__main__':
-    # DO NOT REMOVE THE FOLLOWING LINES!
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    #
-    # This is a fix for the DPI scaling on Windows
-    # Removing this might break the overlay window.
+            for index, section in enumerate(res.copy()[:-1]):
+                res[index] += f"<span style=\"color: rgb{COLORS[colors[index][1:]]}; font-size: {size}pt; {'font-weight: bold;' if bold else ''}\">"
+                res[index+1] = res[index+1] + "</span>"
 
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
-
-    app = QApplication(sys.argv)
-
-    try:
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-    sys.exit(app.exec_())
+            return ''.join(res)

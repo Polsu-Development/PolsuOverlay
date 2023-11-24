@@ -31,75 +31,82 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src.updater import Updater
-from src.overlay import Overlay
-from src.components.logger import Logger
-from src.utils.path import resource_path
+from ..utils.constants import CONFIG
 
-
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
-
-
-import sys
+import json 
 import os
-import traceback
-import datetime
+
+from typing import Union
+from getpass import getuser
 
 
-def run(window: Updater, logger: Logger) -> None:
+class Settings:
     """
-    Run the overlay, depending on the value of the Updater window
-    
-    :param window: The Updater window
-    :param logger: The logger
+    A class representing the overlay settings
     """
-    if window.value:
-        window.close()
+    def __init__(self, win) -> None:
+        """
+        Initialise the class
+        
+        :param win: The Overlay window
+        """
+        self.win = win
+
+
+    def loadConfig(self) -> dict:
+        """
+        Load or create the config
+
+        :return: The config
+        """
+        self.win.dirConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'settings')
+        self.win.themesConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'themes')
+
+        if not os.path.exists(self.win.dirConfig):
+            os.makedirs(self.win.dirConfig)
+            os.makedirs(self.win.themesConfig)
+            self.win.newUser = True
+        else:
+            self.win.newUser = False
+
+        self.win.pathConfig = os.path.join(self.win.dirConfig, "data.json")
+
         try:
-            Overlay(logger).show()
+            with open(self.win.pathConfig, "r") as f:
+                config = json.load(f)
         except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
+            with open(self.win.pathConfig, "w") as f:
+                json.dump(CONFIG, f, indent=6)
+            config = CONFIG
 
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
-    else:
-        window.close()
+        self.win.configAPIKey = config.get("APIKey", CONFIG.get('APIKey'))
+        self.win.configClient = config.get("client", CONFIG.get('client'))
+        self.win.configLogPath = config.get("logPath", CONFIG.get('logPath'))
+        self.win.configTheme = config.get("theme", CONFIG.get('theme'))
+        self.win.configOpacity = config.get("opacity", CONFIG.get('opacity'))
+        self.win.configRPC = config.get("RPC", CONFIG.get('RPC'))
+        self.win.configWho = config.get("who", CONFIG.get('who'))
+        self.win.confighideOverlay = config.get("hideOverlay", CONFIG.get('hideOverlay'))
+        self.win.configXY = config.get("xy", CONFIG.get('xy'))
+        self.win.configWH = config.get("wh", CONFIG.get('wh'))
+        self.win.configStatus = config.get("status", CONFIG.get('status'))
+        self.win.configSorting = config.get("sorting", CONFIG.get('sorting'))
+        self.win.configRqColours = config.get("rqLevel", CONFIG.get('rqLevel'))
+        
+        return config
 
 
-if __name__ == '__main__':
-    # DO NOT REMOVE THE FOLLOWING LINES!
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    #
-    # This is a fix for the DPI scaling on Windows
-    # Removing this might break the overlay window.
+    def update(self, key: str, setting: Union[str, bool, list, dict]) -> None:
+        """
+        Update a setting
 
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
+        :param key: Setting key (e.g. 'APIKey')
+        :param setting: Setting value
+        """
+        with open(self.win.pathConfig, "r") as f:
+            config = json.load(f)
 
-    app = QApplication(sys.argv)
+        config[key] = setting
 
-    try:
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-    sys.exit(app.exec_())
+        with open(self.win.pathConfig, "w") as f:
+            json.dump(config, f, indent=6)

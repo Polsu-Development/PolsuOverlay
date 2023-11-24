@@ -31,75 +31,176 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src.updater import Updater
-from src.overlay import Overlay
-from src.components.logger import Logger
-from src.utils.path import resource_path
+from .. import __version__
 
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
-
-
-import sys
-import os
+import asyncio
 import traceback
-import datetime
+
+from pypresence import Presence as Pr
+from threading import Thread
+from datetime import datetime
 
 
-def run(window: Updater, logger: Logger) -> None:
+def startRPC(win) -> None:
     """
-    Run the overlay, depending on the value of the Updater window
+    Start the Discord RPC
     
-    :param window: The Updater window
-    :param logger: The logger
+    :param win: The Overlay window
     """
-    if window.value:
-        window.close()
-        try:
-            Overlay(logger).show()
-        except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
-    else:
-        window.close()
+    win.logger.debug("Starting Discord RPC Thread...")
+    Thread(target=discordRPC, args=(win, asyncio.new_event_loop(), ), daemon=True).start()
 
 
-if __name__ == '__main__':
-    # DO NOT REMOVE THE FOLLOWING LINES!
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    #
-    # This is a fix for the DPI scaling on Windows
-    # Removing this might break the overlay window.
-
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
-
-    app = QApplication(sys.argv)
+def discordRPC(win, loop) -> None:
+    """
+    Discord RPC
+    
+    :param win: The Overlay window
+    :param loop: The asyncio event loop
+    """
+    asyncio.set_event_loop(loop)
 
     try:
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
+        win.RPC = Presence(win.launch, win.logs, win.configStatus)
+        win.RPC.connect()
 
-    sys.exit(app.exec_())
+        win.logger.info("Discord RPC connected!")
+
+        #self.notif.send(
+        #    title="Discord Activity Status Update",
+        #    message="Succesfully connected to Discord!"
+        #)
+    except:
+        win.RPC = None
+
+        win.logger.error(f"Discord RPC Error.\n\nTraceback: {traceback.format_exc()}")
+
+        #self.notif.send(
+        #    title="Discord Activity Status Error",
+        #    message="Something went wrong, are you sure that your Discord client is opened?"
+        #)
+
+
+class Presence:
+    """
+    RPC - Rich Presence Client
+    
+    Discord Activity Status.
+    """
+    def __init__(self, launch: int, logs, configStatus: bool) -> None:
+        """
+        Initialise the Discord RPC
+        
+        :param launch: The time when the overlay was launched
+        :param logs: The logs
+        :param configStatus: The config status
+        """
+        self.RPC = Pr(client_id="1076464861921415169")
+        self.launch = launch
+        self.logs = logs
+        self.configStatus = configStatus
+
+        self.player = None
+
+
+    def connect(self) -> None:
+        """
+        Connect to Discord
+        """
+        self.RPC.connect()
+        self.update()
+
+    
+    def setPlayer(self, player) -> None:
+        """
+        Set the player
+        """
+        self.player = player
+        self.update()
+
+
+    def setConfigStatus(self, status: bool) -> None:
+        """
+        Set the config status
+        
+        :param status: The config status
+        """
+        self.configStatus = status
+        self.update()
+
+
+    def clear(self) -> None:
+        """
+        Clear the RPC
+        """
+        self.RPC.clear()
+
+
+    def disconnect(self) -> None:
+        """
+        Disconnect from Discord
+        """
+        self.clear()
+        self.RPC.close()
+
+
+    def update(self) -> None:
+        """
+        Update the RPC
+        """
+        elapsed = self.launch
+
+        if self.configStatus:
+            if self.player:
+                details = f"[{self.player.bedwars.stars}✫] {self.logs.rawLine(self.player.rank)}"
+            else:
+                details = None
+
+            party = None
+            if self.logs.party:
+                state = "In a Bedwars Party!"
+                party = [self.logs.partyMembers, self.logs.partyMembers]
+                if self.logs.isInGame:
+                    small_image = "bedwars"
+
+                    elapsed = int(self.logs.gameStart.timestamp())
+                else:
+                    small_image = "hypixel"
+            elif self.logs.waitingForGame:
+                state = "Waiting for the game to start..."
+                small_image = "bedwars"
+            elif self.logs.isInGame:
+                state = "In a Bedwars Game!"
+                small_image = "bedwars"
+
+                elapsed = int(self.logs.gameStart.timestamp())
+            else:
+                state = "Looking to Play..."
+                small_image = "hypixel"
+        else:
+            details = None
+            state = None
+            small_image = "hypixel"
+            party = None
+
+        self.RPC.update(
+            state=state,
+            details=details,
+            start=elapsed,
+            large_image="polsu", 
+            large_text=f"Polsu Overlay v{__version__}",
+            small_image=small_image, 
+            small_text="Playing on mc.hypixel.net",
+            party_size=party,
+            buttons=[
+                {
+                    "label": "Get Overlay 📥", 
+                    "url": "https://discord.polsu.xyz" # TODO: overlay.polsu.xyz
+                }, 
+                {
+                    "label": "Discord Server", 
+                    "url": "https://discord.polsu.xyz"
+                }
+            ],
+        )

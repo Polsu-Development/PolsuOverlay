@@ -1,0 +1,79 @@
+{
+    "overlay": {
+        "icon": "custom",
+        "name": "High Altitude",
+        "gradient": {
+            "start": "white",
+            "end": "white"
+        }
+    },
+    "color": "#5EA7D1",
+    "border": "#ffffff",
+    "menu": {
+        "text": {
+            "color": "white"
+        },
+        "buttons-hover": {
+            "background-color": "#21171AFF",
+            "border-radius": "4px",
+            "disabled-color": "#9CE2FC"
+        },
+        "smallButtons-hover": {
+            "background-color": "#21171AFF",
+            "border-radius": "4px",
+            "disabled-color": "#9CE2FC"
+        }
+    },
+    "buttons-hover": {
+        "background-color": "#21171AFF",
+        "border-radius": "4px"
+    },
+    "close-button": {
+        "background-color": "red",
+        "border-radius": "4px"
+    },
+    "searchBar": {
+        "color": "white",
+        "default": "white",
+        "border-width": "2px",
+        "border-radius": "4px",
+        "border-style": "solid",
+        "border-color": "#ABE1F1",
+        "hover-color": "#21171AFF",
+        "disabled-color": "#9CE2FC"
+    },
+    "table": {
+        "color": "white",
+        "border": "white",
+        "highlight": "#21171AFF"
+    },
+    "scrollBar": {
+        "color": "#808080",
+        "background": "lightgrey"
+    },
+    "toggleButton": {
+        "disabled-color": "#9CE2FC"
+    },
+    "settings": {
+        "menu": {
+            "color": "white",
+            "border-color": "#ABE1F1",
+            "border-radius": "4px",
+            "border-style": "solid",
+            "disabled-color": "#9CE2FC",
+            "hover": {
+                "background-color": "#21171AFF"
+            }
+        },
+        "searchBar": {
+            "color": "white",
+            "default": "lightgrey",
+            "border-width": "2px",
+            "border-radius": "4px",
+            "border-style": "solid",
+            "border-color": "#ABE1F1",
+            "hover-color": "#21171AFF",
+            "disabled-color": "#9CE2FC"
+        }
+    }
+}

@@ -31,75 +31,108 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src.updater import Updater
-from src.overlay import Overlay
-from src.components.logger import Logger
-from src.utils.path import resource_path
+from ..PolsuAPI import Polsu
+from ..PolsuAPI.exception import APIError, InvalidAPIKeyError
 
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QThread, pyqtSignal, QEventLoop, QTimer
 
 
-import sys
-import os
-import traceback
-import datetime
+import asyncio
 
 
-def run(window: Updater, logger: Logger) -> None:
+class APIKeyWorker(QThread):
     """
-    Run the overlay, depending on the value of the Updater window
-    
-    :param window: The Updater window
-    :param logger: The logger
+    APIKeyWorker is a QThread that will check if the API Key is valid or not
     """
-    if window.value:
-        window.close()
+    data = pyqtSignal(object, object)
+
+    def __init__(self, parent, key: str) -> None:
+        """
+        Initialise the APIKeyWorker
+        
+        :param parent: The parent of the APIKeyWorker
+        :param key: The API Key to check
+        """
+        super(QThread, self).__init__()
+        self._parent = parent
+
+        self.client = Polsu(key)
+ 
+
+    def run(self) -> None:
+        """
+        Run the APIKeyWorker
+        """
         try:
-            Overlay(logger).show()
+            data = asyncio.run(self.client.key.get())
+            self.data.emit(self._parent, data)
         except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
+            self.data.emit(self._parent, None)
 
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
+
+
+def loadUpdate(parent) -> None:
+    """
+    Check if the API Key is valid or not
+    
+    :param parent: The parent of the APIKeyWorker
+    """
+    key = parent.apikeyBox.text()
+    
+    if len(key) == 36:
+        parent.apikeyBox.setEnabled(False)
+
+        parent.threads[key] = APIKeyWorker(parent, key)
+        parent.threads[key].data.connect(apikeyUpdate)
+        parent.threads[key].start()
+
+        parent.apikeyBox.setEnabled(True)
+        parent.apikeyBox.setText("")
+
+
+def apikeyUpdate(parent, data) -> None:
+    """
+    Function called when the API Key is checked
+    
+    :param parent: The parent of the APIKeyWorker
+    :param data: The data returned by the APIKeyWorker
+    """
+    if data:
+        newString = f"{data.key[0:4]}XXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+        parent.win.logger.info(f"API Key {newString} is valid!")
+
+        parent.apikeyBox.setStyleSheet(parent.win.themeStyle.settingsAPIKeyStyleValid)
+
+        parent.win.configAPIKey = data.key
+        parent.win.settings.update("APIKey", data.key)
+
+        parent.apikeyBox.setPlaceholderText(newString)
+        parent.win.notif.send(title="Valid API Key", message="Your Polsu API Key is valid you can now launch a Bedwars game!")
+
+        loop = QEventLoop()
+        QTimer.singleShot(3000, loop.quit)
+        loop.exec_()
+
+        parent.apikeyBox.setStyleSheet(parent.win.themeStyle.settingsAPIKeyStyle)
+
+        loop = QEventLoop()
+        QTimer.singleShot(1000, loop.quit)
+        loop.exec_()
+
+        parent.win.logger.info("Closing API Key menu...")
+
+        parent.win.close_apikey_menu()
     else:
-        window.close()
+        parent.win.logger.info(f"API Key {parent.apikeyBox.text()} is invalid!")
 
+        parent.apikeyBox.setStyleSheet(parent.win.themeStyle.settingsAPIKeyStyleInvalid)
 
-if __name__ == '__main__':
-    # DO NOT REMOVE THE FOLLOWING LINES!
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    #
-    # This is a fix for the DPI scaling on Windows
-    # Removing this might break the overlay window.
+        parent.apikeyBox.setPlaceholderText("Enter your Polsu API Key")
+        parent.win.notif.send(title="Invalid API Key!", message="The Polsu API Key you provided is invalid!")
 
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
-
-    app = QApplication(sys.argv)
-
-    try:
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-    sys.exit(app.exec_())
+        loop = QEventLoop()
+        QTimer.singleShot(3000, loop.quit)
+        loop.exec_()
+        
+        parent.apikeyBox.setStyleSheet(parent.win.themeStyle.settingsAPIKeyStyle)

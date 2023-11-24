@@ -31,75 +31,146 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src.updater import Updater
-from src.overlay import Overlay
-from src.components.logger import Logger
-from src.utils.path import resource_path
+from .api import Polsu as PolReq
+from .objects.key import APIKey
+from .objects.player import Player as Pl
+from .objects.user import User
+from .exception import APIError
 
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+import asyncio
+
+from async_timeout import timeout
 
 
-import sys
-import os
-import traceback
-import datetime
+timeout_time = 60
 
 
-def run(window: Updater, logger: Logger) -> None:
+class Polsu:
     """
-    Run the overlay, depending on the value of the Updater window
-    
-    :param window: The Updater window
-    :param logger: The logger
+    A class representing the Polsu Client
     """
-    if window.value:
-        window.close()
+    def __init__(self, key: str) -> None:
+        self.client = PolReq(key)
+        self.api_key = key
+        
+        self.key = Key(self.client)
+        self.user = User(self.client)
+        self.player = Player(self.client)
+
+
+class Key:
+    """
+    A class representing a Polsu API Key
+    """
+    def __init__(self, client: PolReq) -> None:
+        self.client = client
+        
+
+    async def get(self) -> APIKey:
+        """
+        Check if the API Key is valid and get the API Key stats
+
+        :return: An instance of APIKey, representing the Polsu API Key
+        """
         try:
-            Overlay(logger).show()
-        except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
-    else:
-        window.close()
+            async with timeout(timeout_time):
+                return await self.client.get_key_stats()
+        except asyncio.TimeoutError:
+            raise APIError
 
 
-if __name__ == '__main__':
-    # DO NOT REMOVE THE FOLLOWING LINES!
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    #
-    # This is a fix for the DPI scaling on Windows
-    # Removing this might break the overlay window.
+class User:
+    """
+    A class representing a Polsu Overlay User
+    """
+    def __init__(self, client: PolReq) -> None:
+        self.client = client
+        
 
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
+    async def login(self) -> User:
+        """
+        Login to the Polsu API
 
-    app = QApplication(sys.argv)
+        :return: An instance of User, representing the Polsu Overlay User
+        """
+        try:
+            async with timeout(timeout_time):
+                return await self.client.login()
+        except asyncio.TimeoutError:
+            raise APIError
 
-    try:
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
 
-    sys.exit(app.exec_())
+    async def logout(self, timestamp: int) -> None:
+        """
+        Logout of the Overlay
+
+        :param timestamp: The timestamp of the overlay launch
+        """
+        try:
+            async with timeout(timeout_time):
+                return await self.client.logout(timestamp)
+        except asyncio.TimeoutError:
+            raise APIError
+
+
+class Player:
+    """
+    A class representing a Hypixel Player
+    """
+    def __init__(self, client: PolReq) -> None:
+        self.client = client
+        
+
+    async def get(self, player: str) -> Pl:
+        """
+        Get a Player stats
+
+        :param player: A Player (uuid or username)
+        :return: An instance of Pl, representing the Player stats
+        """
+        try:
+            async with timeout(timeout_time):
+                return await self.client.get_stats(player)
+        except asyncio.TimeoutError:
+            raise APIError
+
+
+    async def post(self, players: str) -> list[Pl]:
+        """
+        Get a Player stats
+
+        :param players: A list of Players (uuid or username)
+        :return: An list of instances of Pl, representing the Player stats
+        """
+        try:
+            async with timeout(timeout_time):
+                return await self.client.post_stats(players)
+        except asyncio.TimeoutError:
+            raise APIError
+        
+
+    async def loadQuickbuy(self, uuid: str) -> None:
+        """
+        Load the Player quickbuy
+
+        :param uuid: The Player UUID
+        """
+        try:
+            async with timeout(timeout_time):
+                return await self.client.load_quickbuy(uuid)
+        except asyncio.TimeoutError:
+            raise APIError
+
+
+    async def loadSkin(self, player: Pl) -> None:
+        """
+        Load the Player skin
+
+        :param player: The Player
+        """
+        try:
+            async with timeout(timeout_time):
+                return await self.client.load_skin(player)
+        except asyncio.TimeoutError:
+            raise APIError

@@ -31,75 +31,64 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src.updater import Updater
-from src.overlay import Overlay
-from src.components.logger import Logger
-from src.utils.path import resource_path
+from ..PolsuAPI import Polsu
 
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QThread, pyqtSignal
 
 
-import sys
-import os
-import traceback
-import datetime
+import asyncio
 
 
-def run(window: Updater, logger: Logger) -> None:
+class LoginWorker(QThread):
     """
-    Run the overlay, depending on the value of the Updater window
-    
-    :param window: The Updater window
-    :param logger: The logger
+    A QThread that will request the API when the user starts the overlay
     """
-    if window.value:
-        window.close()
+    ended = pyqtSignal(object)
+
+    def __init__(self, key: str) -> None:
+        """
+        Initialise the LoginWorker
+        
+        :param key: The API Key
+        """
+        super(QThread, self).__init__()
+        self.client = Polsu(key)
+ 
+
+    def run(self):
+        """
+        Run the LoginWorker
+        """
         try:
-            Overlay(logger).show()
+            data = asyncio.run(self.client.user.login())
+            self.ended.emit(data)
         except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
-    else:
-        window.close()
+            data = None
+            self.ended.emit(data)
 
 
-if __name__ == '__main__':
-    # DO NOT REMOVE THE FOLLOWING LINES!
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    #
-    # This is a fix for the DPI scaling on Windows
-    # Removing this might break the overlay window.
+class LogoutWorker(QThread):
+    """
+    A QThread that will request the API when the user closes the overlay
+    """
+    def __init__(self, key: str, launch: int) -> None:
+        """
+        Initialise the LogoutWorker
+        
+        :param key: The API Key
+        :param launch: The launch time
+        """
+        super(QThread, self).__init__()
+        self.client = Polsu(key)
+        self.launch = launch
+ 
 
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
-
-    app = QApplication(sys.argv)
-
-    try:
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-    sys.exit(app.exec_())
+    def run(self) -> None:
+        """
+        Run the LogoutWorker
+        """
+        try:
+            asyncio.run(self.client.user.logout(self.launch))
+        except:
+            pass

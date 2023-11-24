@@ -31,75 +31,88 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src.updater import Updater
-from src.overlay import Overlay
-from src.components.logger import Logger
-from src.utils.path import resource_path
-
-
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
-
-
-import sys
 import os
-import traceback
-import datetime
+import logging
+import logging.handlers
+
+from getpass import getuser
 
 
-def run(window: Updater, logger: Logger) -> None:
+class Logger:
     """
-    Run the overlay, depending on the value of the Updater window
-    
-    :param window: The Updater window
-    :param logger: The logger
+    Handle the logging system
     """
-    if window.value:
-        window.close()
+    def __init__(self):
+        """
+        Initialise the logger
+        """
+        self.logsPath = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'logs')
+        if not os.path.exists(self.logsPath):
+            os.makedirs(self.logsPath)
+
+        # Removing the latest.log file
         try:
-            Overlay(logger).show()
+            os.remove(f"{self.logsPath}/latest.log")
         except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
+            pass
 
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
-    else:
-        window.close()
+        self.logger = logging.getLogger('PolsuOverlay')
+        self.logger.setLevel(logging.DEBUG)
 
+        handler = logging.handlers.RotatingFileHandler(
+            filename=f"{self.logsPath}/latest.log",
+            encoding='utf-8',
+            maxBytes=32 * 1024 * 1024,
+            backupCount=5,
+        )
+        dt_fmt = '%Y-%m-%d %H:%M:%S'
+        formatter = logging.Formatter('[{asctime}] [{levelname:<8}] {name}: {message}', dt_fmt, style='{')
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
 
-if __name__ == '__main__':
-    # DO NOT REMOVE THE FOLLOWING LINES!
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    #
-    # This is a fix for the DPI scaling on Windows
-    # Removing this might break the overlay window.
+        self.logger.info('Logger Initialised\n\n')
+    
 
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
+    def info(self, message: str) -> None:
+        """
+        Log an info message
+        
+        :param message: The message
+        """
+        self.logger.info(message)
 
-    app = QApplication(sys.argv)
+    
+    def warning(self, message: str) -> None:
+        """
+        Log a warning message
+        
+        :param message: The message
+        """
+        self.logger.warning(message)
 
-    try:
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
+    
+    def error(self, message: str) -> None:
+        """
+        Log an error message
+        
+        :param message: The message
+        """
+        self.logger.error(message)
 
-    sys.exit(app.exec_())
+    
+    def critical(self, message: str) -> None:
+        """
+        Log a critical message
+        
+        :param message: The message
+        """
+        self.logger.critical(message)
+
+    
+    def debug(self, message: str) -> None:
+        """
+        Log a debug message
+        
+        :param message: The message
+        """
+        self.logger.debug(message)

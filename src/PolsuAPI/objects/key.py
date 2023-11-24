@@ -31,75 +31,59 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src.updater import Updater
-from src.overlay import Overlay
-from src.components.logger import Logger
-from src.utils.path import resource_path
-
-
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
-
-
-import sys
-import os
-import traceback
-import datetime
-
-
-def run(window: Updater, logger: Logger) -> None:
+class APIKey:
     """
-    Run the overlay, depending on the value of the Updater window
+    A class representing a Polsu API Key
+    """
+    def __init__(self, data: dict) -> None:
+        self._data = data
+
+        self._key = data.get('data').get('key')
+
+        self._discord = data.get('data').get('discord').get('id')
+
+        self._limit = data.get('data').get('limit')
+        self._total_requests = data.get('data').get('total_requests')
+
+
+    @property
+    def data(self) -> dict:
+        """
+        The data of the user.
+        """
+        return self._data
+
+    @property
+    def key(self) -> str:
+        """
+        The API Key
+        """
+        return self._key
     
-    :param window: The Updater window
-    :param logger: The logger
-    """
-    if window.value:
-        window.close()
-        try:
-            Overlay(logger).show()
-        except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
+    @property
+    def discord(self) -> int:
+        """
+        The Discord ID
+        """
+        return self._discord
+    
+    @property
+    def limit(self) -> int:
+        """
+        The API Key Limit
+        """
+        return self._limit
+    
+    @property
+    def total_requests(self) -> int:
+        """
+        The API Key Total Requests
+        """
+        return self._total_requests
+    
 
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
-    else:
-        window.close()
-
-
-if __name__ == '__main__':
-    # DO NOT REMOVE THE FOLLOWING LINES!
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    #
-    # This is a fix for the DPI scaling on Windows
-    # Removing this might break the overlay window.
-
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
-
-    app = QApplication(sys.argv)
-
-    try:
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-    sys.exit(app.exec_())
+    def __repr__(self) -> str:
+        return f"<APIKey key={self.key} discord={self.discord} limit={self.limit} total_requests={self.total_requests}>"
+    
+    def __str__(self) -> str:
+        return self.key

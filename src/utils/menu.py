@@ -31,75 +31,69 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src.updater import Updater
-from src.overlay import Overlay
-from src.components.logger import Logger
-from src.utils.path import resource_path
+from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath
 
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
-
-
-import sys
-import os
-import traceback
-import datetime
-
-
-def run(window: Updater, logger: Logger) -> None:
+def menuPaintEvent(parent, opacity: float = 0.8) -> None:
     """
-    Run the overlay, depending on the value of the Updater window
+    Paint the menu
     
-    :param window: The Updater window
-    :param logger: The logger
+    :param parent: The parent of the menu
+    :param opacity: The opacity of the menu
     """
-    if window.value:
-        window.close()
-        try:
-            Overlay(logger).show()
-        except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
-    else:
-        window.close()
+    x = -1
+    y = 2
+    width = parent.size().width() - parent.win.POPUPWIDTH
+    height = parent.size().height() - 34
+    
+    painter = QPainter(parent)
+    painter.setPen(QPen(QColor(parent.win.themeStyle.color), 1))
+    painter.setBrush(QColor(parent.win.themeStyle.color))
+    painter.setOpacity(opacity)
 
 
-if __name__ == '__main__':
-    # DO NOT REMOVE THE FOLLOWING LINES!
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    #
-    # This is a fix for the DPI scaling on Windows
-    # Removing this might break the overlay window.
+    # Menu
+    path = QPainterPath()
+    path.moveTo(x, y)
+    path.lineTo(x, height)
+    path.lineTo(width - 2 * parent.win._cornerRadius, height)
+    path.arcTo(width - 2 * parent.win._cornerRadius, y + (height - 2 * parent.win._cornerRadius), 2 * parent.win._cornerRadius, 2 * parent.win._cornerRadius, 270.0, 90.0)
+    path.lineTo(width, y)
+    painter.setRenderHints(QPainter.Antialiasing)
+    painter.drawPath(path)
 
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
 
-    app = QApplication(sys.argv)
+    painter.setBrush(QColor("#5b5f62"))
+    painter.setOpacity(0.8)
+    painter.drawRoundedRect(10, 10, 420, 267, 20.0, 20.0)
 
-    try:
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
+    painter.end()
 
-    sys.exit(app.exec_())
+
+def leftMenuPaintEvent(parent) -> None:
+    """
+    Paint the left menu
+
+    :param parent: The parent of the menu
+    """
+    x = -1
+    y = 2
+    width = parent.win.POPUPWIDTH
+    height = parent.size().height()-36
+    
+    painter = QPainter(parent)
+    painter.setOpacity(0.8)
+    painter.setPen(QPen(QColor(parent.win.themeStyle.color), 1))
+    painter.setBrush(QColor(parent.win.themeStyle.color))
+
+    # Menu
+    path = QPainterPath()
+    path.moveTo(x, y)
+    path.lineTo(x, y + (height - 2 * parent.win._cornerRadius))
+    path.arcTo(x, y + (height - 2 * parent.win._cornerRadius), 2 * parent.win._cornerRadius, 2 * parent.win._cornerRadius, 180.0, 90.0)
+    path.lineTo(width, y + height)
+    path.lineTo(width, y)
+    path.lineTo(x + parent.win._cornerRadius, y)
+    painter.drawPath(path)
+
+    painter.end()
