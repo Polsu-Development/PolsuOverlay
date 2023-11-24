@@ -118,7 +118,7 @@ class Updater(FramelessDialog):
 
                         sleep(2)
 
-                        download_url = f"https://github.com/Polsu-Development/PolsuOverlay/releases/download/v{latest_version}/Polsu.Overlay.exe"
+                        download_url = f"https://github.com/Polsu-Development/PolsuOverlay/releases/download/v{latest_version}/Polsu-Overlay.exe"
 
                         directory = os.path.join(os.getcwd(), "Polsu Overlay.exe")
 
