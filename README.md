@@ -54,6 +54,8 @@ Then you just need to head over to the settings (click the Polsu logo) and choos
 - Shows party stats
 - Shows if players are nicked
 - Automatically claim your daily reward
+- View your opponent’s quickbuy
+- Highly customisable, whether it’s comparing stats with external players or changing the look of the interface. Craft custom themes in minutes.
 - You can easily know if a player is good or not since the player gets highlighted
 - Shows player heads, stars, name, winstreak, fkdr, finals, wlr, wins, bblr, beds and index stats
 - You can manually add a plyer to the overlay by doing `/msg +<PLAYER>` or `/w +<PLAYER>` in game
@@ -73,7 +75,6 @@ Then you just need to head over to the settings (click the Polsu logo) and choos
 - Automatic `/who`
 - Discord Rich Presence
 - Customizable window opacity, size & opacity
-- Custom themes
 - Custom logs path
 
 ## 🆕 Next Features
