@@ -51,10 +51,10 @@ class Logger:
             os.makedirs(self.logsPath)
 
         # Removing the latest.log file
-        try:
-            os.remove(f"{self.logsPath}/latest.log")
-        except:
-            pass
+        #try:
+        #    os.remove(f"{self.logsPath}/latest.log")
+        #except:
+        #    pass
 
         self.logger = logging.getLogger('PolsuOverlay')
         self.logger.setLevel(logging.DEBUG)
