@@ -52,6 +52,7 @@ from pyqt_frameless_window import FramelessMainWindow
 import os
 import webbrowser
 import json
+import traceback
 
 from pystray import Icon, Menu as Mn, MenuItem
 from PIL import Image
@@ -193,9 +194,12 @@ class Overlay(FramelessMainWindow):
         self.logger.debug(f"Loading the API Key...")
         if self.configAPIKey != "":
             self.logger.info("Logging in...")
-            self.threads["login"] = LoginWorker(self.configAPIKey)
-            self.threads["login"].ended.connect(self.loginEnded)
-            self.threads["login"].start()
+            try:
+                self.threads["login"] = LoginWorker(self.configAPIKey)
+                self.threads["login"].ended.connect(self.loginEnded)
+                self.threads["login"].start()
+            except:
+                self.logger.error(f"An error occurred while logging in!\nTraceback: {traceback.format_exc()}")
             self.login = True
         else:
             self.logger.warning("No API Key found!")
@@ -717,8 +721,11 @@ class Overlay(FramelessMainWindow):
         if self.configAPIKey != "":
             self.setCursor(Qt.WaitCursor)
 
-            self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch)
-            self.threads["logout"].start()
-            self.threads["logout"].wait()
+            try:
+                self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch)
+                self.threads["logout"].start()
+                self.threads["logout"].wait()
+            except:
+                self.logger.error(f"An error occurred while logging out!\nTraceback: {traceback.format_exc()}")
 
         event.accept()

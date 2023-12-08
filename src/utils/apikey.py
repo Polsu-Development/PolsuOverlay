@@ -32,13 +32,13 @@
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
 from ..PolsuAPI import Polsu
-from ..PolsuAPI.exception import APIError, InvalidAPIKeyError
 
 
 from PyQt5.QtCore import QThread, pyqtSignal, QEventLoop, QTimer
 
 
 import asyncio
+import traceback
 
 
 class APIKeyWorker(QThread):
@@ -83,9 +83,12 @@ def loadUpdate(parent) -> None:
     if len(key) == 36:
         parent.apikeyBox.setEnabled(False)
 
-        parent.threads[key] = APIKeyWorker(parent, key)
-        parent.threads[key].data.connect(apikeyUpdate)
-        parent.threads[key].start()
+        try:
+            parent.threads[key] = APIKeyWorker(parent, key)
+            parent.threads[key].data.connect(apikeyUpdate)
+            parent.threads[key].start()
+        except:
+            parent.win.logger.error(f"An error occurred while checking the API Key!\n\nTraceback: {traceback.format_exc()}")
 
         parent.apikeyBox.setEnabled(True)
         parent.apikeyBox.setText("")
