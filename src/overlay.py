@@ -118,6 +118,13 @@ class Overlay(FramelessMainWindow):
         self.logger.debug(f"Player {'loaded' if self.player.client else 'not loaded'}.")
 
 
+        # Notif
+        self.logger.debug("Loading the Notifications...")
+        self.notif = Notif(f"{self.pathAssets}/polsu/Polsu_.ico")
+        self.minimizeNotif = True
+        self.logger.debug(f"Notifications enabled.")
+
+
         # Logs
         self.logger.debug("Loading the Logs...")
         self.logs = Logs(self)
@@ -131,13 +138,6 @@ class Overlay(FramelessMainWindow):
         self.loadThemes = loadThemes
         self.changeTheme(self.configTheme, False)
         self.logger.debug(f"Theme: {self.themeStyle.name}")
-
-
-        # Notif
-        self.logger.debug("Loading the Notifications...")
-        self.notif = Notif(f"{self.pathAssets}/polsu/Polsu_.ico")
-        self.minimizeNotif = True
-        self.logger.debug(f"Notifications enabled.")
 
 
         # Fonts
