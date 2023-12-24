@@ -19,6 +19,7 @@ A Hypixel Bedwars Overlay in Python, 100% free and open source!
 - [💻 Development](#-development)
     - [⚒️ Requirements](#-requirements)
     - [📥 Configuration](#-configuration)
+    - [🏗️ Build](#-build)
 - [📃 Credits](#-credits)
     - [💻 Developers](#-developers)
     - [📚 Libraries](#-libraries)
@@ -118,7 +119,7 @@ Run the program
 python main.py
 ```
 
-### 📥 Build
+### 🏗️ Build
 
 Install [`PyInstaller`](https://www.pyinstaller.org/)
 ```shell
