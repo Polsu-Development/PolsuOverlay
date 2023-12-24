@@ -229,6 +229,7 @@ class Overlay(FramelessMainWindow):
             try:
                 self.RPC.update()
             except:
+                self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
                 self.RPC = None
 
             self.RPCTimer = 0

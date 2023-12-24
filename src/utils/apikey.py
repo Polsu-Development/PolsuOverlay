@@ -90,9 +90,6 @@ def loadUpdate(parent) -> None:
         except:
             parent.win.logger.error(f"An error occurred while checking the API Key!\n\nTraceback: {traceback.format_exc()}")
 
-        parent.apikeyBox.setEnabled(True)
-        parent.apikeyBox.setText("")
-
 
 def apikeyUpdate(parent, data) -> None:
     """
@@ -108,8 +105,10 @@ def apikeyUpdate(parent, data) -> None:
         parent.apikeyBox.setStyleSheet(parent.win.themeStyle.settingsAPIKeyStyleValid)
 
         parent.win.configAPIKey = data.key
+        parent.win.player.client.updateKey(data.key)
         parent.win.settings.update("APIKey", data.key)
 
+        parent.apikeyBox.setText("")
         parent.apikeyBox.setPlaceholderText(newString)
         parent.win.notif.send(title="Valid API Key", message="Your Polsu API Key is valid you can now launch a Bedwars game!")
 
@@ -139,3 +138,6 @@ def apikeyUpdate(parent, data) -> None:
         loop.exec_()
         
         parent.apikeyBox.setStyleSheet(parent.win.themeStyle.settingsAPIKeyStyle)
+
+        parent.apikeyBox.setEnabled(True)
+        parent.apikeyBox.setText("")
