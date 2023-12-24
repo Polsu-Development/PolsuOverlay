@@ -10,20 +10,20 @@ A Hypixel Bedwars Overlay in Python, 100% free and open source!
   
 # 📖 Table of Contents
 
-- [📝 About](#📝-about)
-- [📥 Installation](#📥-installation)
-- [🗒️ Usage](#🗒️-usage)
-    - [🔍 Features](#🔍-features)
-    - [🆕 Next Features](#🆕-next-features)
-    - [🐛 Known Bugs](#🐛-known-bugs)
-- [💻 Development](#💻-development)
-    - [⚒️ Requirements](#⚒️-requirements)
-    - [📥 Configuration](#📥-configuration)
-- [📃 Credits](#📃-credits)
-    - [💻 Developers](#💻-developers)
-    - [📚 Libraries](#📚-libraries)
-    - [🎨 Assets](#🎨-assets)
-- [📜 License](#📝-license)
+- [📝 About](#-about)
+- [📥 Installation](#-installation)
+- [📄 Usage](#-usage)
+    - [🔍 Features](#-features)
+    - [🆕 Next Features](#-next-features)
+    - [🐛 Known Bugs](#-known-bugs)
+- [💻 Development](#-development)
+    - [⚒️ Requirements](#-requirements)
+    - [📥 Configuration](#-configuration)
+- [📃 Credits](#-credits)
+    - [💻 Developers](#-developers)
+    - [📚 Libraries](#-libraries)
+    - [🎨 Assets](#-assets)
+- [📜 License](#-license)
 
 
 # 📝 About
@@ -40,7 +40,7 @@ You can also download the source code and run it with Python (see [Development](
 Or even download the source code and compile it yourself with [`PyInstaller`](https://www.pyinstaller.org/) (see [Development](#💻-development)).
 
 
-# 🗒️ Usage
+# 📄 Usage
 
 ![](https://polsu.xyz/assets/overlay/beautiful.png)
 
@@ -118,6 +118,21 @@ Run the program
 python main.py
 ```
 
+### 📥 Build
+
+Install [`PyInstaller`](https://www.pyinstaller.org/)
+```shell
+pip install pyinstaller
+```
+
+Build the executable file
+```shell
+pyinstaller --noconfirm build.spec
+```
+
+The executable file will be in the `dist` folder.  
+You can now run it!  
+
 
 # 💎 Support us
 
@@ -147,6 +162,7 @@ This overlay was entirely made & designed by [Polsulpicien](https://github.com/P
 - [`Pillow`](https://pypi.org/project/Pillow/): Python Imaging Library (`v8.4.0`)
 - [`notify-py`](https://pypi.org/project/notify-py/): A cross-platform Python package to display desktop notifications (`v0.4.2`)
 - [`pyqt_frameless_window`](https://pypi.org/project/pyqt-frameless-window/): A PyQt5 widget that can be used to create frameless windows (`v1.0.0`)
+- [`PyInstaller`](https://www.pyinstaller.org/): A program that freezes (packages) Python programs into stand-alone executables (`v4.5.1`)
 
 ## 🎨 Assets
 
