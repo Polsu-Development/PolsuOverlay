@@ -1,0 +1,75 @@
+{
+    "overlay": {
+        "icon": "custom",
+        "name": "Polsu Overlay"
+    },
+    "color": "#4e63a2",
+    "border": "#ffffff",
+    "menu": {
+        "text": {
+            "color": "white"
+        },
+        "buttons-hover": {
+            "background-color": "#CC5490FF",
+            "border-radius": "4px",
+            "disabled-color": "gray"
+        },
+        "smallButtons-hover": {
+            "background-color": "#CC5490FF",
+            "border-radius": "4px",
+            "disabled-color": "gray"
+        }
+    },
+    "buttons-hover": {
+        "background-color": "#CC5490FF",
+        "border-radius": "4px"
+    },
+    "close-button": {
+        "background-color": "#73737391",
+        "border-radius": "4px"
+    },
+    "searchBar": {
+        "color": "white",
+        "default": "lightgrey",
+        "border-width": "2px",
+        "border-radius": "4px",
+        "border-style": "solid",
+        "border-color": "gray",
+        "hover-color": "#CC5490FF",
+        "disabled-color": "gray"
+    },
+    "table": {
+        "color": "white",
+        "border": "white",
+        "highlight": "#CC5490FF"
+    },
+    "scrollBar": {
+        "color": "#4e63a2",
+        "background": "lightgrey"
+    },
+    "toggleButton": {
+        "disabled-color": "lightgrey"
+    },
+    "settings": {
+        "menu": {
+            "color": "white",
+            "border-color": "gray",
+            "border-radius": "4px",
+            "border-style": "solid",
+            "disabled-color": "gray",
+            "hover": {
+                "background-color": "#CC5490FF"
+            }
+        },
+        "searchBar": {
+            "color": "white",
+            "default": "lightgrey",
+            "border-width": "2px",
+            "border-radius": "4px",
+            "border-style": "solid",
+            "border-color": "gray",
+            "hover-color": "#CC5490FF",
+            "disabled-color": "gray"
+        }
+    }
+}

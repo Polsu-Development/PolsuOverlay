@@ -46,7 +46,7 @@ from .utils.colours import setColor
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt, QRectF, QEvent, QTimer, QVariantAnimation, QAbstractAnimation, QEventLoop
 from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFontDatabase, QFont
-from pyqt_frameless_window import FramelessMainWindow
+# from pyqt_frameless_window import FramelessMainWindow
 
 
 import os
@@ -61,7 +61,7 @@ from getpass import getuser
 from functools import partial
 
 
-class Overlay(FramelessMainWindow):
+class Overlay(QWidget):
     """
     Overlay, main class
     """
@@ -71,7 +71,7 @@ class Overlay(FramelessMainWindow):
         
         :param logger: The logger
         """
-        super().__init__(flags=[Qt.WindowType.WindowStaysOnTopHint])
+        super().__init__(flags=Qt.WindowType.WindowStaysOnTopHint)
         self.logger = logger
 
         self._menuOpened = False
@@ -94,7 +94,7 @@ class Overlay(FramelessMainWindow):
         self.win = False
         self.reward = None
         self.auto_minimize = False
-        
+
 
         # Assets
         self.pathAssets = resource_path('assets')
@@ -207,6 +207,13 @@ class Overlay(FramelessMainWindow):
 
         self.logger.info("Polsu Overlay is running!")
 
+
+    def setTitleBarVisible(self, visible):
+        if not visible:
+            self.setWindowFlags(Qt.FramelessWindowHint)
+        else:
+            self.setWindowFlags(Qt.Window)
+        self.show()
 
     def loginEnded(self, user: User) -> None:
         """
@@ -331,13 +338,15 @@ class Overlay(FramelessMainWindow):
         """
         Setup the overlay window
         """
+        setupComponents(self)
+
         self.setWindowTitle("Polsu Overlay")
-        self.setWindowIcon(f"{self.pathAssets}/polsu/Polsu_.png")
-        
-        self.setTitleBarVisible(False)
+        self.setWindowIcon(QIcon(f"{self.pathAssets}/polsu/Polsu_.png"))
 
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setAttribute(Qt.WA_DeleteOnClose)
+
+        self.setTitleBarVisible(False)
 
         self.setStyleSheet("background: transparent")
 
@@ -345,11 +354,8 @@ class Overlay(FramelessMainWindow):
         self.setMinimumSize(700, 150)
 
         self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-       
+        #self.setCentralWidget(self.central_widget)
 
-        # Setup the window components
-        setupComponents(self)
         updateComponents(self)
 
 

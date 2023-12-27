@@ -214,7 +214,7 @@ class Settings(QWidget):
         self.searchIcon = QPushButton(QIcon(f"{self.win.pathAssets}/polsu/Polsu_.png"), "", self)
         self.searchIcon.setIconSize(QSize(18, 18))
         self.searchIcon.clicked.connect(lambda: self.apikeyBox.setFocus())
-        self.searchIcon.setStyleSheet("QPushButton::hover {border-radius: 4px;}")
+        self.searchIcon.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {border-radius: 4px;}")
         self.searchIcon.setGeometry(113, 18, 19, 19)
 
         text = QLabel(text2html(f"§fGet your Key", bold=True), self)

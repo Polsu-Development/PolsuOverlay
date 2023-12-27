@@ -87,7 +87,7 @@ def setupComponents(win) -> None:
     win.searchIcon = QPushButton(QIcon(win.getIconPath("search")), "", win)
     win.searchIcon.setIconSize(QSize(14, 14))
     win.searchIcon.clicked.connect(lambda: win.searchBox.setFocus())
-    win.searchIcon.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
+    win.searchIcon.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {padding-left: 1px; padding-top: 1px}")
 
     win.timerBox = TimerBox(win)
     win.timerBox.setFont(win.minecraftFont)
@@ -97,7 +97,7 @@ def setupComponents(win) -> None:
 
     win.timerIcon = TimerIcon(QIcon(win.getIconPath("hourglass-start")), "", win)
     win.timerIcon.setIconSize(QSize(14, 14))
-    win.timerIcon.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
+    win.timerIcon.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {padding-left: 1px; padding-top: 1px}")
 
     win.deliveryBox = QLineEdit(win)
     win.deliveryBox.setEnabled(False)

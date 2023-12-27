@@ -179,6 +179,8 @@ class ThemeStyle:
         return f"""
             QPushButton {{
                 padding-right: 150px;
+                border: 0;
+                background: transparent;
             }}
             QPushButton::hover {{
                 background-color: {self.config.get('menu', {}).get('buttons-hover', {}).get('background-color', '#73737391')};
@@ -200,6 +202,8 @@ class ThemeStyle:
         return f"""
             QPushButton {{
                 padding-right: 180px;
+                border: 0;
+                background: transparent;
             }}
             QPushButton::hover {{
                 background-color: {self.config.get('menu', {}).get('buttons-hover', {}).get('background-color', '#73737391')};
@@ -219,6 +223,10 @@ class ThemeStyle:
         :return: The sidebar small buttons style
         """
         return f"""
+            QPushButton {{
+                border: 0;
+                background: transparent;
+            }}
             QPushButton::hover {{
                 background-color: {self.config.get('menu', {}).get('smallButtons-hover', {}).get('background-color', '#73737391')};
                 border-radius: {self.config.get('menu', {}).get('smallButtons-hover', {}).get('border-radius', '8px')};
@@ -236,6 +244,10 @@ class ThemeStyle:
         :return: The button style
         """
         return f"""
+            QPushButton {{
+                border: 0;
+                background: transparent;
+            }}
             QPushButton::hover {{
                 background-color: {self.config.get('buttons-hover', {}).get('background-color', '#73737391')}; 
                 border-radius: {self.config.get('buttons-hover', {}).get('border-radius', '8px')};
@@ -253,6 +265,10 @@ class ThemeStyle:
         :return: The close button style
         """
         return f"""
+            QPushButton {{
+                border: 0;
+                background: transparent;
+            }}
             QPushButton::hover {{
                 background-color: {self.config.get('close-button', {}).get('background-color', 'red')}; 
                 border-radius: {self.config.get('close-button', {}).get('border-radius', '8px')};

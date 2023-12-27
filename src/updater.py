@@ -31,14 +31,15 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src import __version__, __module__, EXECUTABLE, WINDOWS
+from src import __version__, __module__, EXECUTABLE, WINDOWS, LINUX
 from .utils.path import resource_path
 from .components.logger import Logger
 
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QProgressBar, QLabel
-from pyqt_frameless_window import FramelessDialog
+from PyQt5.QtWidgets import QProgressBar, QLabel, QMainWindow
+from PyQt5.QtGui import QIcon
+# from pyqt_frameless_window import FramelessDialog
 
 
 import threading
@@ -51,7 +52,7 @@ from packaging import version
 from time import sleep
 
 
-class Updater(FramelessDialog):
+class Updater(QMainWindow):
     """
     Updater class
     """
@@ -69,7 +70,7 @@ class Updater(FramelessDialog):
 
         self.setWindowTitle("Polsu Overlay - Update")
 
-        self.setWindowIcon(f"{resource_path('assets')}/polsu/Polsu_.png")
+        self.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
 
         self.setFixedSize(400, 100)
 
@@ -176,9 +177,13 @@ class Updater(FramelessDialog):
                 self.ended.emit(self, self.logger)
 
         self.logger.debug(f"Running on Windows: {'yes' if WINDOWS else 'no'}")
+        #MacOs
+        self.logger.debug(f"Running on Linux: {'yes' if LINUX else 'no'}")
         self.logger.debug(f"Running as executable: {'yes' if EXECUTABLE else 'no'}")
 
-        if WINDOWS:
+        self.logger.debug(os.name)
+
+        if WINDOWS or LINUX:
             self.logger.info(f"Updater Initialised.")
             self.logger.info(f"Running version: v{__version__}")
 

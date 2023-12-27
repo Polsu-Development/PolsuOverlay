@@ -152,7 +152,7 @@ class Logs:
             return new
         except FileNotFoundError:
             if not self.error_sent:
-                self.win.notif.send(
+                self.notif.send(
                     title="Warning!",
                     message="The log file you are currently using isn't valid.\nGo to: Settings -> Client, and choose a valid client.",
                     block=True

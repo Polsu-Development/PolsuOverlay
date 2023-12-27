@@ -337,7 +337,7 @@ class Settings(QWidget):
         self.searchIcon = QPushButton(QIcon(f"{self.win.pathAssets}/polsu/Polsu_.png"), "", self)
         self.searchIcon.setIconSize(QSize(18, 18))
         self.searchIcon.clicked.connect(lambda: self.apikeyBox.setFocus())
-        self.searchIcon.setStyleSheet("QPushButton::hover {border-radius: 4px;}")
+        self.searchIcon.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {border-radius: 4px;}")
         self.searchIcon.setGeometry(113, 18, 19, 19)
 
 
@@ -369,7 +369,7 @@ class Settings(QWidget):
         self.directoryButton.setToolTip('Open the Themes Directory')
         self.directoryButton.setGeometry(366, 50, 24, 24)
         self.directoryButton.setIconSize(QSize(24, 24))
-        self.directoryButton.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
+        self.directoryButton.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {padding-left: 1px; padding-top: 1px}")
         self.directoryButton.clicked.connect(self.openThemesDirectory)
 
 
@@ -415,7 +415,7 @@ class Settings(QWidget):
         self.logsButton.setToolTip('Choose a log file')
         self.logsButton.setGeometry(366, 112, 24, 24)
         self.logsButton.setIconSize(QSize(24, 24))
-        self.logsButton.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
+        self.logsButton.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {padding-left: 1px; padding-top: 1px}")
         self.logsButton.clicked.connect(self.openLogsFile)
 
 
@@ -795,7 +795,7 @@ class Info(QWidget):
         directoryButton.setToolTip('Open the settings directory')
         directoryButton.setGeometry(20, 248, 24, 24)
         directoryButton.setIconSize(QSize(24, 24))
-        directoryButton.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
+        directoryButton.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {padding-left: 1px; padding-top: 1px}")
         directoryButton.clicked.connect(self.openSettingsDirectory)
 
         self.SIGNALS = WidgetSignals()
