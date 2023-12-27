@@ -52,11 +52,19 @@ class Polsu:
     """
     def __init__(self, key: str) -> None:
         self.client = PolReq(key)
-        self.api_key = key
         
         self.key = Key(self.client)
         self.user = User(self.client)
         self.player = Player(self.client)
+
+
+    def updateKey(self, key: str) -> None:
+        """
+        Update the API Key
+
+        :param key: The new API Key
+        """
+        self.client.key = key
 
 
 class Key:

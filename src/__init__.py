@@ -40,7 +40,7 @@ import os
 __title__ = "PolsuOverlay"
 __author__ = "Polsulpicien"
 __license__ = "GPL-3.0 License"
-__version__ = "2.0.1"
+__version__ = "2.0.2"
 __description__ = "Polsu's Overlay"
 
 __module__ = os.getcwd()

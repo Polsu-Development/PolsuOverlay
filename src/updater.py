@@ -127,7 +127,16 @@ class Updater(QMainWindow):
 
                         # Download the file and save it
                         with requests.get(download_url, stream=True) as response:
-                            response.raise_for_status()
+                            if response.status_code == 404:
+                                self.logger.error(f"An error occurred while downloading the latest version!\n\nTracebak: {traceback.format_exc()}")
+                                self.label.setText(f"[404] Found a new version, but an error occurred while downloading it!")
+
+                                self.value = False
+                                self.ended.emit(self, self.logger)
+
+                                return
+                            else:
+                                response.raise_for_status()
 
                             total_size = int(response.headers.get('Content-Length', 0))
 

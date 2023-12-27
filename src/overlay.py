@@ -52,6 +52,7 @@ from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFo
 import os
 import webbrowser
 import json
+import traceback
 
 from pystray import Icon, Menu as Mn, MenuItem
 from PIL import Image
@@ -117,6 +118,13 @@ class Overlay(QWidget):
         self.logger.debug(f"Player {'loaded' if self.player.client else 'not loaded'}.")
 
 
+        # Notif
+        self.logger.debug("Loading the Notifications...")
+        self.notif = Notif(f"{self.pathAssets}/polsu/Polsu_.ico")
+        self.minimizeNotif = True
+        self.logger.debug(f"Notifications enabled.")
+
+
         # Logs
         self.logger.debug("Loading the Logs...")
         self.logs = Logs(self)
@@ -130,13 +138,6 @@ class Overlay(QWidget):
         self.loadThemes = loadThemes
         self.changeTheme(self.configTheme, False)
         self.logger.debug(f"Theme: {self.themeStyle.name}")
-
-
-        # Notif
-        self.logger.debug("Loading the Notifications...")
-        self.notif = Notif(f"{self.pathAssets}/polsu/Polsu_.ico")
-        self.minimizeNotif = True
-        self.logger.debug(f"Notifications enabled.")
 
 
         # Fonts
@@ -193,9 +194,12 @@ class Overlay(QWidget):
         self.logger.debug(f"Loading the API Key...")
         if self.configAPIKey != "":
             self.logger.info("Logging in...")
-            self.threads["login"] = LoginWorker(self.configAPIKey)
-            self.threads["login"].ended.connect(self.loginEnded)
-            self.threads["login"].start()
+            try:
+                self.threads["login"] = LoginWorker(self.configAPIKey)
+                self.threads["login"].ended.connect(self.loginEnded)
+                self.threads["login"].start()
+            except:
+                self.logger.error(f"An error occurred while logging in!\nTraceback: {traceback.format_exc()}")
             self.login = True
         else:
             self.logger.warning("No API Key found!")
@@ -232,6 +236,7 @@ class Overlay(QWidget):
             try:
                 self.RPC.update()
             except:
+                self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
                 self.RPC = None
 
             self.RPCTimer = 0
@@ -723,8 +728,11 @@ class Overlay(QWidget):
         if self.configAPIKey != "":
             self.setCursor(Qt.WaitCursor)
 
-            self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch)
-            self.threads["logout"].start()
-            self.threads["logout"].wait()
+            try:
+                self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch)
+                self.threads["logout"].start()
+                self.threads["logout"].wait()
+            except:
+                self.logger.error(f"An error occurred while logging out!\nTraceback: {traceback.format_exc()}")
 
         event.accept()

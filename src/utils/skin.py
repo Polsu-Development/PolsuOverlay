@@ -75,6 +75,20 @@ class SkinIcon():
         if player.username in self.cache:
             self.setSkin(self.cache[player.username], player, count)
         else:
+            button = QPushButton(self.table)
+            button.setIcon(self.default)
+            if not player.nicked:
+                button.setStyleSheet(self.win.themeStyle.buttonsStyle)
+                button.clicked.connect(lambda: displayQuickbuy(self.win, player))
+            button.setProperty("name", "head")
+
+            for row in range(self.table.rowCount()):
+                _item = self.table.item(row, 2)
+
+                if _item and _item.value == player.username:
+                    self.table.setCellWidget(row, 0, button)
+                    self.table.setItem(row, 0, TableSortingItem(count))
+
             self.threads[player.username] = Worker(player, self.win.player.client, self.default, count)
             self.threads[player.username].update.connect(self.setSkin)
             self.threads[player.username].start()

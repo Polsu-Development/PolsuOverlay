@@ -1,6 +1,7 @@
 PyQt5
 requests
 asyncio
+async_timeout
 aiohttp
 pypresence
 keyboard

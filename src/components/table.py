@@ -61,7 +61,7 @@ class Table(QTableWidget):
         self.win = window
 
         # Header aka Columns title
-        self.header=['⠀', '˅ 0', 'Player⠀⠀⠀⠀⠀⠀ ', 'TAG', 'WS', 'FKDR', 'Finals', 'WLR', ' Wins', 'BBLR', 'Beds', 'Index', '⠀']
+        self.header=['⠀', '˅ 0', 'Player⠀⠀⠀⠀⠀⠀ ', 'TAG', 'WS', 'FKDR', 'Finals', 'WLR', ' Wins', 'BBLR', 'Beds', 'Requeue', '⠀']
 
         # Settings
         self.setSelectionMode(QAbstractItemView.NoSelection)
@@ -208,7 +208,7 @@ class Table(QTableWidget):
         self.setCellWidget(self.count, 10, label)
         self.setItem(self.count, 10, TableSortingItem(player.bedwars.broken))
 
-        label = QLabel(text2html(f"{int(player.bedwars.requeue.raw):,d} ", colour=player.bedwars.requeue.colour), self)
+        label = QLabel(text2html(f"{int(player.bedwars.requeue.index):,d} ", colour=player.bedwars.requeue.colour), self)
         label.setFont(self.win.minecraftFont)
         label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.setCellWidget(self.count, 11, label)

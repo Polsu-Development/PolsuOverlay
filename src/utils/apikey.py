@@ -32,13 +32,13 @@
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
 from ..PolsuAPI import Polsu
-from ..PolsuAPI.exception import APIError, InvalidAPIKeyError
 
 
 from PyQt5.QtCore import QThread, pyqtSignal, QEventLoop, QTimer
 
 
 import asyncio
+import traceback
 
 
 class APIKeyWorker(QThread):
@@ -83,12 +83,12 @@ def loadUpdate(parent) -> None:
     if len(key) == 36:
         parent.apikeyBox.setEnabled(False)
 
-        parent.threads[key] = APIKeyWorker(parent, key)
-        parent.threads[key].data.connect(apikeyUpdate)
-        parent.threads[key].start()
-
-        parent.apikeyBox.setEnabled(True)
-        parent.apikeyBox.setText("")
+        try:
+            parent.threads[key] = APIKeyWorker(parent, key)
+            parent.threads[key].data.connect(apikeyUpdate)
+            parent.threads[key].start()
+        except:
+            parent.win.logger.error(f"An error occurred while checking the API Key!\n\nTraceback: {traceback.format_exc()}")
 
 
 def apikeyUpdate(parent, data) -> None:
@@ -105,8 +105,10 @@ def apikeyUpdate(parent, data) -> None:
         parent.apikeyBox.setStyleSheet(parent.win.themeStyle.settingsAPIKeyStyleValid)
 
         parent.win.configAPIKey = data.key
+        parent.win.player.client.updateKey(data.key)
         parent.win.settings.update("APIKey", data.key)
 
+        parent.apikeyBox.setText("")
         parent.apikeyBox.setPlaceholderText(newString)
         parent.win.notif.send(title="Valid API Key", message="Your Polsu API Key is valid you can now launch a Bedwars game!")
 
@@ -136,3 +138,6 @@ def apikeyUpdate(parent, data) -> None:
         loop.exec_()
         
         parent.apikeyBox.setStyleSheet(parent.win.themeStyle.settingsAPIKeyStyle)
+
+        parent.apikeyBox.setEnabled(True)
+        parent.apikeyBox.setText("")

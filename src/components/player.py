@@ -113,9 +113,12 @@ class Player:
         if len(new) == 1:
             self.win.logger.info(f"Requesting: {new[0]}.")
 
-            self.threads[cleaned] = Worker(self.client, new[0], manual)
-            self.threads[cleaned].playerObject.connect(self.update)
-            self.threads[cleaned].start()
+            try:
+                self.threads[cleaned] = Worker(self.client, new[0], manual)
+                self.threads[cleaned].playerObject.connect(self.update)
+                self.threads[cleaned].start()
+            except:
+                self.win.logger.error(f"Error while loading a player ({new[0]}).\n\nTraceback: {traceback.format_exc()}")
         else:
             if len(new) > 40:
                 nb_slice = 10
@@ -133,10 +136,13 @@ class Player:
                 while uuid in self.threads:
                     uuid = str(uuid4())
 
-                self.threads[uuid] = Worker(self.client, s, manual)
-                self.threads[uuid].playerObject.connect(self.update)
-                self.threads[uuid].start()
-    
+                try:
+                    self.threads[uuid] = Worker(self.client, s, manual)
+                    self.threads[uuid].playerObject.connect(self.update)
+                    self.threads[uuid].start()
+                except:
+                    self.win.logger.error(f"Error while loading a player slice ({s}).\n\nTraceback: {traceback.format_exc()}")
+
 
     def loadPlayer(self, player: str, uuid: str) -> None:
         """
@@ -150,9 +156,12 @@ class Player:
         if cleaned not in self.loading:
             self.loading.append(cleaned)
 
-            self.threads[cleaned] = Worker(self.client, uuid, True)
-            self.threads[cleaned].playerObject.connect(self.setRPCPlayer)
-            self.threads[cleaned].start()
+            try:
+                self.threads[cleaned] = Worker(self.client, uuid, True)
+                self.threads[cleaned].playerObject.connect(self.setRPCPlayer)
+                self.threads[cleaned].start()
+            except:
+                self.win.logger.error(f"Error while loading a player ({player}) [Manual].\n\nTraceback: {traceback.format_exc()}")
 
 
     def setRPCPlayer(self, player: Pl) -> None:
@@ -202,11 +211,14 @@ class Player:
             if cache:
                 self.cache[player.cleaned] = player
 
-            if player.manual:
-                self.win.table.insert(player)
-            else:
-                if player.username in self.win.logs.queue:
+            try:
+                if player.manual:
                     self.win.table.insert(player)
+                else:
+                    if player.username in self.win.logs.queue:
+                        self.win.table.insert(player)
+            except:
+                self.win.logger.error(f"Error while loading a player ({player}).\n\nTraceback: {traceback.format_exc()}")
 
             if player.cleaned in self.loading:
                 self.loading.remove(player.cleaned)

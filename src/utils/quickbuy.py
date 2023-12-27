@@ -39,6 +39,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 
 
 import asyncio
+import traceback
 
 
 def displayQuickbuy(win, player: Player) -> None:
@@ -80,9 +81,12 @@ class QuickbuyImage():
         if player.username in self.cache:
             self.setPixmap(player, self.cache[player.username], False)
         else:
-            self.threads[player.username] = Worker(self.win.player.client, player)
-            self.threads[player.username].update.connect(self.setPixmap)
-            self.threads[player.username].start()
+            try:
+                self.threads[player.username] = Worker(self.win.player.client, player)
+                self.threads[player.username].update.connect(self.setPixmap)
+                self.threads[player.username].start()
+            except:
+                self.win.logger.error(f"An error occurred while loading the quickbuy image!\n\nTraceback: {traceback.format_exc()}")
 
 
     def setPixmap(self, player, pixmap: QPixmap, cache: bool = True)  -> None:

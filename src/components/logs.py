@@ -44,6 +44,9 @@ import asyncio
 import traceback
 
 
+PLAYER_MESSAGE_PATTERN = re.compile(r'\[([A-Z0-9\+\-\*\s]+)\] \w+: .+') # [RANK] USERNAME: MESSAGE
+
+
 class Logs:
     """
     A class representing the Log File
@@ -196,14 +199,15 @@ class Logs:
             line = l.replace(" [System] ", "")
 
             if "[Client thread/INFO]: " in line:
-                try:
-                    lines = line.split("[Client thread/INFO]: ")
-                    if len(lines) >= 1:
-                        line = lines[1]
-                except:
-                    self.win.logger.error(f"Error while reading logs.\n\nTraceback: {traceback.format_exc()}")
+                lines = line.split("[Client thread/INFO]: ")
+                if len(lines) >= 1:
+                    line = lines[1]
 
             players = []
+
+
+            if PLAYER_MESSAGE_PATTERN.findall(line.replace("[CHAT] ", "")):
+                return
 
 
             ###############################################
@@ -364,11 +368,11 @@ class Logs:
                 self.partyMembers = len(p)
 
             # When a player is removed from the party
-            elif " was removed" in line and line != "Your flower was removed.":
+            elif " was removed from the party." in line:
                 # [MVP+] egdo was removed from the party
 
                 try:
-                    player = line.split(" was removed")[0].split(" ")[4]
+                    player = line.split(" was removed from the party.")[0].split(" ")[4]
                 except:
                     self.win.logger.error(f"Error while removing a player.\n\nTraceback: {traceback.format_exc()}")
 
@@ -380,7 +384,16 @@ class Logs:
             elif " has left the party." in line:
                 # [MVP+] egdo has left the party.
 
-                player = line.split(" has left the party.")[0].split(" ")[4]
+                player = line.split(" has left the party.")[0].split(" ")[1]
+
+                self.win.table.removePlayerFromName(player)
+
+                self.partyMembers -= 1
+
+            elif " has been removed from the party." in line:
+                # [MVP+] egdo has been removed from the party.
+
+                player = line.split("[CHAT] ")[1].split(" has been removed from the party.")[0]
 
                 self.win.table.removePlayerFromName(player)
 
