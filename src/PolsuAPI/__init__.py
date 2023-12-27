@@ -36,7 +36,7 @@
 
 __title__ = "PolsuAPI"
 __author__ = "Polsulpicien"
-__version__ = "2.0.1-alpha"
+__version__ = "2.0.2"
 __description__ = "Polsu's API Async Wrapper in Python."
 
 
