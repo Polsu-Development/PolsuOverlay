@@ -786,7 +786,7 @@ class Info(QWidget):
         label.setFont(self.win.minecraftFont)
         label.move(20, 230)
 
-        label = QLabel(text2html(f"§0C:\\Users\\{'*' * len(getuser())}\\Polsu\\ ", bold=True), self)
+        label = QLabel(text2html(f"§0/home/{'*' * len(getuser())}/Polsu/ ", bold=True), self)
         label.setFont(self.win.minecraftFont)
         label.move((50), 250)
 

@@ -32,20 +32,13 @@
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
 from getpass import getuser
-from src import WINDOWS, LINUX
-
-def getLogPath():
-    if WINDOWS:
-        return f"C:\\Users\\{getuser()}\\AppData\\Roaming\\.minecraft\\logs\\latest.log"
-    elif LINUX:
-        return f"/home/{getuser()}/.minecraft/logs/latest.log"
-
+from src import LINUX
 
 # Default configuration
 CONFIG = {
     "APIKey": "",
     "client": "Vanilla",
-    "logPath": getLogPath(),
+    "logPath": f"/home/{getuser()}/.minecraft/logs/latest.log",
     "theme": "Default Dark",
     "opacity": 0.7,
     "RPC": True,

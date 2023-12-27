@@ -46,7 +46,7 @@ class Logger:
         """
         Initialise the logger
         """
-        self.logsPath = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'logs')
+        self.logsPath = os.path.join(f"/home/{getuser()}", 'Polsu', 'logs')
         if not os.path.exists(self.logsPath):
             os.makedirs(self.logsPath)
 

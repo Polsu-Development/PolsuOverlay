@@ -46,7 +46,7 @@ class Colours:
     
     def __getitem__(self, nb: int) -> None:
         """
-        Get a colour from the configuration set in: C:\\Users\\USER\\Polsu\\settings\\data.json
+        Get a colour from the configuration set in: /home/USER/Polsu/settings/data.json
 
         :param nb: Player reqeueue level index
         :return: A string representing a colour code (hex, e.g. #FFFFFF)

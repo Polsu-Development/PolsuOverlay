@@ -59,8 +59,8 @@ class Settings:
 
         :return: The config
         """
-        self.win.dirConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'settings')
-        self.win.themesConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'themes')
+        self.win.dirConfig = os.path.join(f"/home/{getuser()}", 'Polsu', 'settings')
+        self.win.themesConfig = os.path.join(f"/home/{getuser()}", 'Polsu', 'themes')
 
         if not os.path.exists(self.win.dirConfig):
             os.makedirs(self.win.dirConfig)

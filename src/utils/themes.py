@@ -42,7 +42,7 @@ def loadThemes(win) -> None:
     
     :param win: The main window
     """
-    win.dirThemes = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'themes')
+    win.dirThemes = os.path.join(f"/home/{getuser()}", 'Polsu', 'themes')
     if not os.path.exists(win.dirThemes):
         os.makedirs(win.dirThemes)
 

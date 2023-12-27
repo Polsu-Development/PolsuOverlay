@@ -57,15 +57,7 @@ else:
     __module__ = __module__.replace("/", "\\")
     EXECUTABLE = False
 
-if os.environ.get('OS','') == 'Windows_NT':
-    WINDOWS = True
-else:
-    WINDOWS = False
-
-if os.name == 'posix':
-    LINUX = True
-else:
-    LINUX = False
+LINUX = True if os.name == 'posix' else False
 
 
 # This will only change the local cache, not the API cache

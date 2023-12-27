@@ -31,7 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src import __version__, __module__, EXECUTABLE, WINDOWS, LINUX
+from src import __version__, __module__, EXECUTABLE, LINUX
 from .utils.path import resource_path
 from .components.logger import Logger
 
@@ -185,21 +185,17 @@ class Updater(QMainWindow):
                 self.value = False
                 self.ended.emit(self, self.logger)
 
-        self.logger.debug(f"Running on Windows: {'yes' if WINDOWS else 'no'}")
-        #MacOs
         self.logger.debug(f"Running on Linux: {'yes' if LINUX else 'no'}")
         self.logger.debug(f"Running as executable: {'yes' if EXECUTABLE else 'no'}")
 
-        self.logger.debug(os.name)
-
-        if WINDOWS or LINUX:
+        if LINUX:
             self.logger.info(f"Updater Initialised.")
             self.logger.info(f"Running version: v{__version__}")
 
             thread = threading.Thread(target=update, daemon=True)
             thread.start()
         else:
-            self.label.setText("Uh Oh! OS not supported yet...\nLearn more at https://discord.polsu.xyz")
+            self.label.setText("Uh Oh! Looks like you downloaded the wrong verison.\nLearn more at https://discord.polsu.xyz")
             self.label.setFixedSize(380, 60)
             self.label.setContentsMargins(20, 0, 0, 0)
 
