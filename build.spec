@@ -20,7 +20,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='PolsuOverlay',
+    name='Polsu-Overlay',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
