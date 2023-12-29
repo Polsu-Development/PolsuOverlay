@@ -36,6 +36,7 @@ import re
 
 from dataclasses import dataclass
 from aiohttp import ClientSession, TCPConnector
+from socket import AF_INET6
 
 
 rewardsData = {

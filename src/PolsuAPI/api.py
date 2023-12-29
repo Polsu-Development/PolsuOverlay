@@ -40,6 +40,7 @@ from .objects.user import User
 from .exception import APIError, InvalidAPIKeyError, NotLinkedError
 
 from aiohttp import ClientSession, ContentTypeError, TCPConnector
+from socket import AF_INET6
 from json import load
 
 
