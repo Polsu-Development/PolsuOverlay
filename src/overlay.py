@@ -233,11 +233,19 @@ class Overlay(QWidget):
     def showGameTime(self):
         self.RPCTimer += 1
         if self.RPCTimer > 3:
-            try:
-                self.RPC.update()
-            except:
-                self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
-                self.RPC = None
+            if self.RPC is not None:
+                try:
+                    self.RPC.update()
+                except:
+                    self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
+                    self.RPC = None
+            else:
+                if self.configRPC:
+                    try:
+                        self.RPC = Presence(self.launch, self.logs, self.configStatus)
+                        self.RPC = -1
+                    except:
+                        self.RPC = None
 
             self.RPCTimer = 0
 
