@@ -61,7 +61,7 @@ class Polsu:
         :return: An instance of APIKey
         """
         try:
-            async with ClientSession() as session:
+            async with ClientSession(connector=TCPConnector(family=AF_INET6)) as session:
                 async with session.get(f"{self.api}/api/key?key={self.key}", headers=__header__) as response:
                     json = await response.json()
                     if response.status == 403:
@@ -105,7 +105,7 @@ class Polsu:
     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n
         """
         try:
-            async with ClientSession() as session:
+            async with ClientSession(connector=TCPConnector(family=AF_INET6)) as session:
                 async with session.get(f"{self.api}/internal/overlay/login?key={self.key}&overlay=true", headers=__header__) as response:
                     json = await response.json()
                     if response.status == 403:
@@ -150,7 +150,7 @@ class Polsu:
     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n
         """
         try:
-            async with ClientSession() as session:
+            async with ClientSession(connector=TCPConnector(family=AF_INET6)) as session:
                 async with session.post(f"{self.api}/internal/overlay/logout?key={self.key}&timestamp={timestamp}&overlay=true", headers=__header__):
                     pass
         except ContentTypeError:
@@ -187,7 +187,7 @@ class Polsu:
     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n
         """
         try:
-            async with ClientSession() as session:
+            async with ClientSession(connector=TCPConnector(family=AF_INET6)) as session:
                 async with session.get(f"{self.api}/internal/overlay/player?key={self.key}&player={player}&overlay=true", headers=__header__) as response:
                     json = await response.json()
                     if response.status == 403:
@@ -243,7 +243,7 @@ class Polsu:
         }
 
         try:
-            async with ClientSession() as session:
+            async with ClientSession(connector=TCPConnector(family=AF_INET6)) as session:
                 async with session.post(f"{self.api}/internal/overlay/player?key={self.key}&overlay=true", headers=__header__, json=json) as response:
                     json = await response.json()
                     if response.status == 403:
@@ -275,7 +275,7 @@ class Polsu:
         :param uuid: The Player uuid
         """
         try:
-            async with ClientSession() as session:
+            async with ClientSession(connector=TCPConnector(family=AF_INET6)) as session:
                 async with session.get(f"https://api.polsu.xyz/polsu/bedwars/quickbuy?key={self.key}&uuid={uuid}", headers=__header__) as response:
                     json = await response.json()
                     if response.status == 403:
@@ -301,7 +301,7 @@ class Polsu:
         :param player: The Player
         """
         try:
-            async with ClientSession() as session:
+            async with ClientSession(connector=TCPConnector(family=AF_INET6)) as session:
                 async with session.get(f"https://skins.mcstats.com/face/{player.uuid}", headers=__header__) as response:
                     if response.status == 200:
                         return await response.read()
