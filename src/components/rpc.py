@@ -39,7 +39,6 @@ import traceback
 
 from pypresence import Presence as Pr
 from threading import Thread
-from datetime import datetime
 
 
 def startRPC(win) -> None:
@@ -184,23 +183,27 @@ class Presence:
             small_image = "hypixel"
             party = None
 
-        self.RPC.update(
-            state=state,
-            details=details,
-            start=elapsed,
-            large_image="polsu", 
-            large_text=f"Polsu Overlay v{__version__}",
-            small_image=small_image, 
-            small_text="Playing on mc.hypixel.net",
-            party_size=party,
-            buttons=[
-                {
-                    "label": "Get Overlay 📥", 
-                    "url": "https://discord.polsu.xyz" # TODO: overlay.polsu.xyz
-                }, 
-                {
-                    "label": "Discord Server", 
-                    "url": "https://discord.polsu.xyz"
-                }
-            ],
-        )
+        try:
+            self.RPC.update(
+                state=state,
+                details=details,
+                start=elapsed,
+                large_image="polsu", 
+                large_text=f"Polsu Overlay v{__version__}",
+                small_image=small_image, 
+                small_text="Playing on mc.hypixel.net",
+                party_size=party,
+                buttons=[
+                    {
+                        "label": "Get Overlay 📥", 
+                        "url": "https://discord.polsu.xyz" # TODO: overlay.polsu.xyz
+                    }, 
+                    {
+                        "label": "Discord Server", 
+                        "url": "https://discord.polsu.xyz"
+                    }
+                ],
+            )
+        except AssertionError:
+            # You must connect your client before sending events!
+            pass
