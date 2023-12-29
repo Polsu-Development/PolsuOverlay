@@ -39,7 +39,7 @@ from .objects.player import Player
 from .objects.user import User
 from .exception import APIError, InvalidAPIKeyError, NotLinkedError
 
-from aiohttp import ClientSession, ContentTypeError
+from aiohttp import ClientSession, ContentTypeError, TCPConnector
 from json import load
 
 
