@@ -4,7 +4,6 @@ asyncio
 async_timeout
 aiohttp
 pypresence
-#keyboard
 pynput
 DateTime
 pystray
