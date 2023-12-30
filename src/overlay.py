@@ -417,9 +417,6 @@ class Overlay(FramelessMainWindow):
 
 
     def destroy_window(self):
-        self.tray.visible = False
-        self.tray.stop()
-
         self.close()
 
 
@@ -724,8 +721,14 @@ class Overlay(FramelessMainWindow):
         
         :param event: The event
         """
+        if hasattr(self, "tray") and self.tray:
+            self.tray.visible = False
+            self.tray.stop()
+
         if self.quickbuyWindow is not None:
             self.quickbuyWindow.close()
+
+        event.accept()
 
         if self.configAPIKey != "":
             self.setCursor(Qt.WaitCursor)
@@ -737,4 +740,4 @@ class Overlay(FramelessMainWindow):
             except:
                 self.logger.error(f"An error occurred while logging out!\nTraceback: {traceback.format_exc()}")
 
-        event.accept()
+        self.logger.info("Polsu Overlay is now closed!")
