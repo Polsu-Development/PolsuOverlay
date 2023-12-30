@@ -226,13 +226,14 @@ class Overlay(FramelessMainWindow):
     def showGameTime(self):
         self.RPCTimer += 1
         if self.RPCTimer > 3:
-            if self.RPC is not None:
+            if self.RPC is not None and not isinstance(self.RPC, int):
                 try:
                     self.RPC.update()
                 except:
                     self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
                     self.RPC = None
             else:
+                # Check if Discord was opened in the meantime
                 if self.configRPC:
                     try:
                         self.RPC = Presence(self.launch, self.logs, self.configStatus)
