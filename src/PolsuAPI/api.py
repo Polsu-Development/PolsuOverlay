@@ -39,8 +39,8 @@ from .objects.player import Player
 from .objects.user import User
 from .exception import APIError, InvalidAPIKeyError, NotLinkedError
 
-from aiohttp import ClientSession, ContentTypeError, TCPConnector
-from socket import AF_INET6
+from aiohttp import ClientSession, ContentTypeError
+
 from json import load
 
 
