@@ -37,9 +37,8 @@ from .. import __version__
 import asyncio
 import traceback
 
-from pypresence import Presence as Pr
+from pypresence import Presence as Pr, DiscordNotFound
 from threading import Thread
-from datetime import datetime
 
 
 def startRPC(win) -> None:
@@ -71,6 +70,10 @@ def discordRPC(win, loop) -> None:
         #    title="Discord Activity Status Update",
         #    message="Succesfully connected to Discord!"
         #)
+    except DiscordNotFound:
+        win.RPC = None
+
+        win.logger.debug("Could not find Discord installed and running on this machine.")
     except:
         win.RPC = None
 
@@ -184,23 +187,27 @@ class Presence:
             small_image = "hypixel"
             party = None
 
-        self.RPC.update(
-            state=state,
-            details=details,
-            start=elapsed,
-            large_image="polsu", 
-            large_text=f"Polsu Overlay v{__version__}",
-            small_image=small_image, 
-            small_text="Playing on mc.hypixel.net",
-            party_size=party,
-            buttons=[
-                {
-                    "label": "Get Overlay 📥", 
-                    "url": "https://discord.polsu.xyz" # TODO: overlay.polsu.xyz
-                }, 
-                {
-                    "label": "Discord Server", 
-                    "url": "https://discord.polsu.xyz"
-                }
-            ],
-        )
+        try:
+            self.RPC.update(
+                state=state,
+                details=details,
+                start=elapsed,
+                large_image="polsu", 
+                large_text=f"Polsu Overlay v{__version__}",
+                small_image=small_image, 
+                small_text="Playing on mc.hypixel.net",
+                party_size=party,
+                buttons=[
+                    {
+                        "label": "Get Overlay 📥", 
+                        "url": "https://overlay.polsu.xyz"
+                    }, 
+                    {
+                        "label": "Discord Server", 
+                        "url": "https://discord.polsu.xyz"
+                    }
+                ],
+            )
+        except AssertionError:
+            # You must connect your client before sending events!
+            pass

@@ -32,6 +32,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     linux_exe_icon='assets/polsu/Polsu_.ico'
+    version='version.rc'
 )
 coll = COLLECT(
     exe,
