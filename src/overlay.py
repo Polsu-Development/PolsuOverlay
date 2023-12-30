@@ -569,7 +569,7 @@ class Overlay(FramelessMainWindow):
             menu = Mn(
                 MenuItem(
                     text=f"Polsu Overlay",
-                    action=lambda: webbrowser.open('https://discord.polsu.xyz'),
+                    action=lambda: webbrowser.open('https://overlay.polsu.xyz'),
                     default=False,
                     visible=True,
                     enabled=False,
