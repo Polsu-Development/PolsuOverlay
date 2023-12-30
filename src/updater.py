@@ -101,9 +101,7 @@ class Updater(QMainWindow):
             """
             self.logger.info(f"Checking for updates...")
             try:
-                module_path = os.getcwd() + "Polsu Overlay.exe"
-                module_path = module_path.replace("\\", "\\\\")
-                subprocess.call(f"wmic process where ExecutablePath='{module_path}' delete", shell=True)
+                subprocess.call(f"python -m main.py", shell=True)
             except:
                 pass
 
