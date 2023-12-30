@@ -10,3 +10,4 @@ pystray
 Pillow
 notify-py
 packaging
+pywinctl
