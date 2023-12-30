@@ -11,3 +11,4 @@ Pillow
 notify-py
 pyqt_frameless_window
 packaging
+pywinctl

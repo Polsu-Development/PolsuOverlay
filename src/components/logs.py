@@ -34,6 +34,7 @@
 from .reward import openRewards
 from ..utils.rewards import Rewards as Rw
 from ..utils.username import isValidPlayer, removeRank
+from ..utils.constants import PLAYER_MESSAGE_PATTERN, CLIENT_NAMES
 
 from time import sleep
 from datetime import datetime
@@ -42,9 +43,12 @@ import re
 import keyboard
 import asyncio
 import traceback
+import pywinctl
 
 
-PLAYER_MESSAGE_PATTERN = re.compile(r'\[([A-Z0-9\+\-\*\s]+)\] \w+: .+') # [RANK] USERNAME: MESSAGE
+def get_active_window_title():
+    active_window = pywinctl.getActiveWindow()
+    return active_window.title if active_window else None
 
 
 class Logs:
@@ -114,14 +118,19 @@ class Logs:
             self.reset()
 
             if self.win.configWho:
-                keyboard.press_and_release('t')
-                sleep(0.2)
-                keyboard.write('/who')
-                sleep(0.2)
-                keyboard.press_and_release('enter')
+                self.autoWho = True
 
-            self.autoWho = True
-            self.waitingForGame = True
+                active = get_active_window_title()
+                if any(client in active for client in CLIENT_NAMES):
+                    keyboard.press_and_release('t')
+                    sleep(0.2)
+                    keyboard.write('/who')
+                    sleep(0.2)
+                    keyboard.press_and_release('enter')
+                else:
+                    self.autoWho = False
+                
+                self.waitingForGame = True
 
 
     def task(self) -> None:
@@ -227,12 +236,14 @@ class Logs:
 
             # If it's the first line after a player connects to Hypixel, the delivery command is executed
             elif self.connecting and "[CHAT] " in line:
-                sleep(0.4)
-                keyboard.press_and_release('t')
-                sleep(0.2)
-                keyboard.write('/delivery')
-                sleep(0.2)
-                keyboard.press_and_release('enter')
+                active = get_active_window_title()
+                if any(client in active for client in CLIENT_NAMES):
+                    sleep(0.5)
+                    keyboard.press_and_release('t')
+                    sleep(0.3)
+                    keyboard.write('/delivery')
+                    sleep(0.3)
+                    keyboard.press_and_release('enter')
 
                 self.connecting = False
 

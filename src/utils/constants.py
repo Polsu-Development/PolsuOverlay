@@ -31,6 +31,8 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
+import re
+
 from getpass import getuser
 
 
@@ -71,3 +73,13 @@ TAGS = {
     "ALL": "§7-",
     "PARTY": "§9[PARTY]",
 }
+
+PLAYER_MESSAGE_PATTERN = re.compile(r'\[([A-Z0-9\+\-\*\s]+)\] \w+: .+') # [RANK] USERNAME: MESSAGE
+
+CLIENT_NAMES = [
+    "Minecraft",
+    "Lunar Client",
+    "Lunar",
+    "Badlion Client",
+    "Badlion",
+]
