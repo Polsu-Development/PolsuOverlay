@@ -100,10 +100,10 @@ class Updater(QMainWindow):
             Update the overlay
             """
             self.logger.info(f"Checking for updates...")
-            try:
-                subprocess.call(f"python -m main.py", shell=True)
-            except:
-                pass
+            # try:
+            #     subprocess.call(f"python -m main", shell=True)
+            # except:
+            #     pass
 
             try:
                 latest_version = requests.get('https://api.polsu.xyz/internal/overlay/version')
