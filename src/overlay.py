@@ -233,13 +233,14 @@ class Overlay(QWidget):
     def showGameTime(self):
         self.RPCTimer += 1
         if self.RPCTimer > 3:
-            if self.RPC is not None:
+            if self.RPC is not None and not isinstance(self.RPC, int):
                 try:
                     self.RPC.update()
                 except:
                     self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
                     self.RPC = None
             else:
+                # Check if Discord was opened in the meantime
                 if self.configRPC:
                     try:
                         self.RPC = Presence(self.launch, self.logs, self.configStatus)
@@ -574,7 +575,7 @@ class Overlay(QWidget):
             menu = Mn(
                 MenuItem(
                     text=f"Polsu Overlay",
-                    action=lambda: webbrowser.open('https://discord.polsu.xyz'),
+                    action=lambda: webbrowser.open('https://overlay.polsu.xyz'),
                     default=False,
                     visible=True,
                     enabled=False,
