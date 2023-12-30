@@ -126,7 +126,7 @@ class Rewards:
         """
         Load the rewards
         """
-        async with ClientSession(connector=TCPConnector(family=AF_INET6)) as session:
+        async with ClientSession() as session:
             async with session.get(self.url, headers=headers) as response:
                 text = await response.text()
                 cookies = response.cookies
