@@ -200,7 +200,7 @@ class Presence:
                 buttons=[
                     {
                         "label": "Get Overlay 📥", 
-                        "url": "https://discord.polsu.xyz" # TODO: overlay.polsu.xyz
+                        "url": "https://overlay.polsu.xyz"
                     }, 
                     {
                         "label": "Discord Server", 
