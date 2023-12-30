@@ -39,7 +39,7 @@ from time import sleep
 from datetime import datetime
 
 import re
-import keyboard
+from pynput.keyboard import Key, Controller
 import asyncio
 import traceback
 
@@ -79,6 +79,8 @@ class Logs:
         self.hideOverlayTimer = 0
         self.queue = []
 
+        self.keyboard = Controller()
+
 
     def reset(self, autowho: bool = False) -> None:
         """
@@ -114,11 +116,13 @@ class Logs:
             self.reset()
 
             if self.win.configWho:
-                keyboard.press_and_release('t')
+                self.keyboard.press('t')
+                self.keyboard.release('t')
                 sleep(0.2)
-                keyboard.write('/who')
+                self.keyboard.type('/who')
                 sleep(0.2)
-                keyboard.press_and_release('enter')
+                self.keyboard.press(Key.enter)
+                self.keyboard.release(Key.enter)
 
             self.autoWho = True
             self.waitingForGame = True
@@ -228,11 +232,13 @@ class Logs:
             # If it's the first line after a player connects to Hypixel, the delivery command is executed
             elif self.connecting and "[CHAT] " in line:
                 sleep(0.4)
-                keyboard.press_and_release('t')
+                self.keyboard.press('t')
+                self.keyboard.release('t')
                 sleep(0.2)
-                keyboard.write('/delivery')
+                self.keyboard.type('/delivery')
                 sleep(0.2)
-                keyboard.press_and_release('enter')
+                self.keyboard.press(Key.enter)
+                self.keyboard.release(Key.enter)
 
                 self.connecting = False
 
