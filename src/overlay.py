@@ -35,7 +35,7 @@ from .PolsuAPI import User
 from src import Menu, Presence, Notif, Settings, Logs, Player, loadThemes, openSettings, __version__
 from .components.theme import ThemeStyle
 from .components.logger import Logger
-from .components.rpc import startRPC
+from .components.rpc import openRPC, startRPC
 from .components.components import setupComponents, updateComponents, updateGeometry
 from .components.reward import closeRewards
 from .utils.path import resource_path
@@ -53,6 +53,7 @@ import os
 import webbrowser
 import json
 import traceback
+import pypresence
 
 from pystray import Icon, Menu as Mn, MenuItem
 from PIL import Image
@@ -159,11 +160,8 @@ class Overlay(FramelessMainWindow):
             startRPC(self)
         else:
             # Checking if the RPC is enabled or not (in order to enable the button in the settings menu)
-            try:
-                self.RPC = Presence(self.launch, self.logs, self.configStatus)
-                self.RPC = -1
-            except:
-                self.RPC = None
+            openRPC(self)
+
             self.logger.debug(f"Discord RPC: {self.RPC}")
 
 
@@ -226,20 +224,21 @@ class Overlay(FramelessMainWindow):
     def showGameTime(self):
         self.RPCTimer += 1
         if self.RPCTimer > 3:
-            if self.RPC is not None and not isinstance(self.RPC, int):
+            if self.configRPC and self.RPC is not None and not isinstance(self.RPC, int):
                 try:
                     self.RPC.update()
+                except RuntimeError:
+                    pass
+                except pypresence.exceptions.PipeClosed:
+                    # Try to reconnect
+                    self.RPC.disconnect()
+                    startRPC(self)
                 except:
+                    self.RPC.disconnect()
                     self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
                     self.RPC = None
             else:
-                # Check if Discord was opened in the meantime
-                if self.configRPC:
-                    try:
-                        self.RPC = Presence(self.launch, self.logs, self.configStatus)
-                        self.RPC = -1
-                    except:
-                        self.RPC = None
+                openRPC(self)
 
             self.RPCTimer = 0
 

@@ -37,8 +37,21 @@ from .. import __version__
 import asyncio
 import traceback
 
-from pypresence import Presence as Pr, DiscordNotFound
+from pypresence import Presence as Pr, DiscordNotFound, DiscordError
 from threading import Thread
+
+
+def openRPC(win) -> None:
+    """
+    Try to open the Discord RPC
+    
+    :param win: The Overlay window
+    """
+    try:
+        win.RPC = Presence(win.launch, win.logs, win.configStatus)
+        win.RPC = -1
+    except:
+        win.RPC = None
 
 
 def startRPC(win) -> None:
@@ -74,6 +87,8 @@ def discordRPC(win, loop) -> None:
         win.RPC = None
 
         win.logger.debug("Could not find Discord installed and running on this machine.")
+    except DiscordError:
+        win.logger.debug(f"Discord User logged out")
     except:
         win.RPC = None
 
@@ -144,8 +159,11 @@ class Presence:
         """
         Disconnect from Discord
         """
-        self.clear()
-        self.RPC.close()
+        try:
+            self.clear()
+            self.RPC.close()
+        except:
+            pass
 
 
     def update(self) -> None:
@@ -208,6 +226,5 @@ class Presence:
                     }
                 ],
             )
-        except AssertionError:
-            # You must connect your client before sending events!
+        except (AssertionError, ValueError):
             pass
