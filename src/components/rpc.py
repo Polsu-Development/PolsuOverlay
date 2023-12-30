@@ -37,7 +37,7 @@ from .. import __version__
 import asyncio
 import traceback
 
-from pypresence import Presence as Pr
+from pypresence import Presence as Pr, DiscordNotFound
 from threading import Thread
 
 
@@ -70,6 +70,10 @@ def discordRPC(win, loop) -> None:
         #    title="Discord Activity Status Update",
         #    message="Succesfully connected to Discord!"
         #)
+    except DiscordNotFound:
+        win.RPC = None
+
+        win.logger.debug("Could not find Discord installed and running on this machine.")
     except:
         win.RPC = None
 
