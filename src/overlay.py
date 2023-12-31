@@ -144,8 +144,6 @@ class Overlay(FramelessMainWindow):
         # Fonts
         self.minecraftFont = QFont(QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(f"{self.pathAssets}/fonts/minecraft-font.ttf"))[0])
         self.logger.debug(f"Loaded font: {self.pathAssets}/fonts/minecraft-font.ttf")
-        QFontDatabase.addApplicationFont(f"{self.pathAssets}/fonts/unifont.ttf")
-        self.logger.debug(f"Loaded font: {self.pathAssets}/fonts/unifont.ttf")
 
 
         # Clients
