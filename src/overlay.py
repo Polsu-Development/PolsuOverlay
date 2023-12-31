@@ -415,6 +415,9 @@ class Overlay(FramelessMainWindow):
 
 
     def destroy_window(self):
+        self.tray.visible = False
+        self.tray.stop()
+
         self.close()
 
 
