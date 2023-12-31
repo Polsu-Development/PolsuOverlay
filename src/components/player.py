@@ -183,6 +183,8 @@ class Player:
         :param cache: If the player should be cached
         """
         if isinstance(player, int):
+            self.logger.warning(f"[{player}] Error while loading a player ({player}).")
+
             if player == 422:
                 self.win.notif.send(
                     title="Error...",
@@ -198,9 +200,16 @@ class Player:
                         title="Error...",
                         message="Something went wrong while loading the player! Is the API Key valid?"
                     )
+            elif player == -1:
+                self.win.notif.send(
+                    title="Error...",
+                    message="Malformed player!"
+                )
             else:
                 self.win.logger.error(f"Error while loading a player.\n\nTraceback: {traceback.format_exc()}")
         elif isinstance(player, InvalidAPIKeyError):
+            self.logger.warning(f"[InvalidAPIKeyError] Error while loading a player ({player}).")
+
             self.win.notif.send(
                 title="Error...",
                 message="Something went wrong while loading the player! Is the API Key valid?"
