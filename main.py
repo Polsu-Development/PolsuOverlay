@@ -48,8 +48,8 @@ import traceback
 import datetime
 
 
-if getattr(sys, 'frozen', False):
-    import pyi_splash
+# if getattr(sys, 'frozen', False):
+#     import pyi_splash
 
 
 def run(window: Updater, logger: Logger) -> None:
@@ -100,8 +100,8 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     try:
-        if getattr(sys, 'frozen', False):
-            pyi_splash.close()
+        # if getattr(sys, 'frozen', False):
+        #     pyi_splash.close()
 
         window = Updater(logger)
         window.ended.connect(run)
