@@ -156,6 +156,8 @@ class Player:
         if cleaned not in self.loading:
             self.loading.append(cleaned)
 
+            self.win.logger.info(f"Requesting: {player}. (Connection)")
+
             try:
                 self.threads[cleaned] = Worker(self.client, uuid, True)
                 self.threads[cleaned].playerObject.connect(self.setRPCPlayer)

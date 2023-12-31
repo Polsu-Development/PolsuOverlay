@@ -190,12 +190,14 @@ class Overlay(FramelessMainWindow):
         self.logger.debug(f"Loading the API Key...")
         if self.configAPIKey != "":
             self.logger.info("Logging in...")
+
             try:
                 self.threads["login"] = LoginWorker(self.configAPIKey)
                 self.threads["login"].ended.connect(self.loginEnded)
                 self.threads["login"].start()
             except:
                 self.logger.error(f"An error occurred while logging in!\nTraceback: {traceback.format_exc()}")
+
             self.login = True
         else:
             self.logger.warning("No API Key found!")
@@ -733,6 +735,8 @@ class Overlay(FramelessMainWindow):
 
         if self.configAPIKey != "":
             self.setCursor(Qt.WaitCursor)
+
+            self.logger.info("Logging out...")
 
             try:
                 self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch)
