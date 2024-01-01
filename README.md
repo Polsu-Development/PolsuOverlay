@@ -149,6 +149,11 @@ By becoming a premium user, you not only gain our gratitude, but you also get ac
 
 This overlay was entirely made & designed by [Polsulpicien](https://github.com/Polsulpicien).
 
+Special thanks to:
+- [Zickles](https://github.com/Zickles)
+- [phiwijo](https://github.com/phiwijo)
+for adding a linux support to the overlay.
+
 
 ## 📚 Libraries
 
@@ -163,6 +168,8 @@ This overlay was entirely made & designed by [Polsulpicien](https://github.com/P
 - [`Pillow`](https://pypi.org/project/Pillow/): Python Imaging Library (`v8.4.0`)
 - [`notify-py`](https://pypi.org/project/notify-py/): A cross-platform Python package to display desktop notifications (`v0.4.2`)
 - [`pyqt_frameless_window`](https://pypi.org/project/pyqt-frameless-window/): A PyQt5 widget that can be used to create frameless windows (`v1.0.0`)
+- [`packaging`](https://pypi.org/project/packaging/): Core utilities for Python packages (`v21.3`)
+- [`pywinctl`](https://pypi.org/project/pywinctl/): A Python library for controlling Windows (`v0.1.0`)
 - [`PyInstaller`](https://www.pyinstaller.org/): A program that freezes (packages) Python programs into stand-alone executables (`v4.5.1`)
 
 ## 🎨 Assets

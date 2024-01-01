@@ -60,8 +60,11 @@ def startRPC(win) -> None:
     
     :param win: The Overlay window
     """
-    win.logger.debug("Starting Discord RPC Thread...")
-    Thread(target=discordRPC, args=(win, asyncio.new_event_loop(), ), daemon=True).start()
+    try:
+        win.logger.debug("Starting Discord RPC Thread...")
+        Thread(target=discordRPC, args=(win, asyncio.new_event_loop(), ), daemon=True).start()
+    except:
+        win.RPC = None
 
 
 def discordRPC(win, loop) -> None:

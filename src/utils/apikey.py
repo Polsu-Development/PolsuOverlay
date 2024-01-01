@@ -57,7 +57,7 @@ class APIKeyWorker(QThread):
         super(QThread, self).__init__()
         self._parent = parent
 
-        self.client = Polsu(key)
+        self.client = Polsu(key, parent.win.logger)
  
 
     def run(self) -> None:

@@ -48,6 +48,7 @@ from ..utils.constants import SUFFIX_SVG_MAP
 
 
 import re
+import traceback
 
 
 class Table(QTableWidget):
@@ -140,145 +141,150 @@ class Table(QTableWidget):
         """
         self.win.logger.info(f"Inserting {player.username} ({player.uuid}) in the table.")
 
-        # We need to disable the sorting before inserting or some data will be hidden...
-        self.setSortingEnabled(False)
+        try:
+            # We need to disable the sorting before inserting or some data will be hidden...
+            self.setSortingEnabled(False)
 
-        self.count += 1
-        self.insertRow(self.count)
+            self.count += 1
+            self.insertRow(self.count)
 
-        if player.bedwars.winstreak == -1:
-            ws = f"§7-"
-        else:
-            ws = f"§f{player.bedwars.winstreak:,d}"
+            if player.bedwars.winstreak == -1:
+                ws = f"§7-"
+            else:
+                ws = f"§f{player.bedwars.winstreak:,d}"
 
-        label = QLabel(text2html(player.bedwars.formatted + " "), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 1, label)
-        self.setItem(self.count, 1, TableSortingItem(player.bedwars.stars))
+            label = QLabel(text2html(player.bedwars.formatted + " "), self)
+            label.setFont(self.win.minecraftFont)
+            label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.setCellWidget(self.count, 1, label)
+            self.setItem(self.count, 1, TableSortingItem(player.bedwars.stars))
 
-        pattern = re.compile(r"(?:§.\[.*?\] )?(\w+)(?: (?P<suffix>.*))?")
+            pattern = re.compile(r"(?:§.\[.*?\] )?(\w+)(?: (?P<suffix>.*))?")
 
-        # Search for the pattern in player.rank
-        match = pattern.search(player.rank)
+            # Search for the pattern in player.rank
+            match = pattern.search(player.rank)
 
-        if match.group('suffix'):
-            playername = player.rank[:match.start('suffix')].strip()
-            suffix = match.group('suffix')
-        else:
-            playername = player.rank.strip()
-            suffix = ' '
+            if match.group('suffix'):
+                playername = player.rank[:match.start('suffix')].strip()
+                suffix = match.group('suffix')
+            else:
+                playername = player.rank.strip()
+                suffix = ' '
 
-        # Create the playername label with minecraftFont
-        prefix_label = QLabel(text2html(playername), self)
-        prefix_label.setFont(self.win.minecraftFont)
-        prefix_label.setStyleSheet("color: red;")  # Set label color to red
+            # Create the playername label with minecraftFont
+            prefix_label = QLabel(text2html(playername), self)
+            prefix_label.setFont(self.win.minecraftFont)
+            prefix_label.setStyleSheet("color: red;")  # Set label color to red
 
-        # Create a layout and add the labels to it
-        layout = QHBoxLayout()
-        layout.addWidget(prefix_label)
+            # Create a layout and add the labels to it
+            layout = QHBoxLayout()
+            layout.addWidget(prefix_label)
 
-        layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
+            layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
 
-        # Create the suffix widget with the corresponding SVG
-        if suffix != ' ':
-            suffix_widget = QSvgWidget()
-            suffix_widget.load(self.win.pathAssets + "/icons/ranks/" + str(SUFFIX_SVG_MAP.get(suffix)))
-            suffix_widget.setContentsMargins(0, 0, 0, 0)  # Remove margins
-            suffix_widget.setFixedSize(16, 16)  # Set fixed size
-            layout.addWidget(suffix_widget, alignment=Qt.AlignLeft | Qt.AlignVCenter)  # Align suffix_widget to the left
+            # Create the suffix widget with the corresponding SVG
+            if suffix != ' ':
+                suffix_widget = QSvgWidget()
+                suffix_widget.load(self.win.pathAssets + "/icons/ranks/" + str(SUFFIX_SVG_MAP.get(suffix)))
+                suffix_widget.setContentsMargins(0, 0, 0, 0)  # Remove margins
+                suffix_widget.setFixedSize(16, 16)  # Set fixed size
+                layout.addWidget(suffix_widget, alignment=Qt.AlignLeft | Qt.AlignVCenter)  # Align suffix_widget to the left
 
-        # Create a widget, set its layout, and set it as the cell widget
-        widget = QWidget(self)
-        widget.setLayout(layout)
-        self.setCellWidget(self.count, 2, widget)
-        self.setItem(self.count, 2, TableSortingItem(player.username))
+            # Create a widget, set its layout, and set it as the cell widget
+            widget = QWidget(self)
+            widget.setLayout(layout)
+            self.setCellWidget(self.count, 2, widget)
+            self.setItem(self.count, 2, TableSortingItem(player.username))
 
-        label = QLabel(text2html(player.tag + " "), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 3, label)
-        self.setItem(self.count, 3, TableSortingItem(re.sub(r"(?i)�[0-9A-FK-OR]", "", player.tag)))
+            label = QLabel(text2html(player.tag + " "), self)
+            label.setFont(self.win.minecraftFont)
+            label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.setCellWidget(self.count, 3, label)
+            self.setItem(self.count, 3, TableSortingItem(re.sub(r"(?i)�[0-9A-FK-OR]", "", player.tag)))
 
-        label = QLabel(text2html(f"{ws} "), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 4, label)
-        self.setItem(self.count, 4, TableSortingItem(player.bedwars.winstreak))
+            label = QLabel(text2html(f"{ws} "), self)
+            label.setFont(self.win.minecraftFont)
+            label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.setCellWidget(self.count, 4, label)
+            self.setItem(self.count, 4, TableSortingItem(player.bedwars.winstreak))
 
-        label = QLabel(text2html(f"{player.bedwars.fkdr} ", colour=player.bedwars.requeue.colour), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 5, label)
-        self.setItem(self.count, 5, TableSortingItem(player.bedwars.fkdr))
+            label = QLabel(text2html(f"{player.bedwars.fkdr} ", colour=player.bedwars.requeue.colour), self)
+            label.setFont(self.win.minecraftFont)
+            label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.setCellWidget(self.count, 5, label)
+            self.setItem(self.count, 5, TableSortingItem(player.bedwars.fkdr))
 
-        label = QLabel(text2html(f"{player.bedwars.fkills:,d} ", colour=player.bedwars.requeue.colour), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 6, label)
-        self.setItem(self.count, 6, TableSortingItem(player.bedwars.fkills))
+            label = QLabel(text2html(f"{player.bedwars.fkills:,d} ", colour=player.bedwars.requeue.colour), self)
+            label.setFont(self.win.minecraftFont)
+            label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.setCellWidget(self.count, 6, label)
+            self.setItem(self.count, 6, TableSortingItem(player.bedwars.fkills))
 
-        label = QLabel(text2html(f"{player.bedwars.wlr} ", colour=player.bedwars.requeue.colour), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 7, label)
-        self.setItem(self.count, 7, TableSortingItem(player.bedwars.wlr))
+            label = QLabel(text2html(f"{player.bedwars.wlr} ", colour=player.bedwars.requeue.colour), self)
+            label.setFont(self.win.minecraftFont)
+            label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.setCellWidget(self.count, 7, label)
+            self.setItem(self.count, 7, TableSortingItem(player.bedwars.wlr))
 
-        label = QLabel(text2html(f"{player.bedwars.wins:,d} ", colour=player.bedwars.requeue.colour), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 8, label)
-        self.setItem(self.count, 8, TableSortingItem(player.bedwars.wins))
-        
-        label = QLabel(text2html(f"{player.bedwars.bblr} ", colour=player.bedwars.requeue.colour), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 9, label)
-        self.setItem(self.count, 9, TableSortingItem(player.bedwars.bblr))
+            label = QLabel(text2html(f"{player.bedwars.wins:,d} ", colour=player.bedwars.requeue.colour), self)
+            label.setFont(self.win.minecraftFont)
+            label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.setCellWidget(self.count, 8, label)
+            self.setItem(self.count, 8, TableSortingItem(player.bedwars.wins))
+            
+            label = QLabel(text2html(f"{player.bedwars.bblr} ", colour=player.bedwars.requeue.colour), self)
+            label.setFont(self.win.minecraftFont)
+            label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.setCellWidget(self.count, 9, label)
+            self.setItem(self.count, 9, TableSortingItem(player.bedwars.bblr))
 
-        label = QLabel(text2html(f"{player.bedwars.broken:,d} ", colour=player.bedwars.requeue.colour), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 10, label)
-        self.setItem(self.count, 10, TableSortingItem(player.bedwars.broken))
+            label = QLabel(text2html(f"{player.bedwars.broken:,d} ", colour=player.bedwars.requeue.colour), self)
+            label.setFont(self.win.minecraftFont)
+            label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.setCellWidget(self.count, 10, label)
+            self.setItem(self.count, 10, TableSortingItem(player.bedwars.broken))
 
-        label = QLabel(text2html(f"{int(player.bedwars.requeue.index):,d} ", colour=player.bedwars.requeue.colour), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 11, label)
-        self.setItem(self.count, 11, TableSortingItem(player.bedwars.requeue.raw))
+            label = QLabel(text2html(f"{int(player.bedwars.requeue.index):,d} ", colour=player.bedwars.requeue.colour), self)
+            label.setFont(self.win.minecraftFont)
+            label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.setCellWidget(self.count, 11, label)
+            self.setItem(self.count, 11, TableSortingItem(player.bedwars.requeue.raw))
 
-        #button = QPushButton(self)
-        #button.setIcon(QIcon(self.win.getIconPath("dots")))
-        #button.setStyleSheet(self.win.themeStyle.buttonsStyle)
-        #button.clicked.connect(None)
-        #button.setEnabled(False)
-        #button.setProperty("name", "dots")
-        #self.setCellWidget(self.count, 12, button)
-        #self.setItem(self.count, 12, TableSortingItem(self.count))
+            #button = QPushButton(self)
+            #button.setIcon(QIcon(self.win.getIconPath("dots")))
+            #button.setStyleSheet(self.win.themeStyle.buttonsStyle)
+            #button.clicked.connect(None)
+            #button.setEnabled(False)
+            #button.setProperty("name", "dots")
+            #self.setCellWidget(self.count, 12, button)
+            #self.setItem(self.count, 12, TableSortingItem(self.count))
 
-        button = QPushButton(self)
-        button.setIcon(QIcon(self.win.getIconPath("remove")))
-        button.setStyleSheet(self.win.themeStyle.buttonsStyle)
-        button.clicked.connect(lambda: self.removePlayerFromUUID(player.uuid))
-        button.setProperty("name", "remove")
-        self.setCellWidget(self.count, 12, button)
-        self.setItem(self.count, 12, TableSortingItem(player.uuid))
+            button = QPushButton(self)
+            button.setIcon(QIcon(self.win.getIconPath("remove")))
+            button.setStyleSheet(self.win.themeStyle.buttonsStyle)
+            button.clicked.connect(lambda: self.removePlayerFromUUID(player.uuid))
+            button.setProperty("name", "remove")
+            self.setCellWidget(self.count, 12, button)
+            self.setItem(self.count, 12, TableSortingItem(player.uuid))
 
-        self.skin.loadSkin(player, self.count)
-
-        #color = QColor("#FF0000")
-        #color.setAlpha(50)
-        #for j in range(self.columnCount()):
-        #    item = self.item(self.count, j)
-        #    if item:
-        #        item.setBackground(color)
+            self.skin.loadSkin(player, self.count)
 
 
-        # Done - Enable sorting again
-        self.setSortingEnabled(True)
+            if player.blacklisted.status:
+                color = QColor("#FF0000")
+                color.setAlpha(50)
+                for j in range(self.columnCount()):
+                    item = self.item(self.count, j)
+                    if item:
+                        item.setBackground(color)
 
-        self.updateHeaders()
+
+            # Done - Enable sorting again
+            self.setSortingEnabled(True)
+
+            self.updateHeaders()
+        except:
+            self.win.logger.critical(f"An error occurred while inserting {player.username} ({player.uuid}) in the table!\n\nTraceback: {traceback.format_exc()}")
 
 
     def resetTable(self) -> None:

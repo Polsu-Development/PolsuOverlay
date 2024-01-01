@@ -144,8 +144,6 @@ class Overlay(QWidget):
         # Fonts
         self.minecraftFont = QFont(QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(f"{self.pathAssets}/fonts/minecraft-font.ttf"))[0])
         self.logger.debug(f"Loaded font: {self.pathAssets}/fonts/minecraft-font.ttf")
-        QFontDatabase.addApplicationFont(f"{self.pathAssets}/fonts/unifont.ttf")
-        self.logger.debug(f"Loaded font: {self.pathAssets}/fonts/unifont.ttf")
 
 
         # Clients
@@ -192,12 +190,14 @@ class Overlay(QWidget):
         self.logger.debug(f"Loading the API Key...")
         if self.configAPIKey != "":
             self.logger.info("Logging in...")
+
             try:
-                self.threads["login"] = LoginWorker(self.configAPIKey)
+                self.threads["login"] = LoginWorker(self.configAPIKey, self.logger)
                 self.threads["login"].ended.connect(self.loginEnded)
                 self.threads["login"].start()
             except:
                 self.logger.error(f"An error occurred while logging in!\nTraceback: {traceback.format_exc()}")
+
             self.login = True
         else:
             self.logger.warning("No API Key found!")
@@ -423,6 +423,9 @@ class Overlay(QWidget):
 
 
     def destroy_window(self):
+        self.tray.visible = False
+        self.tray.stop()
+
         self.close()
 
 
@@ -739,8 +742,10 @@ class Overlay(QWidget):
         if self.configAPIKey != "":
             self.setCursor(Qt.WaitCursor)
 
+            self.logger.info("Logging out...")
+
             try:
-                self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch)
+                self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch, self.logger)
                 self.threads["logout"].start()
                 self.threads["logout"].wait()
             except:

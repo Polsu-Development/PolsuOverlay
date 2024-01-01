@@ -47,8 +47,9 @@ class Polsu:
     """
     A class representing the Polsu API
     """
-    def __init__(self, key: str) -> None:
+    def __init__(self, key: str, logger) -> None:
         self.key = key
+        self.logger = logger
 
         # The current API base url
         self.api = "https://api.polsu.xyz"
@@ -67,6 +68,7 @@ class Polsu:
                     if response.status == 403:
                         raise InvalidAPIKeyError(self.key)
                     elif response.status in [404, 422, 500]:
+                        self.logger.error(f"An error occurred while getting the API Key stats: {response.status}")
                         return response.status
                     elif not json["success"]:
                         raise APIError
@@ -109,8 +111,10 @@ class Polsu:
                 async with session.get(f"{self.api}/internal/overlay/login?key={self.key}&overlay=true", headers=__header__) as response:
                     json = await response.json()
                     if response.status == 403:
+                        self.logger.error(f"An error occurred while logging in: {response.status}")
                         raise InvalidAPIKeyError(self.key)
                     elif response.status in [404, 422, 500]:
+                        self.logger.error(f"An error occurred while logging in: {response.status}")
                         return response.status
                     elif not json["success"]:
                         raise APIError
@@ -191,8 +195,10 @@ class Polsu:
                 async with session.get(f"{self.api}/internal/overlay/player?key={self.key}&player={player}&overlay=true", headers=__header__) as response:
                     json = await response.json()
                     if response.status == 403:
+                        self.logger.error(f"An error occurred while logging in: {response.status}")
                         raise InvalidAPIKeyError(self.key)
                     elif response.status in [404, 422, 500]:
+                        self.logger.error(f"An error occurred while logging in: {response.status}")
                         return response.status
                     elif not json["success"]:
                         raise APIError
@@ -247,8 +253,10 @@ class Polsu:
                 async with session.post(f"{self.api}/internal/overlay/player?key={self.key}&overlay=true", headers=__header__, json=json) as response:
                     json = await response.json()
                     if response.status == 403:
+                        self.logger.error(f"An error occurred while logging in: {response.status}")
                         raise InvalidAPIKeyError(self.key)
                     elif response.status in [404, 422, 500]:
+                        self.logger.error(f"An error occurred while logging in: {response.status}")
                         return response.status
                     elif not json:
                         raise APIError
@@ -279,8 +287,10 @@ class Polsu:
                 async with session.get(f"https://api.polsu.xyz/polsu/bedwars/quickbuy?key={self.key}&uuid={uuid}", headers=__header__) as response:
                     json = await response.json()
                     if response.status == 403:
+                        self.logger.error(f"An error occurred while logging in: {response.status}")
                         raise InvalidAPIKeyError(self.key)
                     elif response.status in [404, 422, 500]:
+                        self.logger.error(f"An error occurred while logging in: {response.status}")
                         return response.status
                     elif not json["success"]:
                         raise APIError

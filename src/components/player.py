@@ -59,7 +59,7 @@ class Player:
         """
         self.win = win
 
-        self.client = Polsu(self.win.configAPIKey)
+        self.client = Polsu(self.win.configAPIKey, self.win.logger)
 
         self.rqColour = Colours(self.win.configRqColours)
 
@@ -156,6 +156,8 @@ class Player:
         if cleaned not in self.loading:
             self.loading.append(cleaned)
 
+            self.win.logger.info(f"Requesting: {player}. (Connection)")
+
             try:
                 self.threads[cleaned] = Worker(self.client, uuid, True)
                 self.threads[cleaned].playerObject.connect(self.setRPCPlayer)
@@ -183,6 +185,8 @@ class Player:
         :param cache: If the player should be cached
         """
         if isinstance(player, int):
+            self.win.logger.warning(f"[{player}] Error while loading a player ({player}).")
+
             if player == 422:
                 self.win.notif.send(
                     title="Error...",
@@ -198,9 +202,16 @@ class Player:
                         title="Error...",
                         message="Something went wrong while loading the player! Is the API Key valid?"
                     )
+            elif player == -1:
+                self.win.notif.send(
+                    title="Error...",
+                    message="Malformed player!"
+                )
             else:
                 self.win.logger.error(f"Error while loading a player.\n\nTraceback: {traceback.format_exc()}")
         elif isinstance(player, InvalidAPIKeyError):
+            self.logger.warning(f"[InvalidAPIKeyError] Error while loading a player ({player}).")
+
             self.win.notif.send(
                 title="Error...",
                 message="Something went wrong while loading the player! Is the API Key valid?"
@@ -231,7 +242,7 @@ class Worker(QThread):
     """
     The worker class, used to get players from the API
     """
-    playerObject = pyqtSignal(object)
+    playerObject = pyqtSignal(object, str)
 
     def __init__(self, client, query: Union[list, str], manual: bool = False) -> None:
         """
@@ -256,22 +267,22 @@ class Worker(QThread):
                 players = asyncio.run(self.client.player.post(self.query))
 
                 if players == None:
-                    self.playerObject.emit(False)
+                    self.playerObject.emit(False, "")
                 else:
                     for player in players:
                         player.manual = self.manual
-                        self.playerObject.emit(player)
+                        self.playerObject.emit(player, "")
             else:
                 player = asyncio.run(self.client.player.get(self.query))
 
                 if player == None:
-                    self.playerObject.emit(False)
+                    self.playerObject.emit(False, self.query)
                 else:
                     player.manual = self.manual
-                    self.playerObject.emit(player)
+                    self.playerObject.emit(player, self.query)
         except APIError:
             pass
         except InvalidAPIKeyError:
-            self.playerObject.emit(None)
+            self.playerObject.emit(None, self.query)
         except:
-            self.playerObject.emit(False)
+            self.playerObject.emit(False, self.query)
