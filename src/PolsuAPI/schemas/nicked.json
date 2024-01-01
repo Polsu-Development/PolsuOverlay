@@ -11,7 +11,7 @@
             "formatted": "§7[0@]",
             "stars": 999999999,
             "games_played": 0,
-            "winstreak": 0,
+            "winstreak": -1,
             "kills": 0,
             "deaths": 0,
             "kdr": 0,
