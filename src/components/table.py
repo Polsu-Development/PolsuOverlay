@@ -39,9 +39,12 @@ from ..utils.sorting import TableSortingItem
 from ..PolsuAPI.objects.player import Player
 
 
-from PyQt5.QtWidgets import QTableWidget, QAbstractItemView, QHeaderView, QScrollBar, QLabel, QPushButton
+from PyQt5.QtWidgets import QTableWidget, QAbstractItemView, QHeaderView, QScrollBar, QLabel, QPushButton, QHBoxLayout, QWidget
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFontMetrics, QIcon, QColor
+from PyQt5.QtSvg import QSvgWidget
+
+from ..utils.constants import SUFFIX_SVG_MAP
 
 
 import re
@@ -154,10 +157,41 @@ class Table(QTableWidget):
         self.setCellWidget(self.count, 1, label)
         self.setItem(self.count, 1, TableSortingItem(player.bedwars.stars))
 
-        label = QLabel(text2html(player.rank + " "), self)
-        label.setFont(self.win.minecraftFont)
-        label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        self.setCellWidget(self.count, 2, label)
+        pattern = re.compile(r"(?:§.\[.*?\] )?(\w+)(?: (?P<suffix>.*))?")
+
+        # Search for the pattern in player.rank
+        match = pattern.search(player.rank)
+
+        if match.group('suffix'):
+            playername = player.rank[:match.start('suffix')].strip()
+            suffix = match.group('suffix')
+        else:
+            playername = player.rank.strip()
+            suffix = ' '
+
+        # Create the playername label with minecraftFont
+        prefix_label = QLabel(text2html(playername), self)
+        prefix_label.setFont(self.win.minecraftFont)
+        prefix_label.setStyleSheet("color: red;")  # Set label color to red
+
+        # Create a layout and add the labels to it
+        layout = QHBoxLayout()
+        layout.addWidget(prefix_label)
+
+        layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
+
+        # Create the suffix widget with the corresponding SVG
+        if suffix != ' ':
+            suffix_widget = QSvgWidget()
+            suffix_widget.load(self.win.pathAssets + "/icons/ranks/" + str(SUFFIX_SVG_MAP.get(suffix)))
+            suffix_widget.setContentsMargins(0, 0, 0, 0)  # Remove margins
+            suffix_widget.setFixedSize(16, 16)  # Set fixed size
+            layout.addWidget(suffix_widget, alignment=Qt.AlignLeft | Qt.AlignVCenter)  # Align suffix_widget to the left
+
+        # Create a widget, set its layout, and set it as the cell widget
+        widget = QWidget(self)
+        widget.setLayout(layout)
+        self.setCellWidget(self.count, 2, widget)
         self.setItem(self.count, 2, TableSortingItem(player.username))
 
         label = QLabel(text2html(player.tag + " "), self)

@@ -82,3 +82,12 @@ CLIENT_NAMES = [
     "Badlion Client",
     "Badlion",
 ]
+
+SUFFIX_SVG_MAP = {
+    "🐷": "techno.svg",
+    "👑": "owner.svg",
+    "🔨": "staff.svg",
+    "💻": "dev.svg",
+    "🔗": "partner.svg",
+    "✨": "premium.svg",
+}
