@@ -69,6 +69,10 @@ LINUX = True if os.name == 'posix' else False
 CACHE = 1200
 
 
+# Development mode
+DEV_MODE = False
+
+
 from .PolsuAPI import Polsu
 
 from .components.rpc import Presence

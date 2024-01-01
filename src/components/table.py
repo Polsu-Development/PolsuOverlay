@@ -239,7 +239,11 @@ class Table(QTableWidget):
             self.setCellWidget(self.count, 10, label)
             self.setItem(self.count, 10, TableSortingItem(player.bedwars.broken))
 
-            label = QLabel(text2html(f"{int(player.bedwars.requeue.index):,d} ", colour=player.bedwars.requeue.colour), self)
+            if player.nicked:
+                label = QLabel(text2html(f"§7- "), self)
+            else:
+                label = QLabel(text2html(f"{player.bedwars.requeue.index} ", colour=player.bedwars.requeue.colour), self)
+
             label.setFont(self.win.minecraftFont)
             label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.setCellWidget(self.count, 11, label)
