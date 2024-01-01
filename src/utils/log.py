@@ -31,6 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
+from .. import DEV_MODE
 from ..PolsuAPI import Polsu
 
 
@@ -60,6 +61,9 @@ class LoginWorker(QThread):
         """
         Run the LoginWorker
         """
+        if DEV_MODE:
+            return
+
         try:
             data = asyncio.run(self.client.user.login())
             self.ended.emit(data)
@@ -88,6 +92,9 @@ class LogoutWorker(QThread):
         """
         Run the LogoutWorker
         """
+        if DEV_MODE:
+            return
+
         try:
             asyncio.run(self.client.user.logout(self.launch))
         except:
