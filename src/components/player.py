@@ -59,7 +59,7 @@ class Player:
         """
         self.win = win
 
-        self.client = Polsu(self.win.configAPIKey)
+        self.client = Polsu(self.win.configAPIKey, self.win.logger)
 
         self.rqColour = Colours(self.win.configRqColours)
 
@@ -185,7 +185,7 @@ class Player:
         :param cache: If the player should be cached
         """
         if isinstance(player, int):
-            self.logger.warning(f"[{player}] Error while loading a player ({player}).")
+            self.win.logger.warning(f"[{player}] Error while loading a player ({player}).")
 
             if player == 422:
                 self.win.notif.send(
@@ -242,7 +242,7 @@ class Worker(QThread):
     """
     The worker class, used to get players from the API
     """
-    playerObject = pyqtSignal(object)
+    playerObject = pyqtSignal(object, str)
 
     def __init__(self, client, query: Union[list, str], manual: bool = False) -> None:
         """
@@ -267,22 +267,22 @@ class Worker(QThread):
                 players = asyncio.run(self.client.player.post(self.query))
 
                 if players == None:
-                    self.playerObject.emit(False)
+                    self.playerObject.emit(False, "")
                 else:
                     for player in players:
                         player.manual = self.manual
-                        self.playerObject.emit(player)
+                        self.playerObject.emit(player, "")
             else:
                 player = asyncio.run(self.client.player.get(self.query))
 
                 if player == None:
-                    self.playerObject.emit(False)
+                    self.playerObject.emit(False, self.query)
                 else:
                     player.manual = self.manual
-                    self.playerObject.emit(player)
+                    self.playerObject.emit(player, self.query)
         except APIError:
             pass
         except InvalidAPIKeyError:
-            self.playerObject.emit(None)
+            self.playerObject.emit(None, self.query)
         except:
-            self.playerObject.emit(False)
+            self.playerObject.emit(False, self.query)

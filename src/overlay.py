@@ -192,7 +192,7 @@ class Overlay(FramelessMainWindow):
             self.logger.info("Logging in...")
 
             try:
-                self.threads["login"] = LoginWorker(self.configAPIKey)
+                self.threads["login"] = LoginWorker(self.configAPIKey, self.logger)
                 self.threads["login"].ended.connect(self.loginEnded)
                 self.threads["login"].start()
             except:
@@ -739,7 +739,7 @@ class Overlay(FramelessMainWindow):
             self.logger.info("Logging out...")
 
             try:
-                self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch)
+                self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch, self.logger)
                 self.threads["logout"].start()
                 self.threads["logout"].wait()
             except:
