@@ -41,11 +41,7 @@ from ..PolsuAPI.objects.player import Player
 
 from PyQt5.QtWidgets import QTableWidget, QAbstractItemView, QHeaderView, QScrollBar, QLabel, QPushButton, QHBoxLayout, QWidget
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFontMetrics, QIcon, QColor
-from PyQt5.QtSvg import QSvgWidget
-
-from ..utils.constants import SUFFIX_SVG_MAP
-
+from PyQt5.QtGui import QFontMetrics, QIcon, QColor, QFont
 
 import re
 import traceback
@@ -163,7 +159,9 @@ class Table(QTableWidget):
 
             # Search for the pattern in player.rank
             match = pattern.search(player.rank)
+        
 
+            # Get the prefix and suffix from the match
             if match.group('suffix'):
                 playername = player.rank[:match.start('suffix')].strip()
                 suffix = match.group('suffix')
@@ -172,23 +170,20 @@ class Table(QTableWidget):
                 suffix = ' '
 
             # Create the playername label with minecraftFont
-            prefix_label = QLabel(text2html(playername), self)
-            prefix_label.setFont(self.win.minecraftFont)
-            prefix_label.setStyleSheet("color: red;")  # Set label color to red
+            playername = QLabel(text2html(playername), self)
+            playername.setFont(self.win.minecraftFont)
+            playername.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        
+            # Create the suffix label with NotoEmoji font
+            suffix_label = QLabel(suffix, self)
+            suffix_label.setFont(QFont("NotoEmoji", 11))
+            suffix_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
             # Create a layout and add the labels to it
             layout = QHBoxLayout()
-            layout.addWidget(prefix_label)
-
+            layout.addWidget(playername)
+            layout.addWidget(suffix_label)
             layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
-
-            # Create the suffix widget with the corresponding SVG
-            if suffix != ' ':
-                suffix_widget = QSvgWidget()
-                suffix_widget.load(self.win.pathAssets + "/icons/ranks/" + str(SUFFIX_SVG_MAP.get(suffix)))
-                suffix_widget.setContentsMargins(0, 0, 0, 0)  # Remove margins
-                suffix_widget.setFixedSize(16, 16)  # Set fixed size
-                layout.addWidget(suffix_widget, alignment=Qt.AlignLeft | Qt.AlignVCenter)  # Align suffix_widget to the left
 
             # Create a widget, set its layout, and set it as the cell widget
             widget = QWidget(self)
