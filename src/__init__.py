@@ -40,7 +40,7 @@ from os import getcwd, environ
 __title__ = "PolsuOverlay"
 __author__ = "Polsulpicien"
 __license__ = "GPL-3.0 License"
-__version__ = "2.0.3"
+__version__ = "2.0.4"
 __description__ = "Polsu's Overlay"
 
 __module__ = getcwd()
