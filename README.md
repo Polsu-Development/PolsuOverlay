@@ -67,6 +67,7 @@ Then you just need to head over to the settings (click the Polsu logo) and choos
     - Party
     - Nicked
 - Ranks (emojis):
+    - Overlay User 🎮
     - Premium ✨
     - VIP 🔗
     - Staff 🔨
