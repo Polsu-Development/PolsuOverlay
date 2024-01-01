@@ -235,12 +235,14 @@ class Table(QTableWidget):
 
             self.skin.loadSkin(player, self.count)
 
-            #color = QColor("#FF0000")
-            #color.setAlpha(50)
-            #for j in range(self.columnCount()):
-            #    item = self.item(self.count, j)
-            #    if item:
-            #        item.setBackground(color)
+
+            if player.blacklisted.status:
+                color = QColor("#FF0000")
+                color.setAlpha(50)
+                for j in range(self.columnCount()):
+                    item = self.item(self.count, j)
+                    if item:
+                        item.setBackground(color)
 
 
             # Done - Enable sorting again

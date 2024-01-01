@@ -204,7 +204,7 @@ class Logs:
         line: str = self.readLogFile()
         lines = self.rawLine(line).splitlines()
 
-        for idx, l in enumerate(lines):
+        for l in lines:
             line = l.replace(" [System] ", "")
 
             if "[Client thread/INFO]: " in line:

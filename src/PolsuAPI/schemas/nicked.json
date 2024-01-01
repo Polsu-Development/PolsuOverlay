@@ -29,8 +29,12 @@
                 "level": "",
                 "text": "",
                 "colour": "",
-                "raw": 0
+                "raw": 999999999
             }
         }
+    },
+    "blacklisted": {
+        "status": false,
+        "reason": ""
     }
 }
