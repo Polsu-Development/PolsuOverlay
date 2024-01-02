@@ -239,8 +239,7 @@ class Overlay(FramelessMainWindow):
                     # Try to reconnect
                     self.RPC.disconnect()
                     startRPC(self)
-                except Exception as e:
-                    print(e)
+                except:
                     self.RPC.disconnect()
                     self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
                     self.RPC = None
@@ -396,6 +395,22 @@ class Overlay(FramelessMainWindow):
             else:
                 return f"{self.pathAssets}/icons/{item}.svg"
 
+
+    def getFont(self, path: str = None) -> QFont:
+        """
+        Get the font
+
+        :param path: The path of the theme
+        :return: The font
+        """
+        if not path:
+            path = self.themeStyle.path
+            
+        if os.path.exists(f"{path}/font.ttf"):
+            return QFont(QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(f"{path}/font.ttf"))[0])
+        else:
+            return self.minecraftFont
+    
 
     def changeTheme(self, value, update: bool = True):
         if update:

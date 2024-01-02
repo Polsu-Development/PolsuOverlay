@@ -79,37 +79,37 @@ class Menu(QWidget):
 
         if self.win.height() >= 380:
             text = QLabel("Reload", self)
-            text.setFont(self.win.minecraftFont)
+            text.setFont(self.win.getFont())
             text.adjustSize()
             text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
             text.setGeometry(20, 11, 190, 40)
 
             text = QLabel("Settings", self)
-            text.setFont(self.win.minecraftFont)
+            text.setFont(self.win.getFont())
             text.adjustSize()
             text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
             text.setGeometry(20, 56, 190, 40)
             
             text = QLabel("About", self)
-            text.setFont(self.win.minecraftFont)
+            text.setFont(self.win.getFont())
             text.adjustSize()
             text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
             text.setGeometry(20, 101, 190, 40)
 
             text = QLabel("Github", self)
-            text.setFont(self.win.minecraftFont)
+            text.setFont(self.win.getFont())
             text.adjustSize()
             text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
             text.setGeometry(20, 146, 190, 40)
 
             text = QLabel("Website", self)
-            text.setFont(self.win.minecraftFont)
+            text.setFont(self.win.getFont())
             text.adjustSize()
             text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
             text.setGeometry(20, 191, 190, 40)
 
             text = QLabel("Discord", self)
-            text.setFont(self.win.minecraftFont)
+            text.setFont(self.win.getFont())
             text.adjustSize()
             text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
             text.setGeometry(20, 236, 190, 40)
@@ -193,15 +193,15 @@ class Menu(QWidget):
 
         
         label = QLabel(text2html(f"§7Polsu Overlay v{__version__}", size=12, bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(14, self.win.size().height()-90)
 
         label = QLabel(text2html(f"§8© 2022 - {datetime.now().year} Polsu Development.", size=6, bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, self.win.size().height()-65)
 
         label = QLabel(text2html(f"§8All rights reserved.", size=6, bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(60, self.win.size().height()-55)
 
         self.SIGNALS = WidgetSignals()
@@ -314,11 +314,11 @@ class Settings(QWidget):
 
 
         label = QLabel(text2html(f"§fAPI Key:", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 17)
 
         self.apikeyBox = QLineEdit(self)
-        self.apikeyBox.setFont(self.win.minecraftFont)
+        self.apikeyBox.setFont(self.win.getFont())
         self.apikeyBox.setMaxLength(36)
         self.apikeyBox.setStyleSheet(self.win.themeStyle.settingsAPIKeyStyle)
         self.apikeyBox.setPlaceholderText("Enter your Polsu API Key")
@@ -342,11 +342,11 @@ class Settings(QWidget):
 
 
         label = QLabel(text2html(f"§fTheme:", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 50)
 
         self.themeMenu = QComboBox(self)
-        self.themeMenu.setFont(self.win.minecraftFont)
+        self.themeMenu.setFont(self.win.getFont())
 
         count = 0
         for theme in self.win.themes:
@@ -374,12 +374,12 @@ class Settings(QWidget):
 
 
         label = QLabel(text2html(f"§fClient:", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 81)
         
         
         self.clientMenu = QComboBox(self)
-        self.clientMenu.setFont(self.win.minecraftFont)
+        self.clientMenu.setFont(self.win.getFont())
 
         count = 0
         for client in self.win.clients:
@@ -399,11 +399,11 @@ class Settings(QWidget):
 
 
         label = QLabel(text2html(f"§fLogs:", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 112)
 
         self.customPathBox = QLineEdit(self)
-        self.customPathBox.setFont(self.win.minecraftFont)
+        self.customPathBox.setFont(self.win.getFont())
         self.customPathBox.setMaxLength(36)
         self.customPathBox.setStyleSheet(self.win.themeStyle.settingsLogPathStyle)
         self.customPathBox.setPlaceholderText('...\\'+'\\'.join(self.win.configLogPath.split('\\')[-3:]))
@@ -420,7 +420,7 @@ class Settings(QWidget):
 
 
         label = QLabel(text2html(f"§fOpacity:", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 143)
         
         self.slider = QSlider(Qt.Horizontal, self)
@@ -453,7 +453,7 @@ class Settings(QWidget):
         
         
         label = QLabel(text2html(f"§fDiscord Activity", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(60, 175)
 
 
@@ -473,7 +473,7 @@ class Settings(QWidget):
         self.STATUSswitch.stateChanged.connect(self.STATUSUpdate)
 
         label = QLabel(text2html(f"§fShow Status", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(60, 200)
 
 
@@ -490,7 +490,7 @@ class Settings(QWidget):
         self.Whoswitch.stateChanged.connect(self.WhoUpdate)
 
         label = QLabel(text2html(f"§fAuto Who", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(60, 225)
 
 
@@ -507,7 +507,7 @@ class Settings(QWidget):
         self.globalBlswitch.stateChanged.connect(self.GlobalBlUpdate)
 
         label = QLabel(text2html(f"§fPolsu Blacklist", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(60, 250)
 
 
@@ -776,50 +776,50 @@ class Info(QWidget):
         self.closeButton.clicked.connect(self.close_info)
 
         label = QLabel(text2html(f"§fPolsu Overlay §7v{__version__}", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(125, 10)
 
         label = QLabel(text2html(f"§fThis overlay was made by Polsulpicien"), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 40)
 
         label = QLabel(text2html(f"§f(§9Polsulpicien§f) and is entirely made"), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 60)
 
         label = QLabel(text2html(f"§fin Python."), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 80)
 
         label = QLabel(text2html(f"§f100% Free to use!", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(115, 80)
 
 
         label = QLabel(text2html(f"§fThis Overlay is open-source on §7Github§f."), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 120)
 
 
         label = QLabel(text2html(f"§fAll information is stored only on your", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 160)
 
         label = QLabel(text2html(f"§fcomputer. No one else has access to", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 180)
 
         label = QLabel(text2html(f"§fyour settings!", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 200)
 
 
         label = QLabel(text2html(f"§fSaved at:"), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 230)
 
         label = QLabel(text2html(f"§0C:\\Users\\{'*' * len(getuser())}\\Polsu\\ ", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move((50), 250)
 
         directoryButton = QPushButton(self)

@@ -72,13 +72,13 @@ def setupComponents(win) -> None:
 
     win.overlayTitle = QLabel(win)
     win.overlayTitle.setText(win.themeStyle.name)
-    win.overlayTitle.setFont(win.minecraftFont)
+    win.overlayTitle.setFont(win.getFont())
     win.overlayTitle.setStyleSheet(win.themeStyle.titleStyle)
     win.overlayTitle.adjustSize()
     win.overlayTitle.move(40, 1)
 
     win.searchBox = QLineEdit(win)
-    win.searchBox.setFont(win.minecraftFont)
+    win.searchBox.setFont(win.getFont())
     win.searchBox.setMaxLength(16)
     win.searchBox.setPlaceholderText("Search...")
     win.searchBox.returnPressed.connect(lambda: enterPress(win))
@@ -90,7 +90,7 @@ def setupComponents(win) -> None:
     win.searchIcon.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
 
     win.timerBox = TimerBox(win)
-    win.timerBox.setFont(win.minecraftFont)
+    win.timerBox.setFont(win.getFont())
     win.timerBox.setText("0:00:00")
     win.timerBox.setEnabled(False)
     win.timerBox.adjustSize()
@@ -146,18 +146,21 @@ def updateComponents(win) -> None:
     win.menuButton.update()
 
     win.overlayTitle.setStyleSheet(win.themeStyle.titleStyle)
+    win.overlayTitle.setFont(win.getFont())
     win.overlayTitle.update()
 
     win.searchIcon.setIcon(QIcon(win.getIconPath("search")))
     win.searchIcon.update()
 
     win.searchBox.setStyleSheet(win.themeStyle.searchBarStyle)
+    win.searchBox.setFont(win.getFont())
     win.searchBox.update()
 
     win.timerIcon.setIcon(QIcon(win.getIconPath("hourglass-start")))
     win.timerIcon.update()
 
     win.timerBox.setStyleSheet(win.themeStyle.timerBarStyle)
+    win.timerBox.setFont(win.getFont())
     win.timerBox.update()
 
     win.deliverybutton.setStyleSheet(win.themeStyle.buttonsStyle)
@@ -174,6 +177,8 @@ def updateComponents(win) -> None:
     #win.profileBox.setStyleSheet(win.themeStyle.timerBarStyle)
     #win.profileBox.update()
     
+    win.table.horizontalHeader().setFont(win.getFont())
+    win.table.verticalHeader().setFont(win.getFont())
     win.table.setStyleSheet(win.themeStyle.tableStyle)
     win.table.VscrollBar.setStyleSheet(win.themeStyle.VscrollBarStyle)
     win.table.HscrollBar.setStyleSheet(win.themeStyle.HscrollBarStyle)
@@ -187,6 +192,8 @@ def updateComponents(win) -> None:
                 item.setIcon(QIcon(win.getIconPath("blacklist")))
             if type(item) == QPushButton and item.property("name") == "global-blacklist":
                 item.setIcon(QIcon(win.getIconPath("global-blacklist")))
+            else:
+                item.setFont(win.getFont())
         
     win.table.update()
 
