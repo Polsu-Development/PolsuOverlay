@@ -174,6 +174,8 @@ class Player:
         """
         if self.win.RPC and player:
             self.win.RPC.setPlayer(player)
+
+        if player:
             self.update(player)
 
 
