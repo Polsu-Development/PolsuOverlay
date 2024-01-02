@@ -494,22 +494,30 @@ class Settings(QWidget):
         label.move(60, 225)
 
 
-        self.hideswitch = QCheckBox(self)
-        self.hideswitch.setGeometry(20, 240, 40, 40)
-        self.hideswitch.setToolTip("Hide the overlay after the game starts")
-        self.hideswitch.setStyleSheet(self.win.themeStyle.switchButtonStyle)
-        self.hideswitch.setDisabled(True)
+        self.globalBlswitch = QCheckBox(self)
+        self.globalBlswitch.setGeometry(20, 240, 40, 40)
+        self.globalBlswitch.setToolTip("Toggle the Polsu blacklist")
+        self.globalBlswitch.setStyleSheet(self.win.themeStyle.switchButtonStyle)
 
-        if self.win.confighideOverlay:
-            self.hideswitch.setChecked(True)
+        if self.win.configGlobalBlacklist:
+            self.globalBlswitch.setChecked(True)
         else:
-            self.hideswitch.setChecked(False)
+            self.globalBlswitch.setChecked(False)
 
-        self.hideswitch.stateChanged.connect(self.hideupdate)
+        self.globalBlswitch.stateChanged.connect(self.GlobalBlUpdate)
 
-        label = QLabel(text2html(f"§fHide Overlay", bold=True), self)
+        label = QLabel(text2html(f"§fPolsu Blacklist", bold=True), self)
         label.setFont(self.win.minecraftFont)
         label.move(60, 250)
+
+
+        self.blacklistButton = QPushButton(self)
+        self.blacklistButton.setIcon(QIcon(self.win.getIconPath("folder")))
+        self.blacklistButton.setToolTip("Browse the local blacklists")
+        self.blacklistButton.setGeometry(366, 240, 24, 24)
+        self.blacklistButton.setIconSize(QSize(24, 24))
+        self.blacklistButton.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
+        self.blacklistButton.clicked.connect(self.openLocalBlacklistFile)
 
 
         self.closeButton = QPushButton(self)
@@ -643,6 +651,7 @@ class Settings(QWidget):
             self.win.settings.update("hideOverlay", False)
             self.win.configHide = False
 
+
     def WhoUpdate(self) -> None:
         """
         Update the Who
@@ -653,6 +662,28 @@ class Settings(QWidget):
         else:
             self.win.configWho = False
             self.win.settings.update("who", False)
+
+
+    def GlobalBlUpdate(self) -> None:
+        """
+        Update the Who
+        """
+        if self.globalBlswitch.isChecked():
+            self.win.configGlobalBlacklist = True
+            self.win.settings.update("globalBlacklist", True)
+        else:
+            self.win.configGlobalBlacklist = False
+            self.win.settings.update("globalBlacklist", False)
+
+
+    def openLocalBlacklistFile(self) -> None:
+        """
+        Open the local blacklist file
+        """
+        self.close_settings()
+
+        webbrowser.open(self.win.blacklistConfig)
+        self.win.mini()
 
 
     def openLogsFile(self) -> None:
