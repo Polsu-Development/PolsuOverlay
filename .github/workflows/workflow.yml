@@ -21,27 +21,21 @@ jobs:
         with:
           python-version: 3.11
 
-      - name: Check version
-        id: check_version
-        run: |
-          ls
-          if ((git diff --name-only HEAD~1 HEAD) -match 'version\.rc|__init__\.py') {
-            echo "::set-output name=version_changed::true"
-          } else {
-            echo "::set-output name=version_changed::false"
-          }
-
       - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Check for file changes
+        id: file_changes
         run: |
-          pip install -r requirements.txt
-          pip install pyinstaller
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} > changed_files.txt
+          echo "::set-output name=changes::$(cat changed_files.txt)"
 
       - name: Build project
         run: |
-          if ("${{ steps.check_version.outputs.version_changed }}" -eq "true") {
+          if (Get-Content changed_files.txt | Select-String -Pattern "version.rc|src/init.py") {
             pyinstaller --noconfirm build.spec
           } else {
-            echo "Version is not changed. Skipping build."
+            echo "No changes in version.rc or src/init.py. Skipping build."
           }
 
       - name: Upload artifact
