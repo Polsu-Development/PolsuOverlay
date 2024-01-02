@@ -65,7 +65,8 @@ CONFIG = {
         "10": "AA0000",
         "11": "5555FF",
         "12": "FF55FF"
-    }
+    },
+    "globalBlacklist": True
 }
 
 # Default Players Tags

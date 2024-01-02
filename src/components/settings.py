@@ -103,6 +103,7 @@ class Settings:
         self.win.configStatus = config.get("status", CONFIG.get('status'))
         self.win.configSorting = config.get("sorting", CONFIG.get('sorting'))
         self.win.configRqColours = config.get("rqLevel", CONFIG.get('rqLevel'))
+        self.win.configGlobalBlacklist = config.get("globalBlacklist", CONFIG.get('globalBlacklist'))
         
         return config
 

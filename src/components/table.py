@@ -276,7 +276,7 @@ class Table(QTableWidget):
             self.skin.loadSkin(player, self.count)
 
 
-            if player.blacklisted.status or player.local.status:
+            if player.blacklisted.status and self.win.configGlobalBlacklist or player.local.status:
                 color = QColor("#FF0000")
                 color.setAlpha(50)
                 for j in range(self.columnCount()):

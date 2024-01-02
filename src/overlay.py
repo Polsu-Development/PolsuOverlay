@@ -366,7 +366,7 @@ class Overlay(FramelessMainWindow):
         self.setStyleSheet("background: transparent")
 
         self.setGeometry(self.configXY[0], self.configXY[1], self.configWH[0], self.configWH[1])
-        self.setMinimumSize(700, 150)
+        self.setMinimumSize(880, 150)
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
