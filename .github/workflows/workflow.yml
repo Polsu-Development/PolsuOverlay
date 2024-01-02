@@ -24,8 +24,7 @@ jobs:
       - name: Check for file changes
         id: file_changes
         run: |
-          git fetch origin
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }}
 
       - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller
