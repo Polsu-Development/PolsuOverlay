@@ -153,12 +153,14 @@ def updateComponents(win) -> None:
     win.searchIcon.update()
 
     win.searchBox.setStyleSheet(win.themeStyle.searchBarStyle)
+    win.searchBox.setFont(win.getFont(""))
     win.searchBox.update()
 
     win.timerIcon.setIcon(QIcon(win.getIconPath("hourglass-start")))
     win.timerIcon.update()
 
     win.timerBox.setStyleSheet(win.themeStyle.timerBarStyle)
+    win.timerBox.setFont(win.getFont(""))
     win.timerBox.update()
 
     win.deliverybutton.setStyleSheet(win.themeStyle.buttonsStyle)
@@ -175,6 +177,8 @@ def updateComponents(win) -> None:
     #win.profileBox.setStyleSheet(win.themeStyle.timerBarStyle)
     #win.profileBox.update()
     
+    win.table.horizontalHeader().setFont(win.getFont(""))
+    win.table.verticalHeader().setFont(win.getFont(""))
     win.table.setStyleSheet(win.themeStyle.tableStyle)
     win.table.VscrollBar.setStyleSheet(win.themeStyle.VscrollBarStyle)
     win.table.HscrollBar.setStyleSheet(win.themeStyle.HscrollBarStyle)
@@ -188,6 +192,8 @@ def updateComponents(win) -> None:
                 item.setIcon(QIcon(win.getIconPath("blacklist")))
             if type(item) == QPushButton and item.property("name") == "global-blacklist":
                 item.setIcon(QIcon(win.getIconPath("global-blacklist")))
+            else:
+                item.setFont(win.getFont(""))
         
     win.table.update()
 
