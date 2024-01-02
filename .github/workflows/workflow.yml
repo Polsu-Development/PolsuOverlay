@@ -14,18 +14,32 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: 3.11
+
+      - name: Check version
+        id: check_version
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -qE 'version\.rc|__init__\.py'; then
+            echo "::set-output name=version_changed::true"
+          else
+            echo "::set-output name=version_changed::false"
+          fi
 
       - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller
 
       - name: Build project
-        run: pyinstaller --noconfirm build.spec
+        run: |
+          if [[ "${{ steps.check_version.outputs.version_changed }}" == "true" ]]; then
+            pyinstaller --noconfirm build.spec
+          else
+            echo "Version is not changed. Skipping build."
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
