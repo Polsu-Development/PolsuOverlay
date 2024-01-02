@@ -36,6 +36,7 @@
 
 
 from os import getcwd, environ
+from dotenv import load_dotenv
 
 __title__ = "PolsuOverlay"
 __author__ = "Polsulpicien"
@@ -63,6 +64,11 @@ else:
     WINDOWS = False
 
 
+load_dotenv('.env')
+
+DEV_MODE = bool(environ.get("DEV_MODE", False))
+
+
 # This will only change the local cache, not the API cache
 #
 # - Lower this value and you will make more requests to the API
@@ -70,10 +76,6 @@ else:
 #
 # WARNING: Setting this value lower will only make your Overlay slower!
 CACHE = 1200
-
-
-# Development mode
-DEV_MODE = False
 
 
 from .PolsuAPI import Polsu

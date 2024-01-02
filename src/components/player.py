@@ -31,7 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src import CACHE
+from src import CACHE, DEV_MODE
 from ..PolsuAPI import Polsu
 from ..PolsuAPI.exception import APIError, InvalidAPIKeyError
 from ..PolsuAPI.objects.player import Player as Pl
@@ -184,6 +184,9 @@ class Player:
         :param player: The player to update
         :param cache: If the player should be cached
         """
+        if DEV_MODE:
+            self.win.logger.debug(f"Updating {player}")
+
         if isinstance(player, int):
             self.win.logger.warning(f"[{player}] Error while loading a player ({player}).")
 
