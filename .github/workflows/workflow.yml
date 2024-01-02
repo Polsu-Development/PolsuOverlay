@@ -27,6 +27,7 @@ jobs:
       - name: Check for file changes
         id: file_changes
         run: |
+          git fetch origin
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
 
       - name: Build project
