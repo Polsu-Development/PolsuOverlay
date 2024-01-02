@@ -27,8 +27,7 @@ jobs:
       - name: Check for file changes
         id: file_changes
         run: |
-          git diff --name-only ${{ github.sha }}^ ${{ github.sha }} > changed_files.txt
-          echo "::set-output name=changes::$(cat changed_files.txt)"
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
 
       - name: Build project
         run: |
