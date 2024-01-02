@@ -24,11 +24,12 @@ jobs:
       - name: Check version
         id: check_version
         run: |
-          if (git diff --name-only HEAD^ HEAD | grep -qE 'version\.rc|__init__\.py'); then
-            echo "::set-output name=version_changed::true"
-          else
-            echo "::set-output name=version_changed::false"
-          fi
+          $diff = git diff --name-only HEAD^ HEAD
+
+          $SourceDiff = $diff | Where-Object { $_ -match "version.rc" }
+          $HasDiff = $SourceDiff.Length -gt 0
+
+          Write-Host "::set-output name=version_changed::$HasDiff"
 
       - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller
