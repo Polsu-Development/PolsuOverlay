@@ -26,7 +26,8 @@ jobs:
       - name: Check for file changes
         id: file_changes
         run: |
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} > changed_files.txt
+          echo "::set-output name=files::$(cat changed_files.txt)"
 
       - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller
