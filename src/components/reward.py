@@ -106,13 +106,13 @@ class Rewards(QWidget):
 
 
         self.firstRewardTextTitle = QLabel("", self)
-        self.firstRewardTextTitle.setFont(self.win.minecraftFont)
+        self.firstRewardTextTitle.setFont(self.win.getFont())
         self.firstRewardTextTitle.adjustSize()
         self.firstRewardTextTitle.setStyleSheet(self.win.themeStyle.deliveryTextTitleStyle)
         self.firstRewardTextTitle.setGeometry(15, 2, 220, 40)
 
         self.firstRewardTextSmall = QLabel("", self)
-        self.firstRewardTextSmall.setFont(self.win.minecraftFont)
+        self.firstRewardTextSmall.setFont(self.win.getFont())
         self.firstRewardTextSmall.adjustSize()
         self.firstRewardTextSmall.setStyleSheet(self.win.themeStyle.deliveryTextSmallStyle)
         self.firstRewardTextSmall.setGeometry(15, 20, 220, 40)
@@ -133,13 +133,13 @@ class Rewards(QWidget):
 
 
         self.secondRewardTextTitle = QLabel("", self)
-        self.secondRewardTextTitle.setFont(self.win.minecraftFont)
+        self.secondRewardTextTitle.setFont(self.win.getFont())
         self.secondRewardTextTitle.adjustSize()
         self.secondRewardTextTitle.setStyleSheet(self.win.themeStyle.deliveryTextTitleStyle)
         self.secondRewardTextTitle.setGeometry(15, 47, 220, 40)
 
         self.secondRewardTextSmall = QLabel("", self)
-        self.secondRewardTextSmall.setFont(self.win.minecraftFont)
+        self.secondRewardTextSmall.setFont(self.win.getFont())
         self.secondRewardTextSmall.adjustSize()
         self.secondRewardTextSmall.setStyleSheet(self.win.themeStyle.deliveryTextSmallStyle)
         self.secondRewardTextSmall.setGeometry(15, 65, 220, 40)
@@ -160,13 +160,13 @@ class Rewards(QWidget):
 
 
         self.thirdRewardTextTitle = QLabel("", self)
-        self.thirdRewardTextTitle.setFont(self.win.minecraftFont)
+        self.thirdRewardTextTitle.setFont(self.win.getFont())
         self.thirdRewardTextTitle.adjustSize()
         self.thirdRewardTextTitle.setStyleSheet(self.win.themeStyle.deliveryTextTitleStyle)
         self.thirdRewardTextTitle.setGeometry(15, 92, 220, 40)
 
         self.thirdRewardTextSmall = QLabel("", self)
-        self.thirdRewardTextSmall.setFont(self.win.minecraftFont)
+        self.thirdRewardTextSmall.setFont(self.win.getFont())
         self.thirdRewardTextSmall.adjustSize()
         self.thirdRewardTextSmall.setStyleSheet(self.win.themeStyle.deliveryTextSmallStyle)
         self.thirdRewardTextSmall.setGeometry(15, 110, 220, 40)
@@ -189,7 +189,7 @@ class Rewards(QWidget):
         title = QLabel("Daily Delivery", self)
         title.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
         title.adjustSize()
-        title.setFont(self.win.minecraftFont)
+        title.setFont(self.win.getFont())
         title.move(5, self.win.size().height()-70)
 
         self.SIGNALS = WidgetSignals()
