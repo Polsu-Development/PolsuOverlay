@@ -24,6 +24,7 @@ jobs:
       - name: Check version
         id: check_version
         run: |
+          ls
           if ((git diff --name-only HEAD~1 HEAD) -match 'version\.rc|__init__\.py') {
             echo "::set-output name=version_changed::true"
           } else {
