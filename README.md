@@ -56,7 +56,11 @@ Then you just need to head over to the settings (click the Polsu logo) and choos
 - Shows if players are nicked
 - Automatically claim your daily reward
 - View your opponent’s quickbuy
-- Highly customisable, whether it’s comparing stats with external players or changing the look of the interface. Craft custom themes in minutes.
+- Highly customisable, change the look of the interface. Craft custom themes, you can change:
+    - fonts
+    - colors
+    - icons
+    - images
 - You can easily know if a player is good or not since the player gets highlighted
 - Shows player heads, stars, name, winstreak, fkdr, finals, wlr, wins, bblr, beds and index stats
 - You can manually add a plyer to the overlay by doing `/msg +<PLAYER>` or `/w +<PLAYER>` in game
@@ -78,11 +82,13 @@ Then you just need to head over to the settings (click the Polsu logo) and choos
 - Discord Rich Presence
 - Customizable window opacity, size & opacity
 - Custom logs path
+- Blacklist System
+    - Local blacklists (unlimited)
+    - Polsu blacklist
 
 ## 🆕 Next Features
 - Shows stats of the player who mentioned you in the lobby  
 - Keybinds  
-- Blacklist system (custom tag, report button,...)  
 
 ## 🐛 Known Bugs
 *None for the moment.*
@@ -151,9 +157,11 @@ By becoming a premium user, you not only gain our gratitude, but you also get ac
 This overlay was entirely made & designed by [Polsulpicien](https://github.com/Polsulpicien).
 
 Special thanks to:
-- [Zickles](https://github.com/Zickles)
-- [phiwijo](https://github.com/phiwijo)
-for adding a linux support to the overlay.
+- [Zickles](https://github.com/Zickles)  
+- [phiwijo](https://github.com/phiwijo)  
+for adding a linux support to the overlay.  
+- [Dueel](https://github.com/Dueel)  
+for adding support for custom fonts.  
 
 
 ## 📚 Libraries

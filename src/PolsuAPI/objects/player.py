@@ -31,6 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
+from ...components.blacklist import LocalBlacklisted
 from ...utils.constants import TAGS
 
 
@@ -323,6 +324,7 @@ class Player:
 
         self._bedwars = Bedwars(data.get('stats').get('Bedwars'))
         self._blacklisted = Blacklisted(data.get('blacklisted'))
+        self._local = None
 
 
     @property
@@ -429,6 +431,22 @@ class Player:
         The Player blacklist status
         """
         return self._blacklisted
+    
+
+    @property
+    def local(self) -> LocalBlacklisted:
+        """
+        The Player blacklist status
+        """
+        return self._local
+    
+
+    @local.setter
+    def local(self, value: LocalBlacklisted) -> None:
+        """
+        Set the Player local blacklist status
+        """
+        self._local = value
 
     
     def __repr__(self) -> str:

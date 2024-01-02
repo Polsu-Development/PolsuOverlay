@@ -41,7 +41,13 @@
     "table": {
         "color": "white",
         "border": "white",
-        "highlight": "#CC5490FF"
+        "highlight": "#CC5490FF",
+        "tooltip": {
+            "color": "white",
+            "border": "white",
+            "border-radius": "4px",
+            "background": "#4e63a2"
+        }
     },
     "scrollBar": {
         "color": "#4e63a2",

@@ -32,14 +32,11 @@
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
 from src import DEV_MODE
-from src.updater import Updater
 from src.overlay import Overlay
 from src.components.logger import Logger
-from src.utils.path import resource_path
 
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 
 
@@ -47,40 +44,6 @@ import sys
 import os
 import traceback
 import datetime
-
-
-# if getattr(sys, 'frozen', False):
-#     import pyi_splash
-
-
-def run(window: Updater, logger: Logger) -> None:
-    """
-    Run the overlay, depending on the value of the Updater window
-    
-    :param window: The Updater window
-    :param logger: The logger
-    """
-    if window.value:
-        window.close()
-        try:
-            Overlay(logger).show()
-        except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
-    else:
-        window.close()
 
 
 if __name__ == '__main__':
@@ -100,16 +63,30 @@ if __name__ == '__main__':
     logger.info("-----------------------------------------------------------------------------------------------------")
     logger.info("Starting Polsu Overlay...")
 
-    app = QApplication(sys.argv)
 
-    try:
-        # if getattr(sys, 'frozen', False):
-        #     pyi_splash.close()
+    # DEVELOPMENT MODE
+    # 
+    # This isn't designed to be used by anyone other than developers.
+    # If you are not a developer, please download the latest release from https://overlay.polsu.xyz/download
+    #
+    # > The development bypasses the updater, and runs the overlay directly.
+    # > The development version won't send login and logout attempts to the API.
 
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
+    if DEV_MODE:
+        logger.warning("You are running the overlay in development mode! This is not recommended, as it may cause issues.")
+        logger.warning("If you are not a developer, please download the latest release from https://overlay.polsu.xyz/download")
 
-    sys.exit(app.exec_())
+        app = QApplication(sys.argv)
+
+        try:
+            Overlay(logger).show()
+        except:
+            logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
+
+        sys.exit(app.exec_())
+    else:
+        logger.critical("You are running the development version of the overlay! However, you are not in development mode.")
+
+        print("You are running the development version of the overlay! However, you are not in development mode.")
+
+        sys.exit(1)

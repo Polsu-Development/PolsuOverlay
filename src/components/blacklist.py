@@ -31,85 +31,162 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src import DEV_MODE
-from src.updater import Updater
-from src.overlay import Overlay
-from src.components.logger import Logger
-from src.utils.path import resource_path
-
-
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
-
-
-import sys
 import os
-import traceback
-import datetime
 
 
-# if getattr(sys, 'frozen', False):
-#     import pyi_splash
-
-
-def run(window: Updater, logger: Logger) -> None:
+class PlayerBlacklist:
     """
-    Run the overlay, depending on the value of the Updater window
+    A class representing a Player Blacklist
+    """
+    def __init__(self, player: str, reason: str) -> None:
+        """
+        Initialise the class
+        
+        :param player: The player
+        :param reason: The reason
+        """
+        self._player = player
+        self._reason = reason
+
+
+    @property
+    def player(self) -> str:
+        """
+        Get the player
+        """
+        return self._player
     
-    :param window: The Updater window
-    :param logger: The logger
+    @property
+    def reason(self) -> str:
+        """
+        Get the reason
+        """
+        return self._reason
+
+
+class LocalBlacklisted:
     """
-    if window.value:
-        window.close()
-        try:
-            Overlay(logger).show()
-        except:
-            logger.critical(f"An error occurred while running the overlay!\n\nTraceback: {traceback.format_exc()}")
-
-            errorWindow = QMessageBox()
-            errorWindow.setWindowTitle("An error occurred!")
-            errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
-            errorWindow.setIcon(QMessageBox.Critical)
-            errorWindow.setText("Something went wrong while running the overlay!\nPlease report this issue on GitHub or our Discord server.\nhttps://discord.polsu.xyz")
-            errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
-            errorWindow.setDetailedText(traceback.format_exc())
-            errorWindow.setFocus()
-            errorWindow.exec_()
-    elif not window.value:
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
-    else:
-        window.close()
+    A class representing a Hypixel Player
+    """
+    def __init__(self, status: bool, reason: str, blacklist: str) -> None:
+        """
+        Initialise the class
+        
+        :param status: Whether the Player is blacklisted or not
+        :param reason: The Player blacklist reason
+        :param blacklist: The blacklist name
+        """
+        self._status = status
+        self._reason = reason
+        self._blacklist = blacklist
 
 
-if __name__ == '__main__':
-    # DO NOT REMOVE THE FOLLOWING LINES!
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    #
-    # This is a fix for the DPI scaling on Windows
-    # Removing this might break the overlay window.
+    @property
+    def status(self) -> bool:
+        """
+        Get the Player blacklist status
+        
+        :return: The Player blacklist status
+        """
+        return self._status
 
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info(f"OS: {sys.platform}")
-    logger.info(f"Running in: {'Development' if DEV_MODE else 'Production'} mode")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
+    @property
+    def reason(self) -> str:
+        """
+        Get the Player blacklist reason
+        
+        :return: The Player blacklist reason
+        """
+        return self._reason
 
-    app = QApplication(sys.argv)
+    @property
+    def blacklist(self) -> str:
+        """
+        Get the blacklist name
+        
+        :return: The blacklist name
+        """
+        return self._blacklist
 
-    try:
-        # if getattr(sys, 'frozen', False):
-        #     pyi_splash.close()
 
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
+class Blacklist:
+    """
+    A class representing the overlay local blacklist(s)
+    """
+    def __init__(self, win) -> None:
+        """
+        Initialise the class
+        
+        :param win: The Overlay window
+        """
+        self.win = win
 
-    sys.exit(app.exec_())
+        self.blacklist: dict[list[PlayerBlacklist]] = {}
+
+        self.loadBlacklist()
+
+
+    def loadBlacklist(self) -> None:
+        """
+        Load the local blacklist(s)
+        """
+        for file in os.listdir(self.win.blacklistConfig):
+            if file.endswith(".polsu"):
+                filename = file.replace(".polsu", "")
+
+                file_blacklist = []
+
+                try:
+                    with open(os.path.join(self.win.blacklistConfig, file), "r") as f:
+                        data = f.read().split("\n")
+
+                        for line in data:
+                            if ";" in line:
+                                player, reason = line.split(";")
+                            else:
+                                player, reason = line, None
+
+                            if player != "":
+                                if "-" in player:
+                                    player = player.replace("-", " ")
+
+                                if len(player) > 32 or len(player) < 32 and len(player) > 16:
+                                    self.win.logger.warning(f"Invalid player: {player}, skipping...")
+                                else:
+                                    file_blacklist.append(PlayerBlacklist(player, reason))
+
+                    self.blacklist[filename] = file_blacklist
+                except:
+                    self.win.logger.warning(f"Invalid blacklist file: {file}, skipping...")
+
+
+    def getBlacklists(self) -> list[str]:
+        """
+        Get the local blacklist(s)
+        
+        :return: The local blacklist(s)
+        """
+        return list(self.blacklist.keys())
+    
+
+    def findPlayer(self, player) -> LocalBlacklisted:
+        """
+        Find a player in the local blacklist(s)
+        
+        :param player: The player
+        :return: The player data
+        """
+        for blacklist in self.blacklist:
+            for blacklistedPlayer in self.blacklist[blacklist]:
+                if blacklistedPlayer.player == player.uuid or blacklistedPlayer.player == player.username  or blacklistedPlayer.player.lower() == player.username.lower():
+                    return LocalBlacklisted(
+                        status=True,
+                        reason=blacklistedPlayer.reason,
+                        blacklist=blacklist
+                    )
+
+        return LocalBlacklisted(
+            status=False,
+            reason="",
+            blacklist=None
+        )

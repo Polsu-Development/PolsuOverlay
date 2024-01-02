@@ -31,13 +31,14 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src import __header__
+from src import __header__, DEV_MODE
 from ..utils.path import resource_path
 
 from .objects.key import APIKey
 from .objects.player import Player
 from .objects.user import User
 from .exception import APIError, InvalidAPIKeyError, NotLinkedError
+
 
 from aiohttp import ClientSession, ContentTypeError
 from json import load
@@ -62,6 +63,9 @@ class Polsu:
         :return: An instance of APIKey
         """
         try:
+            if DEV_MODE:
+                self.logger.info(f"GET /api/key?key={self.key}")
+
             async with ClientSession() as session:
                 async with session.get(f"{self.api}/api/key?key={self.key}", headers=__header__) as response:
                     json = await response.json()
@@ -107,6 +111,9 @@ class Polsu:
     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n
         """
         try:
+            if DEV_MODE:
+                self.logger.info(f"GET /internal/overlay/login?key={self.key}&overlay=true")
+
             async with ClientSession() as session:
                 async with session.get(f"{self.api}/internal/overlay/login?key={self.key}&overlay=true", headers=__header__) as response:
                     json = await response.json()
@@ -154,6 +161,9 @@ class Polsu:
     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n
         """
         try:
+            if DEV_MODE:
+                self.logger.info(f"POST /internal/overlay/logout?key={self.key}&overlay=true")
+
             async with ClientSession() as session:
                 async with session.post(f"{self.api}/internal/overlay/logout?key={self.key}&timestamp={timestamp}&overlay=true", headers=__header__):
                     pass
@@ -191,9 +201,16 @@ class Polsu:
     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n
         """
         try:
+            if DEV_MODE:
+                self.logger.info(f"GET /internal/overlay/player?key={self.key}&player={player}&overlay=true")
+
             async with ClientSession() as session:
                 async with session.get(f"{self.api}/internal/overlay/player?key={self.key}&player={player}&overlay=true", headers=__header__) as response:
                     json = await response.json()
+
+                    if DEV_MODE:
+                        self.logger.debug(f"[{response.status}] {player} > {json}")
+
                     if response.status == 403:
                         self.logger.error(f"An error occurred while logging in: {response.status}")
                         raise InvalidAPIKeyError(self.key)
@@ -249,6 +266,9 @@ class Polsu:
         }
 
         try:
+            if DEV_MODE:
+                self.logger.info(f"POST /internal/overlay/player?key={self.key}&overlay=true")
+
             async with ClientSession() as session:
                 async with session.post(f"{self.api}/internal/overlay/player?key={self.key}&overlay=true", headers=__header__, json=json) as response:
                     json = await response.json()
@@ -283,8 +303,11 @@ class Polsu:
         :param uuid: The Player uuid
         """
         try:
+            if DEV_MODE:
+                self.logger.info(f"GET /polsu/bedwars/quickbuy?key={self.key}&uuid={uuid}")
+
             async with ClientSession() as session:
-                async with session.get(f"https://api.polsu.xyz/polsu/bedwars/quickbuy?key={self.key}&uuid={uuid}", headers=__header__) as response:
+                async with session.get(f"{self.api}/polsu/bedwars/quickbuy?key={self.key}&uuid={uuid}", headers=__header__) as response:
                     json = await response.json()
                     if response.status == 403:
                         self.logger.error(f"An error occurred while logging in: {response.status}")
@@ -311,6 +334,9 @@ class Polsu:
         :param player: The Player
         """
         try:
+            if DEV_MODE:
+                self.logger.info(f"GET skins.mcstats.com/face/{player.uuid}")
+
             async with ClientSession() as session:
                 async with session.get(f"https://skins.mcstats.com/face/{player.uuid}", headers=__header__) as response:
                     if response.status == 200:

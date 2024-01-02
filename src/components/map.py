@@ -41,9 +41,9 @@ from PyQt5.QtGui import QIcon
 import asyncio
 
 
-def openRewards(win) -> None:
+def openMap(win) -> None:
     """
-    Open the rewards window
+    Open the Map window
     
     :param win: The Overlay window
     """
@@ -55,17 +55,17 @@ def openRewards(win) -> None:
             win.searchBox.setEnabled(False)
             win.searchIcon.setEnabled(False)
 
-            win.rewards = Rewards(win)
+            win.rewards = Map(win)
             win.rewards.move(0, 34)
             win.rewards.resize(win.width(), win.height())
-            win.rewards.SIGNALS.CLOSE.connect(lambda: closeRewards(win))
+            win.rewards.SIGNALS.CLOSE.connect(lambda: closeMap(win))
             win._rewardsOpened = True
             win.rewards.show()
         else:
-            closeRewards(win)
+            closeMap(win)
     
 
-def closeRewards(win) -> None:
+def closeMap(win) -> None:
     """
     Close the rewards window
     
@@ -86,17 +86,17 @@ class WidgetSignals(QObject):
     CLOSE = pyqtSignal()
 
 
-class Rewards(QWidget):
+class Map(QWidget):
     """
-    Rewards is a QWidget that contains all the rewards
+    Map is a QWidget that contains all the map information
     """
     def __init__(self, window) -> None:
         """
-        Initialise the Rewards widget
+        Initialise the Map widget
         
         :param window: The Overlay window
         """
-        super(Rewards, self).__init__(window)
+        super(Map, self).__init__(window)
         self.win = window
         
 
@@ -204,63 +204,6 @@ class Rewards(QWidget):
             self.firstRewardButton.setEnabled(False)
             self.secondRewardButton.setEnabled(False)
             self.thirdRewardButton.setEnabled(False)
-
-
-    def claim(self, id: int) -> None:
-        """
-        Claim the reward
-        
-        :param id: The reward ID
-        """
-        if self.win.reward:
-            try:
-                reward = asyncio.run(self.win.reward.claim(id))
-
-                closeRewards(self.win)
-                title = reward.title()
-                self.win.notif.send(
-                    title="Hypixel Daily Delivery Reward",
-                    message=f"Successfully claimed: {title}{' - ' if title != '' else ''}{reward.small()}"
-                )
-                self.win.reward = None
-            except:
-                self.win.notif.send(
-                    title="Hypixel Daily Delivery Reward",
-                    message="An error occured while claiming the reward"
-                )
-    
-
-    def updateWindow(self) -> None:
-        """
-        Update the window
-        """
-        self.firstRewardButton.setEnabled(True)
-        self.secondRewardButton.setEnabled(True)
-        self.thirdRewardButton.setEnabled(True)
-
-        self.firstRewardTextTitle.setText(self.win.reward.rewards[0].title())
-        self.firstRewardTextSmall.setText(self.win.reward.rewards[0].small())
-        self.firstRewardIcon.setIcon(QIcon(self.win.getIconPath(self.win.reward.rewards[0].rarity.lower())))
-        self.firstRewardIcon.setToolTip(self.win.reward.rewards[0].rarity)
-        self.firstRewardTextTitle.update()
-        self.firstRewardTextSmall.update()
-        self.firstRewardIcon.update()
-
-        self.secondRewardTextTitle.setText(self.win.reward.rewards[1].title())
-        self.secondRewardTextSmall.setText(self.win.reward.rewards[1].small())
-        self.secondRewardIcon.setIcon(QIcon(self.win.getIconPath(self.win.reward.rewards[1].rarity.lower())))
-        self.secondRewardIcon.setToolTip(self.win.reward.rewards[1].rarity)
-        self.secondRewardTextTitle.update()
-        self.secondRewardTextSmall.update()
-        self.secondRewardIcon.update()
-
-        self.thirdRewardTextTitle.setText(self.win.reward.rewards[2].title())
-        self.thirdRewardTextSmall.setText(self.win.reward.rewards[2].small())
-        self.thirdRewardIcon.setIcon(QIcon(self.win.getIconPath(self.win.reward.rewards[2].rarity.lower())))
-        self.thirdRewardIcon.setToolTip(self.win.reward.rewards[2].rarity)
-        self.thirdRewardTextTitle.update()
-        self.thirdRewardTextSmall.update()
-        self.thirdRewardIcon.update()
         
 
     def paintEvent(self, event) -> None:
