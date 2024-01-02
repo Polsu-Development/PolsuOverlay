@@ -51,10 +51,10 @@ __header__ = {
 
 # Check if the module is executable or not
 if not __module__.endswith("PolsuOverlay"):
-    __module__ = __module__ + "\\"
+    __module__ = __module__ + "/"
     EXECUTABLE = True
 else:
-    __module__ = __module__.replace("/", "\\")
+    __module__ = __module__
     EXECUTABLE = False
 
 LINUX = True if os.name == 'posix' else False
