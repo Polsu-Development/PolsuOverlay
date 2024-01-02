@@ -396,6 +396,24 @@ class Overlay(FramelessMainWindow):
             else:
                 return f"{self.pathAssets}/icons/{item}.svg"
 
+    def getFont(self, path: str = None) -> QFont:
+        """
+        Get the font
+
+        :param path: The path of the theme
+        :return: The font
+        """
+        if not path:
+            path = self.themeStyle.path
+            print(path)
+
+        if os.path.exists(f"{path}/font.ttf"):
+            print(f"{path}/font.ttf")
+            return QFont(QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(f"{path}/font.ttf"))[0])
+        else:
+            print(f"{self.pathAssets}/fonts/minecraft-font.ttf")
+            return QFont(QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(f"{self.pathAssets}/fonts/minecraft-font.ttf"))[0])
+
 
     def changeTheme(self, value, update: bool = True):
         if update:

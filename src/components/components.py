@@ -146,6 +146,7 @@ def updateComponents(win) -> None:
     win.menuButton.update()
 
     win.overlayTitle.setStyleSheet(win.themeStyle.titleStyle)
+    win.overlayTitle.setFont(win.getFont(""))
     win.overlayTitle.update()
 
     win.searchIcon.setIcon(QIcon(win.getIconPath("search")))
