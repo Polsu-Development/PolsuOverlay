@@ -516,7 +516,7 @@ class Settings(QWidget):
         self.blacklistButton.setToolTip("Browse the local blacklists")
         self.blacklistButton.setGeometry(366, 240, 24, 24)
         self.blacklistButton.setIconSize(QSize(24, 24))
-        self.blacklistButton.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
+        self.blacklistButton.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {padding-left: 1px; padding-top: 1px}")
         self.blacklistButton.clicked.connect(self.openLocalBlacklistFile)
 
 

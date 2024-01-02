@@ -128,7 +128,7 @@ class Rewards(QWidget):
         self.firstRewardIcon = QPushButton(self)
         self.firstRewardIcon.setToolTip('Rarity')
         self.firstRewardIcon.setIconSize(QSize(15, 15))
-        self.firstRewardIcon.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
+        self.firstRewardIcon.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {padding-left: 1px; padding-top: 1px}")
         self.firstRewardIcon.setGeometry(215, 22, 20, 20)
 
 
@@ -155,7 +155,7 @@ class Rewards(QWidget):
         self.secondRewardIcon = QPushButton(self)
         self.secondRewardIcon.setToolTip('Rarity')
         self.secondRewardIcon.setIconSize(QSize(15, 15))
-        self.secondRewardIcon.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
+        self.secondRewardIcon.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {padding-left: 1px; padding-top: 1px}")
         self.secondRewardIcon.setGeometry(215, 67, 20, 20)
 
 
@@ -182,7 +182,7 @@ class Rewards(QWidget):
         self.thirdRewardIcon = QPushButton(self)
         self.thirdRewardIcon.setToolTip('Rarity')
         self.thirdRewardIcon.setIconSize(QSize(15, 15))
-        self.thirdRewardIcon.setStyleSheet("QPushButton::hover {padding-left: 1px; padding-top: 1px}")
+        self.thirdRewardIcon.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {padding-left: 1px; padding-top: 1px}")
         self.thirdRewardIcon.setGeometry(215, 112, 20, 20)
 
 
