@@ -136,6 +136,8 @@ class Presence:
     def setPlayer(self, player) -> None:
         """
         Set the player
+
+        :param player: The player
         """
         self.player = player
         self.update()

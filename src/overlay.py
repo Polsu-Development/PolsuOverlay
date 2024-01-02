@@ -32,7 +32,7 @@
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
 from .PolsuAPI import User
-from src import Menu, Presence, Notif, Settings, Logs, Player, loadThemes, openSettings, __version__
+from src import Menu, Notif, Settings, Logs, Player, loadThemes, openSettings, __version__, DEV_MODE
 from .components.theme import ThemeStyle
 from .components.logger import Logger
 from .components.rpc import openRPC, startRPC
@@ -45,7 +45,7 @@ from .utils.colours import setColor
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt, QRectF, QEvent, QTimer, QVariantAnimation, QAbstractAnimation, QEventLoop
-from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFontDatabase, QFont
+from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFontDatabase, QFont, QPixmap
 from pyqt_frameless_window import FramelessMainWindow
 
 
@@ -96,6 +96,11 @@ class Overlay(FramelessMainWindow):
         self.win = False
         self.reward = None
         self.auto_minimize = False
+        self.RPC = None
+
+
+        if DEV_MODE:
+            self.logger.warning("You are running the overlay in development mode!")
         
 
         # Assets
@@ -216,9 +221,10 @@ class Overlay(FramelessMainWindow):
         
         :param user: The user
         """
-        self.logger.info(f"Logged in as: {user.username} ({user.uuid})")
-        self.user = user
-        self.player.loadPlayer(user.username, user.uuid)
+        if user:
+            self.logger.info(f"Logged in as: {user.username} ({user.uuid})")
+            self.user = user
+            self.player.loadPlayer(user.username, user.uuid)
 
 
     def showGameTime(self):
@@ -227,13 +233,14 @@ class Overlay(FramelessMainWindow):
             if self.configRPC and self.RPC is not None and not isinstance(self.RPC, int):
                 try:
                     self.RPC.update()
-                except RuntimeError:
+                except (RuntimeWarning, RuntimeError):
                     pass
                 except pypresence.exceptions.PipeClosed:
                     # Try to reconnect
                     self.RPC.disconnect()
                     startRPC(self)
-                except:
+                except Exception as e:
+                    print(e)
                     self.RPC.disconnect()
                     self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
                     self.RPC = None
@@ -247,9 +254,13 @@ class Overlay(FramelessMainWindow):
                 openSettings(self)
         else:
             if not self.login:
-                self.threads["login"] = LoginWorker(self.configAPIKey)
-                self.threads["login"].ended.connect(self.loginEnded)
-                self.threads["login"].start()
+                try:
+                    self.threads["login"] = LoginWorker(self.configAPIKey, self.logger)
+                    self.threads["login"].ended.connect(self.loginEnded)
+                    self.threads["login"].start()
+                except:
+                    self.logger.error(f"An error occurred while logging in!\nTraceback: {traceback.format_exc()}")
+
                 self.login = True
 
         self.overlayTimer += 1

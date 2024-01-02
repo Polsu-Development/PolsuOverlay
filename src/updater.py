@@ -177,6 +177,12 @@ class Updater(FramelessDialog):
 
                     self.value = True
                     self.ended.emit(self, self.logger)
+            except requests.exceptions.ConnectionError:
+                self.logger.warning(f"An error occurred while updating the overlay! No internet connection!")
+                self.label.setText(f"Can't check for updates. Please try again later.")
+
+                self.value = False
+                self.ended.emit(self, self.logger)
             except:
                 self.logger.error(f"An error occurred while updating the overlay!\n\nTracebak: {traceback.format_exc()}")
                 self.label.setText(f"Someting went wrong... Please try again later.")

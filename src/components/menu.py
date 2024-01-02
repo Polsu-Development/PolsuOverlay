@@ -602,7 +602,8 @@ class Settings(QWidget):
                 message="Your in game status is now being displayed."
             )
 
-        self.win.RPC.setConfigStatus(self.win.configStatus)
+        if self.win.RPC and not isinstance(self.win.RPC, int):
+            self.win.RPC.setConfigStatus(self.win.configStatus)
 
 
     def RPCUpdate(self) -> None:
