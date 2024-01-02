@@ -38,7 +38,7 @@ from .sorting import TableSortingItem
 
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QColor
 
 
 import asyncio
@@ -119,6 +119,13 @@ class SkinIcon():
             if _item and _item.value == player.username:
                 self.table.setCellWidget(row, 0, button)
                 self.table.setItem(row, 0, TableSortingItem(count))
+
+                if player.blacklisted.status or player.local.status:
+                    color = QColor("#FF0000")
+                    color.setAlpha(50)
+                    
+                    item = self.table.item(row, 0)
+                    item.setBackground(color)
 
 
 class Worker(QThread):

@@ -338,8 +338,14 @@ class ThemeStyle:
                 height: 12px;
                 width: 12px;
             }}
+            QToolTip {{ 
+                background-color: {self.config.get('table', {}).get('tooltip', {}).get('background', '#404040')}; 
+                color: {self.config.get('table', {}).get('tooltip', {}).get('color', 'white')}; 
+                border: 1px solid {self.config.get('table', {}).get('tooltip', {}).get('border', 'white')};
+                border-radius: {self.config.get('table', {}).get('tooltip', {}).get('border-radius', '8px')};
+            }}
         """
-         
+
     def getVScrollBarStyle(self) -> str:
         """
         Get the vertical scrollbar style

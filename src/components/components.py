@@ -183,6 +183,10 @@ def updateComponents(win) -> None:
             item = win.table.cellWidget(i, j)
             if type(item) == QPushButton and item.property("name") == "dots":
                 item.setIcon(QIcon(win.getIconPath("dots")))
+            if type(item) == QPushButton and item.property("name") == "blacklist":
+                item.setIcon(QIcon(win.getIconPath("blacklist")))
+            if type(item) == QPushButton and item.property("name") == "global-blacklist":
+                item.setIcon(QIcon(win.getIconPath("global-blacklist")))
         
     win.table.update()
 

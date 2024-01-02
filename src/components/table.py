@@ -62,7 +62,7 @@ class Table(QTableWidget):
         self.win = window
 
         # Header aka Columns title
-        self.header=['⠀', '˅ 0', 'Player⠀⠀⠀⠀⠀⠀ ', 'TAG', 'WS', 'FKDR', 'Finals', 'WLR', ' Wins', 'BBLR', 'Beds', 'Requeue', '⠀']
+        self.header=['⠀', '˅ 0', 'Player⠀⠀⠀⠀⠀⠀ ', 'TAG', 'WS', 'FKDR', 'Finals', 'WLR', ' Wins', 'BBLR', 'Beds', 'Requeue', '⠀', '⠀', '⠀']
 
         # Settings
         self.setSelectionMode(QAbstractItemView.NoSelection)
@@ -119,8 +119,12 @@ class Table(QTableWidget):
         self.horizontalHeader().setSectionResizeMode(9, QHeaderView.Stretch)
         self.horizontalHeader().setSectionResizeMode(10, QHeaderView.ResizeToContents)
         self.horizontalHeader().setSectionResizeMode(11, QHeaderView.Stretch)
-        self.horizontalHeader().setSectionResizeMode(12, QHeaderView.ResizeToContents)
+        self.horizontalHeader().setSectionResizeMode(12, QHeaderView.Fixed)
         self.horizontalHeader().resizeSection(12, 25)
+        self.horizontalHeader().setSectionResizeMode(13, QHeaderView.Fixed)
+        self.horizontalHeader().resizeSection(13, 25)
+        self.horizontalHeader().setSectionResizeMode(14, QHeaderView.Fixed)
+        self.horizontalHeader().resizeSection(13, 25)
 
         self.verticalHeader().setDefaultSectionSize(round((16 * QFontMetrics(self.win.minecraftFont).height()) / 100))
 
@@ -237,10 +241,42 @@ class Table(QTableWidget):
             self.setCellWidget(self.count, 12, button)
             self.setItem(self.count, 12, TableSortingItem(player.uuid))
 
+
+            if player.blacklisted.status:
+                button = QPushButton(self)
+                button.setIcon(QIcon(self.win.getIconPath("global-blacklist")))
+                button.setToolTip(f"<b>Polsu Blacklisted</b><br><br><b>Reason:</b><br>{player.blacklisted.reason}")
+                button.setProperty("name", "global-blacklist")
+                self.setCellWidget(self.count, 13, button)
+                self.setItem(self.count, 13, TableSortingItem(1))
+            else:
+                button = QPushButton(self)
+                self.setCellWidget(self.count, 13, button)
+                self.setItem(self.count, 13, TableSortingItem(0))
+
+
+            # Load the local blacklist
+            if not player.local:
+                player.local = self.win.blacklist.findPlayer(player)
+
+
+            if player.local.status:
+                button = QPushButton(self)
+                button.setIcon(QIcon(self.win.getIconPath("blacklist")))
+                button.setToolTip(f"<b>Local Blacklisted</b><br><br><b>Reason:</b><br>{player.local.reason}<br><br><b>Blacklist:</b><br>{player.local.blacklist}")
+                button.setProperty("name", "blacklist")
+                self.setCellWidget(self.count, 14, button)
+                self.setItem(self.count, 14, TableSortingItem(1))
+            else:
+                button = QPushButton(self)
+                self.setCellWidget(self.count, 14, button)
+                self.setItem(self.count, 14, TableSortingItem(0))
+
+
             self.skin.loadSkin(player, self.count)
 
 
-            if player.blacklisted.status:
+            if player.blacklisted.status or player.local.status:
                 color = QColor("#FF0000")
                 color.setAlpha(50)
                 for j in range(self.columnCount()):
