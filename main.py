@@ -31,6 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
+from src import DEV_MODE
 from src.updater import Updater
 from src.overlay import Overlay
 from src.components.logger import Logger
@@ -94,6 +95,8 @@ if __name__ == '__main__':
     logger.info("-----------------------------------------------------------------------------------------------------")
     logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
     logger.info(f"Python version: {sys.version}")
+    logger.info(f"OS: {sys.platform}")
+    logger.info(f"Running in: {'Development' if DEV_MODE else 'Production'} mode")
     logger.info("-----------------------------------------------------------------------------------------------------")
     logger.info("Starting Polsu Overlay...")
 
