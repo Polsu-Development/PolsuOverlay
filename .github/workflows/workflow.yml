@@ -21,14 +21,14 @@ jobs:
         with:
           python-version: 3.11
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt pyinstaller
-
       - name: Check for file changes
         id: file_changes
         run: |
           git fetch origin
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
 
       - name: Build project
         run: |
