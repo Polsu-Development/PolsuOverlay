@@ -30,7 +30,7 @@ jobs:
           echo "::set-output name=files::$(cat changed_files.txt)"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt pyinstaller
+        run: pip install pyinstaller
 
       - name: Build project
         run: |
