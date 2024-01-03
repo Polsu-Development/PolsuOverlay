@@ -30,7 +30,7 @@ jobs:
           echo "files=$(cat changed_files.txt)" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
-        run: pip install pyinstaller
+        run: pip install -r requirements.txt pyinstaller
 
       - name: Build project
         id: build
