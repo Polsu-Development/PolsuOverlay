@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Check for file changes
+        id: file_changes
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} > changed_files.txt
+          echo "::set-output name=files::$(cat changed_files.txt)"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build project
+        run: |
+          if (Get-Content changed_files.txt | Select-String -Pattern "version.rc|src/init.py") {
+            pyinstaller --noconfirm build.spec
+          } else {
+            echo "No changes in version.rc or src/init.py. Skipping build."
+          }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Polsu Overlay
+          path: dist/Polsu Overlay.exe
