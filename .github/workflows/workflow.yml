@@ -36,11 +36,14 @@ jobs:
         run: |
           if (Get-Content changed_files.txt | Select-String -Pattern "version.rc|src/init.py") {
             pyinstaller --noconfirm build.spec
+            echo "::set-output name=build::true"
           } else {
             echo "No changes in version.rc or src/init.py. Skipping build."
+            echo "::set-output name=build::false"
           }
 
       - name: Upload artifact
+        if: steps.build.outputs.build == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: Polsu Overlay
