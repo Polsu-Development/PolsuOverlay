@@ -74,6 +74,7 @@ class Menu(QWidget):
         # Background Button to close the Popup Menu
         self.close_menu = QPushButton("", self)
         self.close_menu.setGeometry(self.win.POPUPWIDTH, 2, self.win.width(), self.win.height())
+        self.close_menu.setStyleSheet("QPushButton {border: 0; background: transparent;}")
         self.close_menu.clicked.connect(self._onclose)
 
 
