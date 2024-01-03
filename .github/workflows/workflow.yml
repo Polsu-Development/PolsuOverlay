@@ -27,20 +27,24 @@ jobs:
         id: file_changes
         run: |
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }} > changed_files.txt
-          echo "::set-output name=files::$(cat changed_files.txt)"
+          echo "files=$(cat changed_files.txt)" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller
 
       - name: Build project
+        id: build
         run: |
           if (Get-Content changed_files.txt | Select-String -Pattern "version.rc|src/init.py") {
             pyinstaller --noconfirm build.spec
+            echo "build=true" >> $GITHUB_OUTPUT
           } else {
             echo "No changes in version.rc or src/init.py. Skipping build."
+            echo "build=false" >> $GITHUB_OUTPUT
           }
 
       - name: Upload artifact
+        if: steps.build.outputs.build == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: Polsu Overlay
