@@ -27,7 +27,7 @@ jobs:
         id: file_changes
         run: |
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }} > changed_files.txt
-          echo "::set-output name=files::$(cat changed_files.txt)"
+          echo "${{ steps.file_changes.outputs.files }}" >> $GITHUB_STATE
 
       - name: Install dependencies
         run: pip install pyinstaller
@@ -36,10 +36,10 @@ jobs:
         run: |
           if (Get-Content changed_files.txt | Select-String -Pattern "version.rc|src/init.py") {
             pyinstaller --noconfirm build.spec
-            echo "::set-output name=build::true"
+            echo "build=true" >> $GITHUB_STATE
           } else {
             echo "No changes in version.rc or src/init.py. Skipping build."
-            echo "::set-output name=build::false"
+            echo "build=false" >> $GITHUB_STATE
           }
 
       - name: Upload artifact
