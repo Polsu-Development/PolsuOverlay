@@ -13,20 +13,18 @@ class Plugin:
     The base plugin class
     """
     name = "Plugin"
+
     disabled = False
 
-    def __init__(
-        self,
-        logger: Logger,
-        blacklist: Type[TypeVar('PluginBlacklist')],
-        notification: Type[TypeVar('PluginNotification')],
-    ) -> None:
+    logger: Logger
+    blacklist: Type[TypeVar('PluginBlacklist')]
+    notification: Type[TypeVar('PluginNotification')]
+
+    def __init__(self) -> None:
         """
         Initialise the plugin
         """
-        self.logger = logger
-        self.blacklist = blacklist
-        self.notification = notification
+        pass
     
 
     def on_load(self) -> None:

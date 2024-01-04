@@ -95,15 +95,18 @@ class PluginCore:
                     else:
                         # Create the plugin
                         try:
-                            plugin: Plugin = plugin_class(**plugin_arguments)
-                            plugin.__name__ = plugin.name
+                            plugin_instance: Plugin = plugin_class(**plugin_arguments)
                         except TypeError:
                             self.logger.error(f"Invalid arguments for Plugin class of module: {module_name}")
                             continue
 
-                        if hasattr(plugin, "disabled") and plugin.disabled:
-                            self.logger.warning(f"Plugin: {plugin.__name__}, is disabled")
+                        if hasattr(plugin_instance, "disabled") and plugin_instance.disabled:
+                            self.logger.warning(f"Plugin: {plugin_instance.name}, is disabled")
                             continue
+                        else:
+                            combined_class = type("PolsuOverlayPlugin", (Plugin, plugin_class), {})
+                            plugin = combined_class()
+                            plugin.__name__ = plugin_instance.name
                         
                         self.plugins.append(plugin)
 
@@ -134,10 +137,10 @@ class PluginCore:
         :param *args: The arguments to pass to the method
         :param **kwargs: The keyword arguments to pass to the method
         """
+        self.logger.debug(f"Broadcasting method, {method}, to all plugins")
+
         for plugin in self.plugins:
-            if hasattr(plugin, method):
-                self.logger.debug(f"Broadcasting method {method} to plugin: {plugin.__name__}")
-                getattr(plugin, method)(*args, **kwargs)
+            self.send(plugin.__name__, method, *args, **kwargs)
 
     
     def send(self, plugin: str, method: str, *args, **kwargs) -> None:
@@ -152,10 +155,11 @@ class PluginCore:
         for p in self.plugins:
             if p.__name__ == plugin:
                 if hasattr(p, method):
-                    self.logger.debug(f"Sending method {method} to plugin: {plugin}")
-                    getattr(p, method)(*args, **kwargs)
-                else:
-                    self.logger.warning(f"Plugin: {plugin}, does not have method {method}!")
+                    self.logger.debug(f"Sending method, {method}, to plugin: {plugin}")
+                    try:
+                        getattr(p, method)(*args, **kwargs)
+                    except NotImplementedError:
+                        pass
                 break
         else:
             self.logger.warning(f"Plugin: {plugin}, does not exist!")
