@@ -190,3 +190,49 @@ class Blacklist:
             reason="",
             blacklist=None
         )
+
+
+    def addPlayer(self, player: str, reason: str, blacklist: str) -> None:
+        """
+        Add a player to the local blacklist(s)
+
+        :param player: The player
+        :param reason: The reason
+        :param blacklist: The blacklist
+        """
+        if blacklist not in self.blacklist:
+            self.blacklist[blacklist] = []
+
+        self.blacklist[blacklist].append(PlayerBlacklist(player, reason))
+
+        self.saveBlacklist(blacklist)
+
+
+    def removePlayer(self, player: str, blacklist: str) -> None:
+        """
+        Remove a player from the local blacklist(s)
+
+        :param player: The player
+        :param blacklist: The blacklist
+        """
+        if blacklist in self.blacklist:
+            for blacklistedPlayer in self.blacklist[blacklist]:
+                if blacklistedPlayer.player == player:
+                    self.blacklist[blacklist].remove(blacklistedPlayer)
+
+                    self.saveBlacklist(blacklist)
+                    break
+
+
+    def saveBlacklist(self, blacklist: str) -> None:
+        """
+        Save the local blacklist(s)
+
+        :param blacklist: The blacklist
+        """
+        with open(os.path.join(self.win.blacklistConfig, f"{blacklist}.polsu"), "w") as f:
+            for player in self.blacklist[blacklist]:
+                if player.reason is None:
+                    f.write(f"{player.player}\n")
+                else:
+                    f.write(f"{player.player};{player.reason}\n")

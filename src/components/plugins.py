@@ -1,10 +1,13 @@
-from ..utils.plugin import Plugin
+from ..plugins.plugin import Plugin
+from ..plugins.blacklist import PluginBlacklist
+from ..plugins.notification import PluginNotification
 
 
 import os
 import importlib.util
 
 from logging import Logger
+from typing import Type, TypeVar
 
 
 class PluginCore:
@@ -13,15 +16,19 @@ class PluginCore:
     """
     def __init__(
         self, 
-        logger: Logger
+        logger: Logger,
+        blacklist: PluginBlacklist,
+        notification: PluginNotification
     ) -> None:
         """
         Initialise the class
         
         :param logger: The logger
-        :param user: The user
+        :param blacklist: The blacklist
         """
         self.logger = logger
+        self.blacklist = blacklist
+        self.notification = notification
 
         self.plugins = []
 
@@ -53,30 +60,58 @@ class PluginCore:
                     # Check if the Plugin class has a valid constructor
                     constructor = getattr(plugin_class, "__init__", None)
                     if constructor is None or not hasattr(constructor, "__annotations__"):
-                        self.logger.warning(f"Invalid constructor signature in Plugin class of module {module_name}")
+                        self.logger.warning(f"Invalid constructor signature in Plugin class of module: {module_name}")
                         continue
 
                     arguments = {
-                        "logger": self.logger
+                        "logger": self.logger,
+                        "blacklist": self.blacklist,
+                        "notification": self.notification,
+                    }
+
+                    types = {
+                        "logger": Logger,
+                        "blacklist": Type[TypeVar('PluginBlacklist')],
+                        "notification": Type[TypeVar('PluginNotification')],
                     }
 
                     plugin_arguments = {}
 
                     # Get the arguments for the Plugin class
                     for arg_name, arg_type in constructor.__annotations__.items():
-                        if arg_name in arguments:
-                            plugin_arguments[arg_name] = arguments[arg_name]
+                        if arg_name not in ["self", "return"]:
+                            if arg_name in arguments:
+                                expected_type = types.get(arg_name)
+                                if expected_type is not None:
+                                    # Check if the string representation of types are equal
+                                    if str(arg_type) != str(expected_type):
+                                        self.logger.error(f"Invalid type for argument, {arg_name}, in Plugin class of module: {module_name}. Expected {expected_type}, got {arg_type}")
+                                        break
+                                    else:
+                                        plugin_arguments[arg_name] = arguments[arg_name]
+                                else:
+                                    self.logger.error(f"Unexpected argument, {arg_name}, in Plugin class of module: {module_name}")
+                                    break
+                    else:
+                        # Create the plugin
+                        try:
+                            plugin: Plugin = plugin_class(**plugin_arguments)
+                            plugin.__name__ = plugin.name
+                        except TypeError:
+                            self.logger.error(f"Invalid arguments for Plugin class of module: {module_name}")
+                            continue
 
-                    # Create the plugin
-                    plugin: Plugin = plugin_class(**plugin_arguments)
-                    plugin.__name__ = plugin.name
-                    self.plugins.append(plugin)
+                        if hasattr(plugin, "disabled") and plugin.disabled:
+                            self.logger.warning(f"Plugin: {plugin.__name__}, is disabled")
+                            continue
+                        
+                        self.plugins.append(plugin)
 
-                    # Call the on_load method
-                    self.logger.info(f"Loaded plugin {plugin.__name__}")
-                    self.send(plugin.__name__, "on_load")
+                        # Call the on_load method
+                        self.logger.info(f"Loaded plugin: {plugin.__name__}")
+                        self.send(plugin.__name__, "on_load")
                 else:
-                    self.logger.warning(f"No Plugin class found in module {module_name}")
+                    self.logger.warning(f"No Plugin class found in module: {module_name}")
 
 
     def unload_plugins(self) -> None:
@@ -84,7 +119,7 @@ class PluginCore:
         Unload all plugins
         """
         for plugin in self.plugins:
-            self.logger.info(f"Unloaded plugin {plugin.__name__}")
+            self.logger.info(f"Unloaded plugin: {plugin.__name__}")
 
             self.send(plugin.__name__, "on_unload")
 
@@ -101,8 +136,8 @@ class PluginCore:
         """
         for plugin in self.plugins:
             if hasattr(plugin, method):
+                self.logger.debug(f"Broadcasting method {method} to plugin: {plugin.__name__}")
                 getattr(plugin, method)(*args, **kwargs)
-                self.logger.debug(f"Broadcasted method {method} to plugin {plugin.__name__}")
 
     
     def send(self, plugin: str, method: str, *args, **kwargs) -> None:
@@ -117,10 +152,10 @@ class PluginCore:
         for p in self.plugins:
             if p.__name__ == plugin:
                 if hasattr(p, method):
+                    self.logger.debug(f"Sending method {method} to plugin: {plugin}")
                     getattr(p, method)(*args, **kwargs)
-                    self.logger.debug(f"Sent method {method} to plugin {plugin}")
                 else:
-                    self.logger.warning(f"Plugin {plugin} does not have method {method}!")
+                    self.logger.warning(f"Plugin: {plugin}, does not have method {method}!")
                 break
         else:
-            self.logger.warning(f"Plugin {plugin} does not exist!")
+            self.logger.warning(f"Plugin: {plugin}, does not exist!")

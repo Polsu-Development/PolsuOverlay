@@ -1,6 +1,10 @@
 from ..PolsuAPI import Player, User
 
 
+from logging import Logger
+from typing import Type, TypeVar
+
+
 # Plugin class
 #
 # You musn't change the name of this class!
@@ -9,12 +13,20 @@ class Plugin:
     The base plugin class
     """
     name = "Plugin"
+    disabled = False
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        logger: Logger,
+        blacklist: Type[TypeVar('PluginBlacklist')],
+        notification: Type[TypeVar('PluginNotification')],
+    ) -> None:
         """
         Initialise the plugin
         """
-        pass
+        self.logger = logger
+        self.blacklist = blacklist
+        self.notification = notification
     
 
     def on_load(self) -> None:

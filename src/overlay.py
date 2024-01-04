@@ -39,6 +39,9 @@ from .components.rpc import openRPC, startRPC
 from .components.components import setupComponents, updateComponents, updateGeometry
 from .components.reward import closeRewards
 from .components.plugins import PluginCore
+from .components.blacklist import Blacklist
+from .plugins.blacklist import PluginBlacklist
+from .plugins.notification import PluginNotification
 from .utils.path import resource_path
 from .utils.log import LoginWorker, LogoutWorker
 from .utils.colours import setColor
@@ -46,7 +49,7 @@ from .utils.colours import setColor
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt, QRectF, QEvent, QTimer, QVariantAnimation, QAbstractAnimation, QEventLoop
-from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFontDatabase, QFont, QPixmap
+from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFontDatabase, QFont
 from pyqt_frameless_window import FramelessMainWindow
 
 
@@ -99,6 +102,7 @@ class Overlay(FramelessMainWindow):
         self.auto_minimize = False
         self.RPC = None
         self.user = None
+        self.blacklist: Blacklist = None
 
 
         if DEV_MODE:
@@ -219,7 +223,11 @@ class Overlay(FramelessMainWindow):
 
         # Plugins
         self.logger.debug("Loading the Plugins...")
-        self.plugins = PluginCore(self.logger)
+        self.plugins = PluginCore(
+            self.logger,
+            PluginBlacklist(self.blacklist),
+            PluginNotification(self.notif),
+        )
         self.plugins.load_plugins(self.pluginsConfig)
         self.logger.info(f"There are {len(self.plugins.plugins)} plugins loaded.")
         self.logger.debug(f"Plugins: {', '.join([plugin.__name__ for plugin in self.plugins.plugins])}")
