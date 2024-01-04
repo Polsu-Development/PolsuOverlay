@@ -36,32 +36,23 @@ class User:
     A class representing a User.
     """
     def __init__(self, data: dict) -> None:
-        self._data = data
+        self.__username = data.get('username')
+        self.__uuid = data.get('uuid')
 
-        self._username = data.get('username')
-        self._uuid = data.get('uuid')
-
-
-    @property
-    def data(self) -> dict:
-        """
-        The data of the user.
-        """
-        return self._data
 
     @property
     def username(self) -> str:
         """
         The username of the user.
         """
-        return self._username
+        return self.__username
     
     @property
     def uuid(self) -> str:
         """
         The UUID of the user.
         """
-        return self._uuid
+        return self.__uuid
 
     
     def __repr__(self) -> str:

@@ -142,6 +142,8 @@ class Table(QTableWidget):
         """
         self.win.logger.info(f"Inserting {player.username} ({player.uuid}) in the table.")
 
+        self.win.plugins.broadcast("on_player_insert", player)
+
         try:
             # We need to disable the sorting before inserting or some data will be hidden...
             self.setSortingEnabled(False)

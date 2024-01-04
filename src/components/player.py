@@ -78,6 +78,7 @@ class Player:
         :param manual: If the player is manually added
         """
         self.win.logger.debug(f"Loading {len(players)} player{'s' if len(players)>1 else ''}!")
+
         new = []
         for player in players:
             player = player.split(" ")[0]
@@ -113,6 +114,8 @@ class Player:
         if len(new) == 1:
             self.win.logger.info(f"Requesting: {new[0]}.")
 
+            self.win.plugins.broadcast("on_player_load", new[0])
+
             try:
                 self.threads[cleaned] = Worker(self.client, new[0], manual)
                 self.threads[cleaned].playerObject.connect(self.update)
@@ -136,6 +139,9 @@ class Player:
                 while uuid in self.threads:
                     uuid = str(uuid4())
 
+                for p in s:
+                    self.win.plugins.broadcast("on_player_load", p)
+
                 try:
                     self.threads[uuid] = Worker(self.client, s, manual)
                     self.threads[uuid].playerObject.connect(self.update)
@@ -157,6 +163,8 @@ class Player:
             self.loading.append(cleaned)
 
             self.win.logger.info(f"Requesting: {player}. (Connection)")
+
+            self.win.plugins.broadcast("on_player_load", player)
 
             try:
                 self.threads[cleaned] = Worker(self.client, uuid, True)

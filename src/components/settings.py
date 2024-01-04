@@ -63,6 +63,7 @@ class Settings:
         self.win.dirConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'settings')
         self.win.themesConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'themes')
         self.win.blacklistConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'blacklist')
+        self.win.pluginsConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'plugins')
 
         if not os.path.exists(self.win.dirConfig):
             os.makedirs(self.win.dirConfig)
@@ -76,6 +77,9 @@ class Settings:
 
         if not os.path.exists(self.win.blacklistConfig):
             os.makedirs(self.win.blacklistConfig)
+
+        if not os.path.exists(self.win.pluginsConfig):
+            os.makedirs(self.win.pluginsConfig)
 
         # Create the blacklist
         self.win.blacklist = Blacklist(self.win)

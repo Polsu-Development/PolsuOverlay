@@ -38,6 +38,7 @@ from .components.logger import Logger
 from .components.rpc import openRPC, startRPC
 from .components.components import setupComponents, updateComponents, updateGeometry
 from .components.reward import closeRewards
+from .components.plugins import PluginCore
 from .utils.path import resource_path
 from .utils.log import LoginWorker, LogoutWorker
 from .utils.colours import setColor
@@ -97,6 +98,7 @@ class Overlay(FramelessMainWindow):
         self.reward = None
         self.auto_minimize = False
         self.RPC = None
+        self.user = None
 
 
         if DEV_MODE:
@@ -215,6 +217,14 @@ class Overlay(FramelessMainWindow):
         self.logger.info("Polsu Overlay is running!")
 
 
+        # Plugins
+        self.logger.debug("Loading the Plugins...")
+        self.plugins = PluginCore(self.logger)
+        self.plugins.load_plugins(self.pluginsConfig)
+        self.logger.info(f"There are {len(self.plugins.plugins)} plugins loaded.")
+        self.logger.debug(f"Plugins: {', '.join([plugin.__name__ for plugin in self.plugins.plugins])}")
+
+
     def loginEnded(self, user: User) -> None:
         """
         Called when the login thread ends
@@ -224,6 +234,9 @@ class Overlay(FramelessMainWindow):
         if user:
             self.logger.info(f"Logged in as: {user.username} ({user.uuid})")
             self.user = user
+
+            self.plugins.broadcast("on_login", user)
+
             self.player.loadPlayer(user.username, user.uuid)
 
 
@@ -764,11 +777,16 @@ class Overlay(FramelessMainWindow):
 
             self.logger.info("Logging out...")
 
+            if self.user:
+                self.plugins.broadcast("on_logout", self.user)
+
             try:
                 self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch, self.logger)
                 self.threads["logout"].start()
                 self.threads["logout"].wait()
             except:
                 self.logger.error(f"An error occurred while logging out!\nTraceback: {traceback.format_exc()}")
+
+        self.plugins.broadcast("on_unload")
 
         self.logger.info("Polsu Overlay is now closed!")
