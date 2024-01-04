@@ -1,7 +1,9 @@
+from src import DEV_MODE
 from ..plugins.plugin import Plugin
 from ..plugins.blacklist import PluginBlacklist
 from ..plugins.notification import PluginNotification
 from ..plugins.table import PluginTable
+from ..plugins.logs import PluginLogs
 
 
 import os
@@ -21,17 +23,22 @@ class PluginCore:
         blacklist: PluginBlacklist,
         notification: PluginNotification,
         table: PluginTable,
+        logs: PluginLogs,
     ) -> None:
         """
         Initialise the class
         
         :param logger: The logger
         :param blacklist: The blacklist
+        :param notification: The notification
+        :param table: The table
+        :param logs: The logs
         """
         self.logger = logger
         self.blacklist = blacklist
         self.notification = notification
         self.table = table
+        self.logs = logs
 
         self.__plugins = []
 
@@ -71,6 +78,7 @@ class PluginCore:
                         "blacklist": self.blacklist,
                         "notification": self.notification,
                         "table": self.table,
+                        "logs": self.logs,
                     }
 
                     types = {
@@ -78,6 +86,7 @@ class PluginCore:
                         "blacklist": Type[TypeVar('PluginBlacklist')],
                         "notification": Type[TypeVar('PluginNotification')],
                         "table": Type[TypeVar('PluginTable')],
+                        "logs": Type[TypeVar('PluginLogs')],
                     }
 
                     plugin_arguments = {}
@@ -139,7 +148,8 @@ class PluginCore:
         :param *args: The arguments to pass to the method
         :param **kwargs: The keyword arguments to pass to the method
         """
-        self.logger.debug(f"Broadcasting method, {method}, to all plugins")
+        if DEV_MODE:
+            self.logger.debug(f"Broadcasting method, {method}, to all plugins")
 
         for plugin in self.__plugins:
             self.send(plugin.__name__, method, *args, **kwargs)
@@ -157,11 +167,12 @@ class PluginCore:
         for p in self.__plugins:
             if p.__name__ == plugin:
                 if hasattr(p, method):
-                    self.logger.debug(f"Sending method, {method}, to plugin: {plugin}")
+                    if DEV_MODE:
+                        self.logger.debug(f"Sending method, {method}, to plugin: {plugin}")
+                    
                     try:
                         getattr(p, method)(*args, **kwargs)
                     except NotImplementedError:
-                        print(f"NotImplementedError {method} {args}")
                         pass
                 break
         else:

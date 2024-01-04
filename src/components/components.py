@@ -315,8 +315,8 @@ def enterPress(win) -> None:
 
     if not av:
         win.player.getPlayer([win.searchBox.text()], True)
+    
+    win.plugins.broadcast("on_search", win.searchBox.text())
 
     win.searchBox.setText("")
     win.searchBox.setDisabled(False)
-
-    win.plugins.broadcast("on_search", win.searchBox.text())

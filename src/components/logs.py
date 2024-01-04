@@ -64,13 +64,10 @@ class Logs:
         self.win = win
 
         self.oldString = ""
-        self.connected = False
         self.timeIconIndex = 1
         self.error_sent = False
 
-        self.inAParty = False
         self.waitingForGame = False
-
         self.isInGame = False
         self.gameStart = None
 
@@ -83,6 +80,51 @@ class Logs:
         self.hideOverlayTimer = 0
         self.queue = []
 
+    
+    def isConnecting(self) -> bool:
+        """
+        Returns if the player is connecting to Hypixel
+        
+        :return: A boolean representing if the player is connecting to Hypixel
+        """
+        return self.connecting
+
+
+    def inGame(self) -> bool:
+        """
+        Returns if the player is in a game
+
+        :return: A boolean representing if the player is in a game
+        """
+        return self.isInGame
+
+
+    def isWaitingForGame(self) -> bool:
+        """
+        Returns if the player is waiting for a game
+
+        :return: A boolean representing if the player is waiting for a game
+        """
+        return self.waitingForGame
+
+
+    def isInAParty(self) -> bool:
+        """
+        Returns if the player is in a party
+
+        :return: A boolean representing if the player is in a party
+        """
+        return self.party
+    
+
+    def getPartyMembers(self) -> int:
+        """
+        Returns the number of party members
+
+        :return: An integer representing the number of party members
+        """
+        return self.partyMembers
+    
 
     def reset(self, autowho: bool = False) -> None:
         """
@@ -216,6 +258,7 @@ class Logs:
 
 
             if PLAYER_MESSAGE_PATTERN.findall(line.replace("[CHAT] ", "")):
+                self.win.plugins.broadcast("on_player_message", line.replace("[CHAT] ", ""))
                 return
 
 
@@ -496,3 +539,6 @@ class Logs:
             # If some players where detected, add them to the queue
             if players:
                 self.win.player.getPlayer(players)
+
+
+            self.win.plugins.broadcast("on_message", line)

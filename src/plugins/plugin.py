@@ -75,3 +75,17 @@ class Plugin:
         Called when the player is inserted
         """
         raise NotImplementedError("on_insert() is not implemented!")
+
+
+    def on_player_message(self, message: str) -> None:
+        """
+        Called when the player sends a message
+        """
+        raise NotImplementedError("on_player_message() is not implemented!")
+    
+
+    def on_message(self, message: str) -> None:
+        """
+        Called when a message is sent
+        """
+        raise NotImplementedError("on_message() is not implemented!")
