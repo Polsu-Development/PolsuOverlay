@@ -5,6 +5,10 @@
 # Polsu's Overlay
 A Hypixel Bedwars Overlay in Python, 100% free and open source!
 
+<a href="https://github.com/Polsu-Development/PolsuOverlay/releases"><img src="https://img.shields.io/github/downloads/Polsu-Development/PolsuOverlay/total" alt="Downloads"></a>
+<a href="https://discord.polsu.xyz"><img src="https://img.shields.io/discord/761623845119328257?color=7289DA&label=Discord" alt="Discord"></a>
+<a><img src="https://wakatime.com/badge/user/ae13d286-a127-41f2-b631-4c4b2e09d04c/project/bdf90bf4-bb4f-4adb-8305-c4523e188b2c.svg" alt="Wakatime"></a>
+
 </div>
   
   
