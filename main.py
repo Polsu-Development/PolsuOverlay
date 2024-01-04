@@ -79,6 +79,16 @@ def run(window: Updater, logger: Logger) -> None:
     elif not window.value:
         window.progressBar.setMaximum(100)
         window.progressBar.setValue(100)
+
+        window.close()
+
+        # Cleanup, delete the old version
+        def cleanup():
+            with open("cleanup.bat", "w+") as file:
+                file.write(f"DEL /F \"{sys.argv[0]}\" \nDEL /F \"{os.getcwd()}\\cleanup.bat\"")
+            os.startfile(os.getcwd()+"\\cleanup.bat")
+
+        cleanup()
     else:
         window.close()
 

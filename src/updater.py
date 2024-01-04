@@ -46,6 +46,7 @@ import requests
 import subprocess
 import os
 import traceback
+import sys
 
 from packaging import version
 from time import sleep
@@ -115,6 +116,8 @@ class Updater(FramelessDialog):
                     if EXECUTABLE:
                         self.logger.info(f"Found a new version! Downloading...")
                         self.label.setText(f"v{latest_version} - Found a new version! Updating...")
+
+                        os.rename(sys.argv[0], os.path.join(os.getcwd(), f"[{__version__} - Outdated] PolsuOverlay.exe"))
 
                         sleep(2)
 
