@@ -31,34 +31,162 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-class Colours:
+import os
+
+
+class PlayerBlacklist:
     """
-    A class representing the colour configuration of the overlay.
+    A class representing a Player Blacklist
     """
-    def __init__(self, data: dict) -> None:
+    def __init__(self, player: str, reason: str) -> None:
         """
-        Initialise the Colours class
+        Initialise the class
         
-        :param data: The data from the configuration file
+        :param player: The player
+        :param reason: The reason
         """
-        self.data = data
+        self._player = player
+        self._reason = reason
 
+
+    @property
+    def player(self) -> str:
+        """
+        Get the player
+        """
+        return self._player
     
-    def __getitem__(self, nb: int) -> None:
+    @property
+    def reason(self) -> str:
         """
-        Get a colour from the configuration set in: /home/USER/Polsu/settings/data.json
-
-        :param nb: Player reqeueue level index
-        :return: A string representing a colour code (hex, e.g. #FFFFFF)
+        Get the reason
         """
-        return self.data[str(nb)]
+        return self._reason
 
 
-def setColor(item, color):
+class LocalBlacklisted:
     """
-    Set the colour of an item
+    A class representing a Hypixel Player
+    """
+    def __init__(self, status: bool, reason: str, blacklist: str) -> None:
+        """
+        Initialise the class
+        
+        :param status: Whether the Player is blacklisted or not
+        :param reason: The Player blacklist reason
+        :param blacklist: The blacklist name
+        """
+        self._status = status
+        self._reason = reason
+        self._blacklist = blacklist
+
+
+    @property
+    def status(self) -> bool:
+        """
+        Get the Player blacklist status
+        
+        :return: The Player blacklist status
+        """
+        return self._status
+
+    @property
+    def reason(self) -> str:
+        """
+        Get the Player blacklist reason
+        
+        :return: The Player blacklist reason
+        """
+        return self._reason
+
+    @property
+    def blacklist(self) -> str:
+        """
+        Get the blacklist name
+        
+        :return: The blacklist name
+        """
+        return self._blacklist
+
+
+class Blacklist:
+    """
+    A class representing the overlay local blacklist(s)
+    """
+    def __init__(self, win) -> None:
+        """
+        Initialise the class
+        
+        :param win: The Overlay window
+        """
+        self.win = win
+
+        self.blacklist: dict[list[PlayerBlacklist]] = {}
+
+        self.loadBlacklist()
+
+
+    def loadBlacklist(self) -> None:
+        """
+        Load the local blacklist(s)
+        """
+        for file in os.listdir(self.win.blacklistConfig):
+            if file.endswith(".polsu"):
+                filename = file.replace(".polsu", "")
+
+                file_blacklist = []
+
+                try:
+                    with open(os.path.join(self.win.blacklistConfig, file), "r") as f:
+                        data = f.read().split("\n")
+
+                        for line in data:
+                            if ";" in line:
+                                player, reason = line.split(";")
+                            else:
+                                player, reason = line, None
+
+                            if player != "":
+                                if "-" in player:
+                                    player = player.replace("-", " ")
+
+                                if len(player) > 32 or len(player) < 32 and len(player) > 16:
+                                    self.win.logger.warning(f"Invalid player: {player}, skipping...")
+                                else:
+                                    file_blacklist.append(PlayerBlacklist(player, reason))
+
+                    self.blacklist[filename] = file_blacklist
+                except:
+                    self.win.logger.warning(f"Invalid blacklist file: {file}, skipping...")
+
+
+    def getBlacklists(self) -> list[str]:
+        """
+        Get the local blacklist(s)
+        
+        :return: The local blacklist(s)
+        """
+        return list(self.blacklist.keys())
     
-    :param item: The item to change the colour of
-    :param color: The colour to set
-    """
-    item.setBackground(color)
+
+    def findPlayer(self, player) -> LocalBlacklisted:
+        """
+        Find a player in the local blacklist(s)
+        
+        :param player: The player
+        :return: The player data
+        """
+        for blacklist in self.blacklist:
+            for blacklistedPlayer in self.blacklist[blacklist]:
+                if blacklistedPlayer.player == player.uuid or blacklistedPlayer.player == player.username  or blacklistedPlayer.player.lower() == player.username.lower():
+                    return LocalBlacklisted(
+                        status=True,
+                        reason=blacklistedPlayer.reason,
+                        blacklist=blacklist
+                    )
+
+        return LocalBlacklisted(
+            status=False,
+            reason="",
+            blacklist=None
+        )

@@ -31,6 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
+from .blacklist import Blacklist
 from ..utils.constants import CONFIG
 
 import json 
@@ -59,15 +60,26 @@ class Settings:
 
         :return: The config
         """
-        self.win.dirConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'settings')
-        self.win.themesConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'themes')
+
+        self.win.dirConfig = os.path.join(f"/home/{getuser()}", 'Polsu', 'settings')
+        self.win.themesConfig = os.path.join(f"/home/{getuser()}", 'Polsu', 'themes')
+        self.win.blacklistConfig = os.path.join(f"/home/{getuser()}", 'Polsu', 'blacklist')
 
         if not os.path.exists(self.win.dirConfig):
             os.makedirs(self.win.dirConfig)
-            os.makedirs(self.win.themesConfig)
             self.win.newUser = True
         else:
             self.win.newUser = False
+
+        # Create the themes and blacklist folders
+        if not os.path.exists(self.win.themesConfig):
+            os.makedirs(self.win.themesConfig)
+
+        if not os.path.exists(self.win.blacklistConfig):
+            os.makedirs(self.win.blacklistConfig)
+
+        # Create the blacklist
+        self.win.blacklist = Blacklist(self.win)
 
         self.win.pathConfig = os.path.join(self.win.dirConfig, "data.json")
 
@@ -92,6 +104,7 @@ class Settings:
         self.win.configStatus = config.get("status", CONFIG.get('status'))
         self.win.configSorting = config.get("sorting", CONFIG.get('sorting'))
         self.win.configRqColours = config.get("rqLevel", CONFIG.get('rqLevel'))
+        self.win.configGlobalBlacklist = config.get("globalBlacklist", CONFIG.get('globalBlacklist'))
         
         return config
 

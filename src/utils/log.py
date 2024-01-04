@@ -31,6 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
+from .. import DEV_MODE
 from ..PolsuAPI import Polsu
 
 
@@ -46,20 +47,23 @@ class LoginWorker(QThread):
     """
     ended = pyqtSignal(object)
 
-    def __init__(self, key: str) -> None:
+    def __init__(self, key: str, logger) -> None:
         """
         Initialise the LoginWorker
         
         :param key: The API Key
         """
         super(QThread, self).__init__()
-        self.client = Polsu(key)
+        self.client = Polsu(key, logger)
  
 
     def run(self):
         """
         Run the LoginWorker
         """
+        if DEV_MODE:
+            return
+
         try:
             data = asyncio.run(self.client.user.login())
             self.ended.emit(data)
@@ -72,7 +76,7 @@ class LogoutWorker(QThread):
     """
     A QThread that will request the API when the user closes the overlay
     """
-    def __init__(self, key: str, launch: int) -> None:
+    def __init__(self, key: str, launch: int, logger) -> None:
         """
         Initialise the LogoutWorker
         
@@ -80,7 +84,7 @@ class LogoutWorker(QThread):
         :param launch: The launch time
         """
         super(QThread, self).__init__()
-        self.client = Polsu(key)
+        self.client = Polsu(key, logger)
         self.launch = launch
  
 
@@ -88,6 +92,9 @@ class LogoutWorker(QThread):
         """
         Run the LogoutWorker
         """
+        if DEV_MODE:
+            return
+
         try:
             asyncio.run(self.client.user.logout(self.launch))
         except:

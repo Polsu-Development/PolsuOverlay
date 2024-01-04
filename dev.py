@@ -31,34 +31,62 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-class Colours:
-    """
-    A class representing the colour configuration of the overlay.
-    """
-    def __init__(self, data: dict) -> None:
-        """
-        Initialise the Colours class
-        
-        :param data: The data from the configuration file
-        """
-        self.data = data
-
-    
-    def __getitem__(self, nb: int) -> None:
-        """
-        Get a colour from the configuration set in: /home/USER/Polsu/settings/data.json
-
-        :param nb: Player reqeueue level index
-        :return: A string representing a colour code (hex, e.g. #FFFFFF)
-        """
-        return self.data[str(nb)]
+from src import DEV_MODE
+from src.overlay import Overlay
+from src.components.logger import Logger
 
 
-def setColor(item, color):
-    """
-    Set the colour of an item
-    
-    :param item: The item to change the colour of
-    :param color: The colour to set
-    """
-    item.setBackground(color)
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import Qt
+
+
+import sys
+import os
+import traceback
+import datetime
+
+
+if __name__ == '__main__':
+    # DO NOT REMOVE THE FOLLOWING LINES!
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+    #
+    # This is a fix for the DPI scaling on Windows
+    # Removing this might break the overlay window.
+
+    logger = Logger()
+    logger.info("-----------------------------------------------------------------------------------------------------")
+    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
+    logger.info(f"Python version: {sys.version}")
+    logger.info(f"OS: {sys.platform}")
+    logger.info(f"Running in: {'Development' if DEV_MODE else 'Production'} mode")
+    logger.info("-----------------------------------------------------------------------------------------------------")
+    logger.info("Starting Polsu Overlay...")
+
+
+    # DEVELOPMENT MODE
+    # 
+    # This isn't designed to be used by anyone other than developers.
+    # If you are not a developer, please download the latest release from https://overlay.polsu.xyz/download
+    #
+    # > The development bypasses the updater, and runs the overlay directly.
+    # > The development version won't send login and logout attempts to the API.
+
+    if DEV_MODE:
+        logger.warning("You are running the overlay in development mode! This is not recommended, as it may cause issues.")
+        logger.warning("If you are not a developer, please download the latest release from https://overlay.polsu.xyz/download")
+
+        app = QApplication(sys.argv)
+
+        try:
+            Overlay(logger).show()
+        except:
+            logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
+
+        sys.exit(app.exec_())
+    else:
+        logger.critical("You are running the development version of the overlay! However, you are not in development mode.")
+
+        print("You are running the development version of the overlay! However, you are not in development mode.")
+
+        sys.exit(1)

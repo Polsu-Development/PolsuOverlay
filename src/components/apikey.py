@@ -90,25 +90,25 @@ class APIKeyMenu(QWidget):
         self.sentNotification = False
 
         text = QLabel("API", self)
-        text.setFont(self.win.minecraftFont)
+        text.setFont(self.win.getFont())
         text.adjustSize()
         text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
         text.setGeometry(20, 11, 190, 40)
 
         text = QLabel("Github", self)
-        text.setFont(self.win.minecraftFont)
+        text.setFont(self.win.getFont())
         text.adjustSize()
         text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
         text.setGeometry(20, 56, 190, 40)
 
         text = QLabel("Website", self)
-        text.setFont(self.win.minecraftFont)
+        text.setFont(self.win.getFont())
         text.adjustSize()
         text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
         text.setGeometry(20, 101, 190, 40)
 
         text = QLabel("Discord", self)
-        text.setFont(self.win.minecraftFont)
+        text.setFont(self.win.getFont())
         text.adjustSize()
         text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
         text.setGeometry(20, 146, 190, 40)
@@ -152,15 +152,15 @@ class APIKeyMenu(QWidget):
 
 
         label = QLabel(text2html(f"§7Polsu Overlay v{__version__}", size=12, bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(14, self.win.size().height()-90)
 
         label = QLabel(text2html(f"§8© 2022 - {datetime.now().year} Polsu Development.", size=6, bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, self.win.size().height()-65)
 
         label = QLabel(text2html(f"§8All rights reserved.", size=6, bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(60, self.win.size().height()-55)
 
         self.win.setMinimumSize(714, 352)
@@ -197,11 +197,11 @@ class Settings(QWidget):
         self.threads = {}
 
         label = QLabel(text2html(f"§fAPI Key:", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 17)
 
         self.apikeyBox = QLineEdit(self)
-        self.apikeyBox.setFont(self.win.minecraftFont)
+        self.apikeyBox.setFont(self.win.getFont())
         self.apikeyBox.setMaxLength(36)
         self.apikeyBox.setStyleSheet(self.win.themeStyle.settingsAPIKeyStyle)
         self.apikeyBox.setPlaceholderText("Enter your Polsu API Key")
@@ -214,11 +214,11 @@ class Settings(QWidget):
         self.searchIcon = QPushButton(QIcon(f"{self.win.pathAssets}/polsu/Polsu_.png"), "", self)
         self.searchIcon.setIconSize(QSize(18, 18))
         self.searchIcon.clicked.connect(lambda: self.apikeyBox.setFocus())
-        self.searchIcon.setStyleSheet("QPushButton::hover {border-radius: 4px;}")
+        self.searchIcon.setStyleSheet("QPushButton {border: 0; background: transparent;} QPushButton::hover {border-radius: 4px;}")
         self.searchIcon.setGeometry(113, 18, 19, 19)
 
         text = QLabel(text2html(f"§fGet your Key", bold=True), self)
-        text.setFont(self.win.minecraftFont)
+        text.setFont(self.win.getFont())
         text.adjustSize()
         text.setStyleSheet(self.win.themeStyle.sideBarTextStyle)
         text.setGeometry(20, 60, 190, 40)
@@ -233,7 +233,7 @@ class Settings(QWidget):
         self.apikey.setStyleSheet(self.win.themeStyle.sideBarButtonsStyle)
 
         label = QLabel(text2html(f"§fNeed help? Join our discord server!", bold=True), self)
-        label.setFont(self.win.minecraftFont)
+        label.setFont(self.win.getFont())
         label.move(20, 250)
 
         self.SIGNALS = WidgetSignals()

@@ -50,8 +50,8 @@ class Polsu:
     """
     A class representing the Polsu Client
     """
-    def __init__(self, key: str) -> None:
-        self.client = PolReq(key)
+    def __init__(self, key: str, logger) -> None:
+        self.client = PolReq(key, logger)
         
         self.key = Key(self.client)
         self.user = User(self.client)

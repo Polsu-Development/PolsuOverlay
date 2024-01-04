@@ -31,14 +31,15 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src import __version__, __module__, EXECUTABLE, WINDOWS
+from src import __version__, __module__, EXECUTABLE, LINUX
 from .utils.path import resource_path
 from .components.logger import Logger
 
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QProgressBar, QLabel
-from pyqt_frameless_window import FramelessDialog
+from PyQt5.QtWidgets import QProgressBar, QLabel, QMainWindow
+from PyQt5.QtGui import QIcon
+# from pyqt_frameless_window import FramelessDialog
 
 
 import threading
@@ -51,7 +52,7 @@ from packaging import version
 from time import sleep
 
 
-class Updater(FramelessDialog):
+class Updater(QMainWindow):
     """
     Updater class
     """
@@ -69,7 +70,7 @@ class Updater(FramelessDialog):
 
         self.setWindowTitle("Polsu Overlay - Update")
 
-        self.setWindowIcon(f"{resource_path('assets')}/polsu/Polsu_.png")
+        self.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
 
         self.setFixedSize(400, 100)
 
@@ -99,12 +100,10 @@ class Updater(FramelessDialog):
             Update the overlay
             """
             self.logger.info(f"Checking for updates...")
-            try:
-                module_path = os.getcwd() + "Polsu Overlay.exe"
-                module_path = module_path.replace("\\", "\\\\")
-                subprocess.call(f"wmic process where ExecutablePath='{module_path}' delete", shell=True)
-            except:
-                pass
+            # try:
+            #     subprocess.call(f"python -m main", shell=True)
+            # except:
+            #     pass
 
             try:
                 latest_version = requests.get('https://api.polsu.xyz/internal/overlay/version')
@@ -177,6 +176,12 @@ class Updater(FramelessDialog):
 
                     self.value = True
                     self.ended.emit(self, self.logger)
+            except requests.exceptions.ConnectionError:
+                self.logger.warning(f"An error occurred while updating the overlay! No internet connection!")
+                self.label.setText(f"Can't check for updates. Please try again later.")
+
+                self.value = False
+                self.ended.emit(self, self.logger)
             except:
                 self.logger.error(f"An error occurred while updating the overlay!\n\nTracebak: {traceback.format_exc()}")
                 self.label.setText(f"Someting went wrong... Please try again later.")
@@ -184,17 +189,17 @@ class Updater(FramelessDialog):
                 self.value = False
                 self.ended.emit(self, self.logger)
 
-        self.logger.debug(f"Running on Windows: {'yes' if WINDOWS else 'no'}")
+        self.logger.debug(f"Running on Linux: {'yes' if LINUX else 'no'}")
         self.logger.debug(f"Running as executable: {'yes' if EXECUTABLE else 'no'}")
 
-        if WINDOWS:
+        if LINUX:
             self.logger.info(f"Updater Initialised.")
             self.logger.info(f"Running version: v{__version__}")
 
             thread = threading.Thread(target=update, daemon=True)
             thread.start()
         else:
-            self.label.setText("Uh Oh! OS not supported yet...\nLearn more at https://discord.polsu.xyz")
+            self.label.setText("Uh Oh! Looks like you downloaded the wrong verison.\nLearn more at https://discord.polsu.xyz")
             self.label.setFixedSize(380, 60)
             self.label.setContentsMargins(20, 0, 0, 0)
 

@@ -4,10 +4,11 @@ asyncio
 async_timeout
 aiohttp
 pypresence
-keyboard
+pynput
 DateTime
 pystray
 Pillow
 notify-py
-pyqt_frameless_window
 packaging
+pywinctl
+python-dotenv

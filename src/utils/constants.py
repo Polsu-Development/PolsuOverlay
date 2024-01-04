@@ -31,14 +31,15 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from getpass import getuser
+import re
 
+from getpass import getuser
 
 # Default configuration
 CONFIG = {
     "APIKey": "",
     "client": "Vanilla",
-    "logPath": f"C:\\Users\\{getuser()}\\AppData\\Roaming\\.minecraft\\logs\\latest.log",
+    "logPath": f"/home/{getuser()}/.minecraft/logs/latest.log",
     "theme": "Default Dark",
     "opacity": 0.7,
     "RPC": True,
@@ -63,7 +64,8 @@ CONFIG = {
         "10": "AA0000",
         "11": "5555FF",
         "12": "FF55FF"
-    }
+    },
+    "globalBlacklist": True
 }
 
 # Default Players Tags
@@ -71,3 +73,13 @@ TAGS = {
     "ALL": "§7-",
     "PARTY": "§9[PARTY]",
 }
+
+PLAYER_MESSAGE_PATTERN = re.compile(r'\[([A-Z0-9\+\-\*\s]+)\] \w+: .+') # [RANK] USERNAME: MESSAGE
+
+CLIENT_NAMES = [
+    "Minecraft",
+    "Lunar Client",
+    "Lunar",
+    "Badlion Client",
+    "Badlion",
+]

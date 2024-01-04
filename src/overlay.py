@@ -32,10 +32,10 @@
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
 from .PolsuAPI import User
-from src import Menu, Presence, Notif, Settings, Logs, Player, loadThemes, openSettings, __version__
+from src import Menu, Notif, Settings, Logs, Player, loadThemes, openSettings, __version__, DEV_MODE
 from .components.theme import ThemeStyle
 from .components.logger import Logger
-from .components.rpc import startRPC
+from .components.rpc import openRPC, startRPC
 from .components.components import setupComponents, updateComponents, updateGeometry
 from .components.reward import closeRewards
 from .utils.path import resource_path
@@ -45,14 +45,14 @@ from .utils.colours import setColor
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt, QRectF, QEvent, QTimer, QVariantAnimation, QAbstractAnimation, QEventLoop
-from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFontDatabase, QFont
-from pyqt_frameless_window import FramelessMainWindow
+from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFontDatabase, QFont, QPixmap
 
 
 import os
 import webbrowser
 import json
 import traceback
+import pypresence
 
 from pystray import Icon, Menu as Mn, MenuItem
 from PIL import Image
@@ -62,7 +62,7 @@ from getpass import getuser
 from functools import partial
 
 
-class Overlay(FramelessMainWindow):
+class Overlay(QWidget):
     """
     Overlay, main class
     """
@@ -72,7 +72,7 @@ class Overlay(FramelessMainWindow):
         
         :param logger: The logger
         """
-        super().__init__(flags=[Qt.WindowType.WindowStaysOnTopHint])
+        super().__init__(flags=Qt.WindowType.WindowStaysOnTopHint)
         self.logger = logger
 
         self._menuOpened = False
@@ -95,7 +95,10 @@ class Overlay(FramelessMainWindow):
         self.win = False
         self.reward = None
         self.auto_minimize = False
-        
+        self.RPC = None
+
+        if DEV_MODE:
+            self.logger.warning("You are running the overlay in development mode!")
 
         # Assets
         self.pathAssets = resource_path('assets')
@@ -143,8 +146,6 @@ class Overlay(FramelessMainWindow):
         # Fonts
         self.minecraftFont = QFont(QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(f"{self.pathAssets}/fonts/minecraft-font.ttf"))[0])
         self.logger.debug(f"Loaded font: {self.pathAssets}/fonts/minecraft-font.ttf")
-        QFontDatabase.addApplicationFont(f"{self.pathAssets}/fonts/unifont.ttf")
-        self.logger.debug(f"Loaded font: {self.pathAssets}/fonts/unifont.ttf")
 
 
         # Clients
@@ -159,11 +160,8 @@ class Overlay(FramelessMainWindow):
             startRPC(self)
         else:
             # Checking if the RPC is enabled or not (in order to enable the button in the settings menu)
-            try:
-                self.RPC = Presence(self.launch, self.logs, self.configStatus)
-                self.RPC = -1
-            except:
-                self.RPC = None
+            openRPC(self)
+
             self.logger.debug(f"Discord RPC: {self.RPC}")
 
 
@@ -194,12 +192,14 @@ class Overlay(FramelessMainWindow):
         self.logger.debug(f"Loading the API Key...")
         if self.configAPIKey != "":
             self.logger.info("Logging in...")
+
             try:
-                self.threads["login"] = LoginWorker(self.configAPIKey)
+                self.threads["login"] = LoginWorker(self.configAPIKey, self.logger)
                 self.threads["login"].ended.connect(self.loginEnded)
                 self.threads["login"].start()
             except:
                 self.logger.error(f"An error occurred while logging in!\nTraceback: {traceback.format_exc()}")
+
             self.login = True
         else:
             self.logger.warning("No API Key found!")
@@ -212,25 +212,43 @@ class Overlay(FramelessMainWindow):
         self.logger.info("Polsu Overlay is running!")
 
 
+    def setTitleBarVisible(self, visible):
+        if not visible:
+            self.setWindowFlags(Qt.FramelessWindowHint)
+        else:
+            self.setWindowFlags(Qt.Window)
+        self.show()
+
     def loginEnded(self, user: User) -> None:
         """
         Called when the login thread ends
         
         :param user: The user
         """
-        self.logger.info(f"Logged in as: {user.username} ({user.uuid})")
-        self.user = user
-        self.player.loadPlayer(user.username, user.uuid)
+        if user:
+            self.logger.info(f"Logged in as: {user.username} ({user.uuid})")
+            self.user = user
+            self.player.loadPlayer(user.username, user.uuid)
 
 
     def showGameTime(self):
         self.RPCTimer += 1
         if self.RPCTimer > 3:
-            try:
-                self.RPC.update()
-            except:
-                self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
-                self.RPC = None
+            if self.configRPC and self.RPC is not None and not isinstance(self.RPC, int):
+                try:
+                    self.RPC.update()
+                except (RuntimeWarning, RuntimeError):
+                    pass
+                except pypresence.exceptions.PipeClosed:
+                    # Try to reconnect
+                    self.RPC.disconnect()
+                    startRPC(self)
+                except:
+                    self.RPC.disconnect()
+                    self.logger.error(f"An error occurred while updating the Discord RPC!\nTraceback: {traceback.format_exc()}")
+                    self.RPC = None
+            else:
+                openRPC(self)
 
             self.RPCTimer = 0
 
@@ -239,9 +257,13 @@ class Overlay(FramelessMainWindow):
                 openSettings(self)
         else:
             if not self.login:
-                self.threads["login"] = LoginWorker(self.configAPIKey)
-                self.threads["login"].ended.connect(self.loginEnded)
-                self.threads["login"].start()
+                try:
+                    self.threads["login"] = LoginWorker(self.configAPIKey, self.logger)
+                    self.threads["login"].ended.connect(self.loginEnded)
+                    self.threads["login"].start()
+                except:
+                    self.logger.error(f"An error occurred while logging in!\nTraceback: {traceback.format_exc()}")
+
                 self.login = True
 
         self.overlayTimer += 1
@@ -336,25 +358,24 @@ class Overlay(FramelessMainWindow):
         """
         Setup the overlay window
         """
+        setupComponents(self)
+
         self.setWindowTitle("Polsu Overlay")
-        self.setWindowIcon(f"{self.pathAssets}/polsu/Polsu_.png")
-        
-        self.setTitleBarVisible(False)
+        self.setWindowIcon(QIcon(f"{self.pathAssets}/polsu/Polsu_.png"))
 
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setAttribute(Qt.WA_DeleteOnClose)
 
+        self.setTitleBarVisible(False)
+
         self.setStyleSheet("background: transparent")
 
         self.setGeometry(self.configXY[0], self.configXY[1], self.configWH[0], self.configWH[1])
-        self.setMinimumSize(700, 150)
+        self.setMinimumSize(880, 150)
 
         self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-       
+        #self.setCentralWidget(self.central_widget)
 
-        # Setup the window components
-        setupComponents(self)
         updateComponents(self)
 
 
@@ -377,6 +398,22 @@ class Overlay(FramelessMainWindow):
             else:
                 return f"{self.pathAssets}/icons/{item}.svg"
 
+
+    def getFont(self, path: str = None) -> QFont:
+        """
+        Get the font
+
+        :param path: The path of the theme
+        :return: The font
+        """
+        if not path:
+            path = self.themeStyle.path
+            
+        if os.path.exists(f"{path}/font.ttf"):
+            return QFont(QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(f"{path}/font.ttf"))[0])
+        else:
+            return self.minecraftFont
+    
 
     def changeTheme(self, value, update: bool = True):
         if update:
@@ -560,7 +597,7 @@ class Overlay(FramelessMainWindow):
             menu = Mn(
                 MenuItem(
                     text=f"Polsu Overlay",
-                    action=lambda: webbrowser.open('https://discord.polsu.xyz'),
+                    action=lambda: webbrowser.open('https://overlay.polsu.xyz'),
                     default=False,
                     visible=True,
                     enabled=False,
@@ -716,17 +753,25 @@ class Overlay(FramelessMainWindow):
         
         :param event: The event
         """
+        if hasattr(self, "tray") and self.tray:
+            self.tray.visible = False
+            self.tray.stop()
+
         if self.quickbuyWindow is not None:
             self.quickbuyWindow.close()
+
+        event.accept()
 
         if self.configAPIKey != "":
             self.setCursor(Qt.WaitCursor)
 
+            self.logger.info("Logging out...")
+
             try:
-                self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch)
+                self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch, self.logger)
                 self.threads["logout"].start()
                 self.threads["logout"].wait()
             except:
                 self.logger.error(f"An error occurred while logging out!\nTraceback: {traceback.format_exc()}")
 
-        event.accept()
+        self.logger.info("Polsu Overlay is now closed!")

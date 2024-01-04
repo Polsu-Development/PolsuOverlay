@@ -34,17 +34,21 @@
 from .reward import openRewards
 from ..utils.rewards import Rewards as Rw
 from ..utils.username import isValidPlayer, removeRank
+from ..utils.constants import PLAYER_MESSAGE_PATTERN, CLIENT_NAMES
 
 from time import sleep
 from datetime import datetime
 
 import re
-import keyboard
+from pynput.keyboard import Key, Controller
 import asyncio
 import traceback
+import pywinctl
 
 
-PLAYER_MESSAGE_PATTERN = re.compile(r'\[([A-Z0-9\+\-\*\s]+)\] \w+: .+') # [RANK] USERNAME: MESSAGE
+def get_active_window_title():
+    active_window = pywinctl.getActiveWindow()
+    return active_window.title if active_window else None
 
 
 class Logs:
@@ -78,6 +82,8 @@ class Logs:
         self.hideOverlay = False
         self.hideOverlayTimer = 0
         self.queue = []
+
+        self.keyboard = Controller()
 
 
     def reset(self, autowho: bool = False) -> None:
@@ -114,14 +120,19 @@ class Logs:
             self.reset()
 
             if self.win.configWho:
-                keyboard.press_and_release('t')
-                sleep(0.2)
-                keyboard.write('/who')
-                sleep(0.2)
-                keyboard.press_and_release('enter')
-
-            self.autoWho = True
-            self.waitingForGame = True
+                active = get_active_window_title()
+                if any(client in active for client in CLIENT_NAMES):
+                    self.keyboard.press('t')
+                    self.keyboard.release('t')
+                    sleep(0.2)
+                    self.keyboard.type('/who')
+                    sleep(0.2)
+                    self.keyboard.press(Key.enter)
+                    self.keyboard.release(Key.enter)
+                else:
+                    self.autoWho = False
+                
+                self.waitingForGame = True
 
 
     def task(self) -> None:
@@ -195,7 +206,7 @@ class Logs:
         line: str = self.readLogFile()
         lines = self.rawLine(line).splitlines()
 
-        for idx, l in enumerate(lines):
+        for l in lines:
             line = l.replace(" [System] ", "")
 
             if "[Client thread/INFO]: " in line:
@@ -227,12 +238,16 @@ class Logs:
 
             # If it's the first line after a player connects to Hypixel, the delivery command is executed
             elif self.connecting and "[CHAT] " in line:
-                sleep(0.4)
-                keyboard.press_and_release('t')
-                sleep(0.2)
-                keyboard.write('/delivery')
-                sleep(0.2)
-                keyboard.press_and_release('enter')
+                active = get_active_window_title()
+                if any(client in active for client in CLIENT_NAMES):
+                    sleep(0.5)
+                    self.keyboard.press('t')
+                    self.keyboard.release('t')
+                    sleep(0.3)
+                    self.keyboard.type('/delivery')
+                    sleep(0.3)
+                    self.keyboard.press(Key.enter)
+                    self.keyboard.release(Key.enter)
 
                 self.connecting = False
 

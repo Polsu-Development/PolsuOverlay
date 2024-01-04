@@ -37,9 +37,21 @@ from .. import __version__
 import asyncio
 import traceback
 
-from pypresence import Presence as Pr
+from pypresence import Presence as Pr, DiscordNotFound, DiscordError
 from threading import Thread
-from datetime import datetime
+
+
+def openRPC(win) -> None:
+    """
+    Try to open the Discord RPC
+    
+    :param win: The Overlay window
+    """
+    try:
+        win.RPC = Presence(win.launch, win.logs, win.configStatus)
+        win.RPC = -1
+    except:
+        win.RPC = None
 
 
 def startRPC(win) -> None:
@@ -48,8 +60,11 @@ def startRPC(win) -> None:
     
     :param win: The Overlay window
     """
-    win.logger.debug("Starting Discord RPC Thread...")
-    Thread(target=discordRPC, args=(win, asyncio.new_event_loop(), ), daemon=True).start()
+    try:
+        win.logger.debug("Starting Discord RPC Thread...")
+        Thread(target=discordRPC, args=(win, asyncio.new_event_loop(), ), daemon=True).start()
+    except:
+        win.RPC = None
 
 
 def discordRPC(win, loop) -> None:
@@ -71,6 +86,12 @@ def discordRPC(win, loop) -> None:
         #    title="Discord Activity Status Update",
         #    message="Succesfully connected to Discord!"
         #)
+    except DiscordNotFound:
+        win.RPC = None
+
+        win.logger.debug("Could not find Discord installed and running on this machine.")
+    except DiscordError:
+        win.logger.debug(f"Discord User logged out")
     except:
         win.RPC = None
 
@@ -115,6 +136,8 @@ class Presence:
     def setPlayer(self, player) -> None:
         """
         Set the player
+
+        :param player: The player
         """
         self.player = player
         self.update()
@@ -141,8 +164,11 @@ class Presence:
         """
         Disconnect from Discord
         """
-        self.clear()
-        self.RPC.close()
+        try:
+            self.clear()
+            self.RPC.close()
+        except:
+            pass
 
 
     def update(self) -> None:
@@ -184,23 +210,26 @@ class Presence:
             small_image = "hypixel"
             party = None
 
-        self.RPC.update(
-            state=state,
-            details=details,
-            start=elapsed,
-            large_image="polsu", 
-            large_text=f"Polsu Overlay v{__version__}",
-            small_image=small_image, 
-            small_text="Playing on mc.hypixel.net",
-            party_size=party,
-            buttons=[
-                {
-                    "label": "Get Overlay 📥", 
-                    "url": "https://discord.polsu.xyz" # TODO: overlay.polsu.xyz
-                }, 
-                {
-                    "label": "Discord Server", 
-                    "url": "https://discord.polsu.xyz"
-                }
-            ],
-        )
+        try:
+            self.RPC.update(
+                state=state,
+                details=details,
+                start=elapsed,
+                large_image="polsu", 
+                large_text=f"Polsu Overlay v{__version__}",
+                small_image=small_image, 
+                small_text="Playing on mc.hypixel.net",
+                party_size=party,
+                buttons=[
+                    {
+                        "label": "Get Overlay 📥", 
+                        "url": "https://overlay.polsu.xyz"
+                    }, 
+                    {
+                        "label": "Discord Server", 
+                        "url": "https://discord.polsu.xyz"
+                    }
+                ],
+            )
+        except (AssertionError, ValueError):
+            pass

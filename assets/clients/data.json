@@ -1,6 +1,6 @@
 {
-    "Badlion Client": "C:\\Users\\{}\\AppData\\Roaming\\.minecraft\\logs\\blclient\\minecraft\\latest.log",
-    "Lunar Client": "C:\\Users\\{}\\.lunarclient\\offline\\multiver\\logs\\latest.log",
-    "Vanilla": "C:\\Users\\{}\\AppData\\Roaming\\.minecraft\\logs\\latest.log",
+    "Badlion Client": "/home/{}/.minecraft/logs/blclient/minecraft/latest.log",
+    "Lunar Client": "/home/{}/.lunarclient/offline/multiver/logs/latest.log",
+    "Vanilla": "/home/{}/.minecraft/logs/latest.log",
     "Custom": ""
 }
