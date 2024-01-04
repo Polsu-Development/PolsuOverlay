@@ -42,6 +42,7 @@ from .components.plugins import PluginCore
 from .components.blacklist import Blacklist
 from .plugins.blacklist import PluginBlacklist
 from .plugins.notification import PluginNotification
+from .plugins.table import PluginTable
 from .utils.path import resource_path
 from .utils.log import LoginWorker, LogoutWorker
 from .utils.colours import setColor
@@ -227,10 +228,12 @@ class Overlay(FramelessMainWindow):
             self.logger,
             PluginBlacklist(self.blacklist),
             PluginNotification(self.notif),
+            PluginTable(self.table),
         )
         self.plugins.load_plugins(self.pluginsConfig)
-        self.logger.info(f"There are {len(self.plugins.plugins)} plugins loaded.")
-        self.logger.debug(f"Plugins: {', '.join([plugin.__name__ for plugin in self.plugins.plugins])}")
+        self.logger.info(f"There are {len(self.plugins.getPlugins())} plugins loaded.")
+        self.logger.debug(f"Plugins: {', '.join([plugin.__name__ for plugin in self.plugins.getPlugins()])}")
+        self.logger.debug("Plugins loaded!")
 
 
     def loginEnded(self, user: User) -> None:

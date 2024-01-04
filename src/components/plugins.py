@@ -1,6 +1,7 @@
 from ..plugins.plugin import Plugin
 from ..plugins.blacklist import PluginBlacklist
 from ..plugins.notification import PluginNotification
+from ..plugins.table import PluginTable
 
 
 import os
@@ -18,7 +19,8 @@ class PluginCore:
         self, 
         logger: Logger,
         blacklist: PluginBlacklist,
-        notification: PluginNotification
+        notification: PluginNotification,
+        table: PluginTable,
     ) -> None:
         """
         Initialise the class
@@ -29,8 +31,9 @@ class PluginCore:
         self.logger = logger
         self.blacklist = blacklist
         self.notification = notification
+        self.table = table
 
-        self.plugins = []
+        self.__plugins = []
 
 
     def load_plugins(self, path: str) -> None:
@@ -67,12 +70,14 @@ class PluginCore:
                         "logger": self.logger,
                         "blacklist": self.blacklist,
                         "notification": self.notification,
+                        "table": self.table,
                     }
 
                     types = {
                         "logger": Logger,
                         "blacklist": Type[TypeVar('PluginBlacklist')],
                         "notification": Type[TypeVar('PluginNotification')],
+                        "table": Type[TypeVar('PluginTable')],
                     }
 
                     plugin_arguments = {}
@@ -95,20 +100,17 @@ class PluginCore:
                     else:
                         # Create the plugin
                         try:
-                            plugin_instance: Plugin = plugin_class(**plugin_arguments)
+                            plugin: Plugin = plugin_class(**plugin_arguments)
+                            plugin.__name__ = plugin.name
                         except TypeError:
                             self.logger.error(f"Invalid arguments for Plugin class of module: {module_name}")
                             continue
 
-                        if hasattr(plugin_instance, "disabled") and plugin_instance.disabled:
-                            self.logger.warning(f"Plugin: {plugin_instance.name}, is disabled")
+                        if hasattr(plugin, "disabled") and plugin.disabled:
+                            self.logger.warning(f"Plugin: {plugin.__name__}, is disabled")
                             continue
-                        else:
-                            combined_class = type("PolsuOverlayPlugin", (Plugin, plugin_class), {})
-                            plugin = combined_class()
-                            plugin.__name__ = plugin_instance.name
                         
-                        self.plugins.append(plugin)
+                        self.__plugins.append(plugin)
 
                         # Call the on_load method
                         self.logger.info(f"Loaded plugin: {plugin.__name__}")
@@ -121,12 +123,12 @@ class PluginCore:
         """
         Unload all plugins
         """
-        for plugin in self.plugins:
+        for plugin in self.__plugins:
             self.logger.info(f"Unloaded plugin: {plugin.__name__}")
 
             self.send(plugin.__name__, "on_unload")
 
-        self.plugins = []
+        self.__plugins = []
 
 
     def broadcast(self, method: str, *args, **kwargs) -> None:
@@ -139,7 +141,7 @@ class PluginCore:
         """
         self.logger.debug(f"Broadcasting method, {method}, to all plugins")
 
-        for plugin in self.plugins:
+        for plugin in self.__plugins:
             self.send(plugin.__name__, method, *args, **kwargs)
 
     
@@ -152,14 +154,27 @@ class PluginCore:
         :param *args: The arguments to pass to the method
         :param **kwargs: The keyword arguments to pass to the method
         """
-        for p in self.plugins:
+        for p in self.__plugins:
             if p.__name__ == plugin:
+                print(p)
+                print(method)
+                print(hasattr(p, method))
                 if hasattr(p, method):
                     self.logger.debug(f"Sending method, {method}, to plugin: {plugin}")
                     try:
                         getattr(p, method)(*args, **kwargs)
                     except NotImplementedError:
+                        print(f"NotImplementedError {method} {args}")
                         pass
                 break
         else:
             self.logger.warning(f"Plugin: {plugin}, does not exist!")
+
+
+    def getPlugins(self) -> list[Plugin]:
+        """
+        Get all plugins
+        
+        :return: A list of all plugins
+        """
+        return self.__plugins

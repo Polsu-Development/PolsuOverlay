@@ -19,6 +19,7 @@ class Plugin:
     logger: Logger
     blacklist: Type[TypeVar('PluginBlacklist')]
     notification: Type[TypeVar('PluginNotification')]
+    table: Type[TypeVar('PluginTable')]
 
     def __init__(self) -> None:
         """

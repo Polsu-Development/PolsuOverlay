@@ -96,7 +96,7 @@ class Table(QTableWidget):
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.horizontalHeader().setSectionsMovable(True)
         self.horizontalHeader().setVisible(True)
-        self.horizontalHeader().sortIndicatorChanged.connect(self.sorting)
+        self.horizontalHeader().sortIndicatorChanged.connect(self.sort)
         self.setHorizontalHeaderLabels(self.header)
 
         self.verticalHeader().hide()
@@ -295,6 +295,40 @@ class Table(QTableWidget):
             self.win.logger.critical(f"An error occurred while inserting {player.username} ({player.uuid}) in the table!\n\nTraceback: {traceback.format_exc()}")
 
 
+    def getPlayers(self) -> list:
+        """
+        Get the players
+        
+        :return: The players
+        """
+        players = []
+
+        for row in range(self.rowCount()):
+            _item = self.item(row, 2)
+
+            if _item:
+                players.append(_item.value)
+        
+        return players
+    
+
+    def getUUIDs(self) -> list:
+        """
+        Get the UUIDs
+        
+        :return: The UUIDs
+        """
+        uuids = []
+
+        for row in range(self.rowCount()):
+            _item = self.item(row, 12)
+
+            if _item:
+                uuids.append(_item.value)
+        
+        return uuids
+    
+    
     def resetTable(self) -> None:
         """
         Reset the table
@@ -341,6 +375,15 @@ class Table(QTableWidget):
         self.updateHeaders()
 
 
+    def getHeaders(self) -> list:
+        """
+        Get the headers
+        
+        :return: The headers
+        """
+        return self.header
+
+
     def updateHeaders(self) -> None:
         """
         Update the headers
@@ -350,10 +393,13 @@ class Table(QTableWidget):
         self.setHorizontalHeaderLabels(hd)
 
 
-    def sorting(self, column: int, order: int) -> None:
+    def sort(self, column: int, order: int) -> None:
         """
         Handle the sorting
         
         :param column: The column
-        :param order: The order"""
+        :param order: The order
+        """
+        self.sortByColumn(column, order)
+
         self.win.settings.update("sorting", [column, order])

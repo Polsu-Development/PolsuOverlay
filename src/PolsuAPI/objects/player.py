@@ -265,7 +265,7 @@ class Bedwars:
     
 
     def __repr__(self) -> str:
-        return f"<Bedwars formatted={self.formatted} stars={self.stars} games_played={self.games_played} winstreak={self.winstreak} kills={self.kills} deaths={self.deaths} kdr={self.kdr} fkills={self.fkills} fdeaths={self.fdeaths} fkdr={self.fkdr} wins={self.wins} losses={self.losses} wlr={self.wlr} beds={self.broken} broken={self.broken} bblr={self.bblr} quickbuy={self.quickbuy} requeue={self.requeue}>"
+        return f"<Bedwars formatted={self.formatted} stars={self.stars} games_played={self.games_played} winstreak={self.winstreak} kills={self.kills} deaths={self.deaths} kdr={self.kdr} fkills={self.fkills} fdeaths={self.fdeaths} fkdr={self.fkdr} wins={self.wins} losses={self.losses} wlr={self.wlr} beds={self.broken} broken={self.broken} bblr={self.bblr} requeue={self.requeue}>"
 
 
 class Blacklisted:
