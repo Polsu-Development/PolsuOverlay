@@ -788,9 +788,6 @@ class Overlay(FramelessMainWindow):
 
             self.logger.info("Logging out...")
 
-            if self.user:
-                self.plugins.broadcast("on_logout", self.user)
-
             try:
                 self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch, self.logger)
                 self.threads["logout"].start()
@@ -798,6 +795,12 @@ class Overlay(FramelessMainWindow):
             except:
                 self.logger.error(f"An error occurred while logging out!\nTraceback: {traceback.format_exc()}")
 
-        self.plugins.broadcast("on_unload")
+
+            if self.user:
+                self.plugins.broadcast("on_logout", self.user)
+
+
+        self.plugins.unload_plugins()
+
 
         self.logger.info("Polsu Overlay is now closed!")

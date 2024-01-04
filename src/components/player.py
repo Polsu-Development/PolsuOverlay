@@ -114,12 +114,12 @@ class Player:
         if len(new) == 1:
             self.win.logger.info(f"Requesting: {new[0]}.")
 
-            self.win.plugins.broadcast("on_player_load", new[0])
-
             try:
                 self.threads[cleaned] = Worker(self.client, new[0], manual)
                 self.threads[cleaned].playerObject.connect(self.update)
                 self.threads[cleaned].start()
+
+                self.win.plugins.broadcast("on_player_load", new[0])
             except:
                 self.win.logger.error(f"Error while loading a player ({new[0]}).\n\nTraceback: {traceback.format_exc()}")
         else:
@@ -139,13 +139,13 @@ class Player:
                 while uuid in self.threads:
                     uuid = str(uuid4())
 
-                for p in s:
-                    self.win.plugins.broadcast("on_player_load", p)
-
                 try:
                     self.threads[uuid] = Worker(self.client, s, manual)
                     self.threads[uuid].playerObject.connect(self.update)
                     self.threads[uuid].start()
+
+                    for p in s:
+                        self.win.plugins.broadcast("on_player_load", p)
                 except:
                     self.win.logger.error(f"Error while loading a player slice ({s}).\n\nTraceback: {traceback.format_exc()}")
 
@@ -164,12 +164,12 @@ class Player:
 
             self.win.logger.info(f"Requesting: {player}. (Connection)")
 
-            self.win.plugins.broadcast("on_player_load", player)
-
             try:
                 self.threads[cleaned] = Worker(self.client, uuid, True)
                 self.threads[cleaned].playerObject.connect(self.setRPCPlayer)
                 self.threads[cleaned].start()
+
+                self.win.plugins.broadcast("on_player_load", player)
             except:
                 self.win.logger.error(f"Error while loading a player ({player}) [Manual].\n\nTraceback: {traceback.format_exc()}")
 

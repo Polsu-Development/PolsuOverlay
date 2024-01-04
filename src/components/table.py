@@ -142,8 +142,6 @@ class Table(QTableWidget):
         """
         self.win.logger.info(f"Inserting {player.username} ({player.uuid}) in the table.")
 
-        self.win.plugins.broadcast("on_player_insert", player)
-
         try:
             # We need to disable the sorting before inserting or some data will be hidden...
             self.setSortingEnabled(False)
@@ -291,6 +289,8 @@ class Table(QTableWidget):
             self.setSortingEnabled(True)
 
             self.updateHeaders()
+
+            self.win.plugins.broadcast("on_player_insert", player)
         except:
             self.win.logger.critical(f"An error occurred while inserting {player.username} ({player.uuid}) in the table!\n\nTraceback: {traceback.format_exc()}")
 

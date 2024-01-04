@@ -156,9 +156,6 @@ class PluginCore:
         """
         for p in self.__plugins:
             if p.__name__ == plugin:
-                print(p)
-                print(method)
-                print(hasattr(p, method))
                 if hasattr(p, method):
                     self.logger.debug(f"Sending method, {method}, to plugin: {plugin}")
                     try:
