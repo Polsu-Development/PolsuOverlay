@@ -80,7 +80,7 @@ class Player:
         self.win.logger.debug(f"Loading {len(players)} player{'s' if len(players)>1 else ''}!")
 
         if self.win.plugins.askPlugins("on_player_load"):
-            self.win.plugins.broadcast("on_player_load", players)
+            self.win.plugins.broadcast("on_player_load", players, override=True)
             return
 
         new = []
@@ -167,7 +167,7 @@ class Player:
             self.loading.append(cleaned)
 
             if self.win.plugins.askPlugins("on_player_load"):
-                self.win.plugins.broadcast("on_player_load", player)
+                self.win.plugins.broadcast("on_player_load", player, override=True)
                 return
 
             self.win.logger.info(f"Requesting: {player}. (Connection)")

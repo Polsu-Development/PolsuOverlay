@@ -189,18 +189,20 @@ class PluginCore:
         self.__plugins = []
 
 
-    def broadcast(self, method: str, *args, **kwargs) -> None:
+    def broadcast(self, method: str, *args, override: bool = False, **kwargs) -> None:
         """
         Broadcast a method to all plugins
         
         :param method: The method to broadcast
         :param *args: The arguments to pass to the method
+        :param override: Whether to override the overlay function
         :param **kwargs: The keyword arguments to pass to the method
         """
         if DEV_MODE:
             self.logger.debug(f"Broadcasting method, {method}, to all plugins")
 
         for plugin in self.__plugins:
+            kwargs["override"] = override
             self.send(plugin.__name__, method, *args, **kwargs)
 
     
@@ -218,9 +220,15 @@ class PluginCore:
                 if hasattr(p, method):
                     if DEV_MODE:
                         self.logger.debug(f"Sending method, {method}, to plugin: {plugin}")
-                    
+
+                    # Check if the method has the arguments
+                    new_kwargs = {}
+                    for key, value in kwargs.items():
+                        if key in getattr(p, method).__code__.co_varnames:
+                            new_kwargs[key] = value
+
                     try:
-                        getattr(p, method)(*args, **kwargs)
+                        getattr(p, method)(*args, **new_kwargs)
                     except NotImplementedError:
                         pass
                 break
