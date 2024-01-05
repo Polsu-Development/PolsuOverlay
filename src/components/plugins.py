@@ -159,12 +159,12 @@ class PluginCore:
                             continue
 
 
-                        # Check if constants of plugins already exists
-                        constants = self.getAllConstants()
+                        # Check if overrides of plugins already exists
+                        overrides = self.getAllOverrides()
 
-                        for const in self.getPluginConstants(plugin):
-                            if const in constants:
-                                self.logger.warning(f"Plugin: {plugin.__name__}, has a constant that already exists: {const}")
+                        for override in self.getPluginOverrides(plugin):
+                            if override in overrides:
+                                self.logger.warning(f"Plugin: {plugin.__name__}, has a override that already exists: {override}")
                                 continue
 
 
@@ -245,59 +245,59 @@ class PluginCore:
         return self.__plugins
     
 
-    def askPlugins(self, constant: str) -> bool:
+    def askPlugins(self, override: str) -> bool:
         """
         Ask all plugins for a variable
         
-        :param constant: The constant to ask for
+        :param override: The override to ask for
         :return: The response
         """
         for plugin in self.__plugins:
-            if hasattr(plugin, constant):
-                if getattr(plugin, f"CONST_{constant}", False):
+            if hasattr(plugin, override):
+                if getattr(plugin, f"OVERRIDE_{override}", False):
                     if DEV_MODE:
-                        self.logger.debug(f"Plugin: {plugin.__name__}, responded to constant: {constant}")
+                        self.logger.debug(f"Plugin: {plugin.__name__}, responded to override: {override}")
                     return True
         else:
             return False
         
 
-    def askPlugin(self, plugin: Plugin, constant: str):
+    def askPlugin(self, plugin: Plugin, override: str):
         """
         Ask a plugin for a variable
         
         :param plugin: The plugin to ask
-        :param constant: The constant to ask for
+        :param override: The override to ask for
         :return: The response
         """
-        if hasattr(plugin, constant):
-            if getattr(plugin, f"CONST_{constant}", False):
+        if hasattr(plugin, override):
+            if getattr(plugin, f"CONST_{override}", False):
                 if DEV_MODE:
-                    self.logger.debug(f"Plugin: {plugin.__name__}, responded to constant: {constant}")
+                    self.logger.debug(f"Plugin: {plugin.__name__}, responded to override: {override}")
                 return True
         else:
             return False
 
 
-    def getPluginConstants(self, plugin: Plugin) -> list:
+    def getPluginOverrides(self, plugin: Plugin) -> list:
         """
-        Get all constants of a plugin
+        Get all overrides of a plugin
 
         :param plugin: The plugin instance
-        :return: A list of constants
+        :return: A list of overrides
         """
-        return list(filter(lambda constant: self.askPlugin(plugin, constant.replace("CONST_", "")), [attr for attr in dir(plugin) if not callable(getattr(plugin, attr)) and attr.startswith("CONST_")]))
+        return list(filter(lambda override: self.askPlugin(plugin, override.replace("OVERRIDE_", "")), [attr for attr in dir(plugin) if not callable(getattr(plugin, attr)) and attr.startswith("CONST_")]))
 
 
-    def getAllConstants(self) -> list:
+    def getAllOverrides(self) -> list:
         """
-        Get all constants
+        Get all overrides of all plugins
         
-        :return: A list of constants
+        :return: A list of overrides
         """
-        constants = []
+        overrides = []
 
         for plugin in self.__plugins:
-            constants.extend(self.getPluginConstants(plugin))
+            overrides.extend(self.getPluginOverrides(plugin))
 
-        return constants
+        return overrides
