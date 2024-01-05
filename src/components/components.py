@@ -288,6 +288,10 @@ def enterPress(win) -> None:
     
     :param win: The Overlay window
     """
+    if win.plugins.askPlugins("on_search"):
+        win.plugins.broadcast("on_search", win.searchBox.text())
+        return
+
     win.searchBox.setDisabled(True)
 
     av = False

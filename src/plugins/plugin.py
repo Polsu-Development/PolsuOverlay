@@ -50,6 +50,7 @@ class Plugin:
     disabled = False
 
     CONST_on_player_load = False
+    CONST_on_search = False
 
     logger: Logger
     blacklist: Type[TypeVar('PluginBlacklist')]
