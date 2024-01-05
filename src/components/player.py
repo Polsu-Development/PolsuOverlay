@@ -79,6 +79,10 @@ class Player:
         """
         self.win.logger.debug(f"Loading {len(players)} player{'s' if len(players)>1 else ''}!")
 
+        if self.win.plugins.askPlugins("on_player_load"):
+            self.win.logger.debug("Plugin cancelled the request!")
+            return
+
         new = []
         for player in players:
             player = player.split(" ")[0]

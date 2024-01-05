@@ -31,15 +31,12 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from ..components.logs import Logs
+from ..PolsuAPI import Polsu
 
 
-class PluginLogs:
-    def __init__(self, logs: Logs) -> None:
-        self.reset = logs.reset
-        self.isConnecting = logs.isConnecting
-        self.inGame = logs.inGame
-        self.isWaitingForGame = logs.isWaitingForGame
-        self.isInAParty = logs.isInAParty
-        self.getPartyMembers = logs.getPartyMembers
-        
+class PluginAPI:
+    def __init__(self, api: Polsu) -> None:
+        self.getPlayer = api.player.get
+        self.getPlayers = api.player.post
+        self.loadQuickbuy = api.player.loadQuickbuy
+        self.loadSkin = api.player.loadSkin

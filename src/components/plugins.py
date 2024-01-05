@@ -1,9 +1,43 @@
+"""
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                                                                                                                      ┃
+┃                                                  Polsu's Overlay                                                     ┃
+┃                                                                                                                      ┃
+┃                                                                                                                      ┃
+┃  • A Hypixel Bedwars Overlay in Python, 100% free and open source!                                                   ┃
+┃  > https://github.com/Polsu-Development/PolsuOverlay                                                                 ┃
+┃  • Made by Polsu's Development Team                                                                                  ┃
+┃                                                                                                                      ┃
+┃                                                                                                                      ┃
+┃                                                                                                                      ┃
+┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                                                                                                                      ┃
+┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
+┃  following conditions are met:                                                                                       ┃
+┃                                                                                                                      ┃
+┃  1. Redistributions of source code must retain the above copyright notice, this list of conditions and the           ┃
+┃     following disclaimer.                                                                                            ┃
+┃                                                                                                                      ┃
+┃  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the        ┃
+┃     following disclaimer in the documentation and/or other materials provided with the distribution.                 ┃
+┃                                                                                                                      ┃
+┃  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,  ┃
+┃  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE   ┃
+┃  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,  ┃
+┃  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR     ┃
+┃  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,   ┃
+┃  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE    ┃
+┃  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                                            ┃
+┃                                                                                                                      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+"""
 from src import DEV_MODE
 from ..plugins.plugin import Plugin
 from ..plugins.blacklist import PluginBlacklist
 from ..plugins.notification import PluginNotification
 from ..plugins.table import PluginTable
 from ..plugins.logs import PluginLogs
+from ..plugins.api import PluginAPI
 
 
 import os
@@ -24,6 +58,7 @@ class PluginCore:
         notification: PluginNotification,
         table: PluginTable,
         logs: PluginLogs,
+        api: PluginAPI,
     ) -> None:
         """
         Initialise the class
@@ -33,12 +68,14 @@ class PluginCore:
         :param notification: The notification
         :param table: The table
         :param logs: The logs
+        :param api: The API
         """
         self.logger = logger
         self.blacklist = blacklist
         self.notification = notification
         self.table = table
         self.logs = logs
+        self.api = api
 
         self.__plugins = []
 
@@ -79,6 +116,7 @@ class PluginCore:
                         "notification": self.notification,
                         "table": self.table,
                         "logs": self.logs,
+                        "api": self.api,
                     }
 
                     types = {
@@ -87,6 +125,7 @@ class PluginCore:
                         "notification": Type[TypeVar('PluginNotification')],
                         "table": Type[TypeVar('PluginTable')],
                         "logs": Type[TypeVar('PluginLogs')],
+                        "api": Type[TypeVar('PluginAPI')],
                     }
 
                     plugin_arguments = {}
@@ -186,3 +225,19 @@ class PluginCore:
         :return: A list of all plugins
         """
         return self.__plugins
+    
+
+    def askPlugins(self, constant: str) -> bool:
+        """
+        Ask all plugins for a variable
+        
+        :param constant: The constant to ask for
+        :return: The response
+        """
+        for plugin in self.__plugins:
+            if hasattr(plugin, constant):
+                if getattr(plugin, f"CONST_{constant}", False):
+                    self.logger.debug(f"Plugin: {plugin.__name__}, responded to constant: {constant}")
+                    return True
+        else:
+            return False
