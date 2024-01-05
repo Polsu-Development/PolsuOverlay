@@ -104,6 +104,7 @@ class Overlay(FramelessMainWindow):
         self.auto_minimize = False
         self.RPC = None
         self.user = None
+        self.tray = None
         self.blacklist: Blacklist = None
 
 
@@ -599,11 +600,14 @@ class Overlay(FramelessMainWindow):
         Minimise the window
         """
         self.win = True
+        self.showMinimized()
         self.window().showMinimized()
         self.win = False
         
         if self.quickbuyWindow is not None:
             self.quickbuyWindow.window().showMinimized()
+
+        print("Minimized")
 
         if not self.minimizeNotif:
             self.notif.send(
@@ -613,56 +617,57 @@ class Overlay(FramelessMainWindow):
 
             self.minimizeNotif = True
 
-        self.tray = Icon(
-            name = 'polsu', 
-            icon = Image.open(f"{self.pathAssets}/polsu/Polsu_.ico"),
-            title = f"Polsu Overlay v{__version__}",
-            menu = Mn(
-                MenuItem(
-                    text=f"Polsu Overlay",
-                    action=lambda: webbrowser.open('https://overlay.polsu.xyz'),
-                    default=False,
-                    visible=True,
-                    enabled=False,
-                    
-                ),
-                Mn.SEPARATOR,
-                MenuItem(
-                    text="Github",
-                    action=lambda: webbrowser.open('https://github.com/PolsuDevelopment'),
-                    default=False,
-                    visible=True
-                ),
-                MenuItem(
-                    text="Website",
-                    action=lambda: webbrowser.open('https://polsu.xyz'),
-                    default=False,
-                    visible=True
-                ),
-                MenuItem(
-                    text="Discord",
-                    action=lambda: webbrowser.open('https://discord.polsu.xyz'),
-                    default=False,
-                    visible=True
-                ),
-                Mn.SEPARATOR,
-                Mn.SEPARATOR,
-                MenuItem(
-                    text="Show",
-                    action=self.show_window,
-                    default=True,
-                    visible=True
-                ),
-                MenuItem(
-                    text="Quit",
-                    action=self.destroy_window,
-                    default=False,
-                    visible=True
+        if self.tray is None or not self.tray._running:
+            self.tray = Icon(
+                name = 'polsu', 
+                icon = Image.open(f"{self.pathAssets}/polsu/Polsu_.ico"),
+                title = f"Polsu Overlay v{__version__}",
+                menu = Mn(
+                    MenuItem(
+                        text=f"Polsu Overlay",
+                        action=lambda: webbrowser.open('https://overlay.polsu.xyz'),
+                        default=False,
+                        visible=True,
+                        enabled=False,
+                        
+                    ),
+                    Mn.SEPARATOR,
+                    MenuItem(
+                        text="Github",
+                        action=lambda: webbrowser.open('https://github.com/PolsuDevelopment'),
+                        default=False,
+                        visible=True
+                    ),
+                    MenuItem(
+                        text="Website",
+                        action=lambda: webbrowser.open('https://polsu.xyz'),
+                        default=False,
+                        visible=True
+                    ),
+                    MenuItem(
+                        text="Discord",
+                        action=lambda: webbrowser.open('https://discord.polsu.xyz'),
+                        default=False,
+                        visible=True
+                    ),
+                    Mn.SEPARATOR,
+                    Mn.SEPARATOR,
+                    MenuItem(
+                        text="Show",
+                        action=self.show_window,
+                        default=True,
+                        visible=True
+                    ),
+                    MenuItem(
+                        text="Quit",
+                        action=self.destroy_window,
+                        default=False,
+                        visible=True
+                    )
                 )
             )
-        )
 
-        self.tray.run()
+            self.tray.run()
 
 
     def paintEvent(self, event) -> None:
