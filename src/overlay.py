@@ -609,8 +609,6 @@ class Overlay(FramelessMainWindow):
         if self.quickbuyWindow is not None:
             self.quickbuyWindow.window().showMinimized()
 
-        print("Minimized")
-
         if not self.minimizeNotif:
             self.notif.send(
                 title="Minimized",

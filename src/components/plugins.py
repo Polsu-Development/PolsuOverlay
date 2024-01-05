@@ -157,7 +157,17 @@ class PluginCore:
                         if hasattr(plugin, "disabled") and plugin.disabled:
                             self.logger.warning(f"Plugin: {plugin.__name__}, is disabled")
                             continue
-                        
+
+
+                        # Check if constants of plugins already exists
+                        constants = self.getAllConstants()
+
+                        for const in self.getPluginConstants(plugin):
+                            if const in constants:
+                                self.logger.warning(f"Plugin: {plugin.__name__}, has a constant that already exists: {const}")
+                                continue
+
+
                         self.__plugins.append(plugin)
 
                         # Call the on_load method
@@ -237,7 +247,49 @@ class PluginCore:
         for plugin in self.__plugins:
             if hasattr(plugin, constant):
                 if getattr(plugin, f"CONST_{constant}", False):
-                    self.logger.debug(f"Plugin: {plugin.__name__}, responded to constant: {constant}")
+                    if DEV_MODE:
+                        self.logger.debug(f"Plugin: {plugin.__name__}, responded to constant: {constant}")
                     return True
         else:
             return False
+        
+
+    def askPlugin(self, plugin: Plugin, constant: str):
+        """
+        Ask a plugin for a variable
+        
+        :param plugin: The plugin to ask
+        :param constant: The constant to ask for
+        :return: The response
+        """
+        if hasattr(plugin, constant):
+            if getattr(plugin, f"CONST_{constant}", False):
+                if DEV_MODE:
+                    self.logger.debug(f"Plugin: {plugin.__name__}, responded to constant: {constant}")
+                return True
+        else:
+            return False
+
+
+    def getPluginConstants(self, plugin: Plugin) -> list:
+        """
+        Get all constants of a plugin
+
+        :param plugin: The plugin instance
+        :return: A list of constants
+        """
+        return list(filter(lambda constant: self.askPlugin(plugin, constant.replace("CONST_", "")), [attr for attr in dir(plugin) if not callable(getattr(plugin, attr)) and attr.startswith("CONST_")]))
+
+
+    def getAllConstants(self) -> list:
+        """
+        Get all constants
+        
+        :return: A list of constants
+        """
+        constants = []
+
+        for plugin in self.__plugins:
+            constants.extend(self.getPluginConstants(plugin))
+
+        return constants
