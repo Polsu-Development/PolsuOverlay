@@ -271,7 +271,7 @@ class PluginCore:
         :return: The response
         """
         if hasattr(plugin, override):
-            if getattr(plugin, f"CONST_{override}", False):
+            if getattr(plugin, f"OVERRIDE_{override}", False):
                 if DEV_MODE:
                     self.logger.debug(f"Plugin: {plugin.__name__}, responded to override: {override}")
                 return True
@@ -286,7 +286,7 @@ class PluginCore:
         :param plugin: The plugin instance
         :return: A list of overrides
         """
-        return list(filter(lambda override: self.askPlugin(plugin, override.replace("OVERRIDE_", "")), [attr for attr in dir(plugin) if not callable(getattr(plugin, attr)) and attr.startswith("CONST_")]))
+        return list(filter(lambda override: self.askPlugin(plugin, override.replace("OVERRIDE_", "")), [attr for attr in dir(plugin) if not callable(getattr(plugin, attr)) and attr.startswith("OVERRIDE_")]))
 
 
     def getAllOverrides(self) -> list:
