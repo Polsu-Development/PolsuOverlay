@@ -256,7 +256,6 @@ class Logs:
 
             players = []
 
-
             if PLAYER_MESSAGE_PATTERN.findall(line.replace("[CHAT] ", "")):
                 self.win.plugins.broadcast("on_player_message", line.replace("[CHAT] ", ""))
                 return
@@ -315,9 +314,13 @@ class Logs:
                     self.hideOverlay = True
                     self.hideOverlayTimer = 0
 
+                self.win.plugins.broadcast("on_game_start")
+
             elif "[CHAT] You have been eliminated!" == line:
                 self.hideOverlay = False
                 self.hideOverlayTimer = 0
+
+                self.win.plugins.broadcast("on_final_death")
 
             # Detects when a player joins a started game
             elif line.startswith("To leave ") or "[CHAT]        " == line:
@@ -347,6 +350,7 @@ class Logs:
                 self.autoWho = True
 
                 self.win.player.getPlayer(players)
+                self.win.plugins.broadcast("on_who", players)
                 players = []
 
             # Detects when /list is executed
@@ -360,6 +364,8 @@ class Logs:
                         players.append(x[1])
                     else:
                         players.append(x[0])
+
+                self.win.plugins.broadcast("on_list", players)
 
             # Detects when /msg +PLAYER is executed
             elif "Can't find a player by the name of '+" in line:
@@ -528,6 +534,8 @@ class Logs:
                 self.queue.append(player)
                 players.append(removeRank(player))
 
+                self.win.plugins.broadcast("on_join", player)
+
             # Detects when a player leaves the lobby
             elif " has quit!" in line:
                 player = line.split("[CHAT] ")[1].split(" has quit!")[0]
@@ -535,6 +543,18 @@ class Logs:
                 if player in self.queue:
                     self.queue.remove(player)
                     self.win.table.removePlayerFromName(player)
+
+                self.win.plugins.broadcast("on_quit", player)
+
+            elif line.endswith("FINAL KILL!"):
+                player = line.replace("[CHAT] ", "").split(" ")[0]
+                
+                if player in self.queue:
+                    self.queue.remove(player)
+                    self.win.table.removePlayerFromName(player)
+
+                self.win.plugins.broadcast("on_final_kill", player)
+
 
             # If some players where detected, add them to the queue
             if players:
