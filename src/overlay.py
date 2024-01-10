@@ -45,12 +45,14 @@ from .plugins.notification import PluginNotification
 from .plugins.table import PluginTable
 from .plugins.logs import PluginLogs
 from .plugins.api import PluginAPI
+from .plugins.settings import PluginSettings
+from .plugins.window import PluginWindow
 from .utils.path import resource_path
 from .utils.log import LoginWorker, LogoutWorker
 from .utils.colours import setColor
 
 
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QInputDialog
 from PyQt5.QtCore import Qt, QRectF, QEvent, QTimer, QVariantAnimation, QAbstractAnimation, QEventLoop
 from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFontDatabase, QFont
 from pyqt_frameless_window import FramelessMainWindow
@@ -233,7 +235,9 @@ class Overlay(FramelessMainWindow):
             PluginNotification(self.notif),
             PluginTable(self.table),
             PluginLogs(self.logs),
-            PluginAPI(self.player.client)
+            PluginAPI(self.player.client),
+            PluginSettings(self.settings),
+            PluginWindow(self.ask),
         )
         self.plugins.load_plugins(self.pluginsConfig)
         self.logger.info(f"There are {len(self.plugins.getPlugins())} plugins loaded.")
@@ -254,6 +258,26 @@ class Overlay(FramelessMainWindow):
             self.plugins.broadcast("on_login", user)
 
             self.player.loadPlayer(user.username, user.uuid)
+
+
+    def ask(self, title: str, message: str) -> str:
+        """
+        Ask the user a question
+        """
+        dialog = QInputDialog(self)
+        dialog.setWindowFlags(dialog.windowFlags() & ~Qt.WindowContextHelpButtonHint | Qt.MSWindowsFixedSizeDialogHint)
+        dialog.setInputMode(QInputDialog.TextInput)
+        dialog.setWindowTitle(title)
+        dialog.setLabelText(message)
+        dialog.setWindowOpacity(100)
+        dialog.setAttribute(Qt.WA_TranslucentBackground, False)
+        dialog.setStyleSheet("background: white")
+        dialog.setFixedSize(400, 100)
+
+        if dialog.exec_():
+            return dialog.textValue()
+        else:
+            return ""
 
 
     def showGameTime(self):

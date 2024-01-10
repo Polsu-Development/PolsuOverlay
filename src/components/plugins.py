@@ -38,6 +38,8 @@ from ..plugins.notification import PluginNotification
 from ..plugins.table import PluginTable
 from ..plugins.logs import PluginLogs
 from ..plugins.api import PluginAPI
+from ..plugins.settings import PluginSettings
+from ..plugins.window import PluginWindow
 
 
 import os
@@ -47,6 +49,7 @@ from logging import Logger
 from typing import Type, TypeVar
 
 
+# Please check src/plugins/plugin.py for more information about how plugins work!
 class PluginCore:
     """
     A class representing the plugin core
@@ -59,6 +62,8 @@ class PluginCore:
         table: PluginTable,
         logs: PluginLogs,
         api: PluginAPI,
+        settings: PluginSettings,
+        window: PluginWindow,
     ) -> None:
         """
         Initialise the class
@@ -76,6 +81,8 @@ class PluginCore:
         self.table = table
         self.logs = logs
         self.api = api
+        self.settings = settings
+        self.window = window
 
         self.__plugins = []
 
@@ -117,6 +124,8 @@ class PluginCore:
                         "table": self.table,
                         "logs": self.logs,
                         "api": self.api,
+                        "settings": self.settings,
+                        "window": self.window,
                     }
 
                     types = {
@@ -126,6 +135,8 @@ class PluginCore:
                         "table": Type[TypeVar('PluginTable')],
                         "logs": Type[TypeVar('PluginLogs')],
                         "api": Type[TypeVar('PluginAPI')],
+                        "settings": Type[TypeVar('PluginSettings')],
+                        "window": Type[TypeVar('PluginWindow')],
                     }
 
                     plugin_arguments = {}
@@ -189,6 +200,21 @@ class PluginCore:
         self.__plugins = []
 
 
+    def disable_plugin(self, plugin: Plugin) -> None:
+        """
+        Disable a plugin
+        
+        :param plugin: The plugin to disable
+        """
+        if plugin not in self.__plugins:
+            self.logger.warning(f"Plugin: {plugin.__name__}, isn't loaded! Cannot disable it...")
+            return
+        else:
+            self.__plugins.remove(plugin)
+
+            self.logger.warning(f"Disabled plugin: {plugin.__name__}")
+
+
     def broadcast(self, method: str, *args, override: bool = False, **kwargs) -> None:
         """
         Broadcast a method to all plugins
@@ -205,7 +231,7 @@ class PluginCore:
             kwargs["override"] = override
             self.send(plugin.__name__, method, *args, **kwargs)
 
-    
+
     def send(self, plugin: str, method: str, *args, **kwargs) -> None:
         """
         Send a method to a plugin
@@ -217,6 +243,10 @@ class PluginCore:
         """
         for p in self.__plugins:
             if p.__name__ == plugin:
+                if p.disabled:
+                    self.disable_plugin(p)
+                    continue
+
                 if hasattr(p, method):
                     if DEV_MODE:
                         self.logger.debug(f"Sending method, {method}, to plugin: {plugin}")
@@ -243,7 +273,7 @@ class PluginCore:
         :return: A list of all plugins
         """
         return self.__plugins
-    
+
 
     def askPlugins(self, override: str) -> bool:
         """
@@ -253,14 +283,11 @@ class PluginCore:
         :return: The response
         """
         for plugin in self.__plugins:
-            if hasattr(plugin, override):
-                if getattr(plugin, f"OVERRIDE_{override}", False):
-                    if DEV_MODE:
-                        self.logger.debug(f"Plugin: {plugin.__name__}, responded to override: {override}")
-                    return True
+            if self.askPlugin(plugin, override):
+                return True
         else:
             return False
-        
+
 
     def askPlugin(self, plugin: Plugin, override: str):
         """
@@ -270,6 +297,10 @@ class PluginCore:
         :param override: The override to ask for
         :return: The response
         """
+        if plugin.disabled:
+            self.disable_plugin(plugin) 
+            return False
+
         if hasattr(plugin, override):
             if getattr(plugin, f"OVERRIDE_{override}", False):
                 if DEV_MODE:

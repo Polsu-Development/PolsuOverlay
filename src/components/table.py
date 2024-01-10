@@ -310,7 +310,7 @@ class Table(QTableWidget):
                 players.append(_item.value)
         
         return players
-    
+
 
     def getUUIDs(self) -> list:
         """
@@ -327,8 +327,8 @@ class Table(QTableWidget):
                 uuids.append(_item.value)
         
         return uuids
-    
-    
+
+
     def resetTable(self) -> None:
         """
         Reset the table
@@ -389,7 +389,7 @@ class Table(QTableWidget):
         Update the headers
         """
         hd = self.header
-        hd[1]=f"˅ {self.count+1}"
+        hd[1] = f"˅ {self.count+1}"
         self.setHorizontalHeaderLabels(hd)
 
 
@@ -403,3 +403,32 @@ class Table(QTableWidget):
         self.sortByColumn(column, order)
 
         self.win.settings.update("sorting", [column, order])
+
+
+    def setGlobalBlacklist(self, uuid: str, tooltip: str, blacklisted: bool) -> None:
+        """
+        Set the global blacklist
+        
+        :param uuid: The player uuid
+        :param tooltip: The tooltip
+        :param blacklisted: Is blacklisted
+        :param icon: The icon
+        """
+        self.setSortingEnabled(False)
+
+        for row in range(self.rowCount()):
+            _item = self.item(row, 12)
+
+            if _item and _item.value == uuid:
+                button = QPushButton(self)
+                button.setIcon(QIcon(self.win.getIconPath("global-blacklist")))
+                button.setToolTip(tooltip)
+                button.setProperty("name", "global-blacklist")
+                self.setCellWidget(row, 13, button)
+
+                if blacklisted:
+                    self.setItem(row, 13, TableSortingItem(1))
+                else:
+                    self.setItem(row, 13, TableSortingItem(0))
+
+        self.setSortingEnabled(True)

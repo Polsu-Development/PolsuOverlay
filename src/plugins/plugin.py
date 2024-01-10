@@ -40,12 +40,36 @@ from typing import Type, TypeVar
 
 # Plugin class
 #
-# You musn't change the name of this class!
+# This is the base plugin class, all plugins must have this format.
+# Due to the way the plugin system works, you cannot inherit from this class
+# since your plugin is outside of the Posu Overlay package.
+#
+# All methods are optional & parameters are optional.
+# You musn't change the name of your class, it must be "Plugin", instead you
+# can change the name variable to whatever you want.
+# The name variable is used to identify your plugin and is mandatory.
+# All other variables are optional.
+#
+# A plugin can override some overlay internal methods, this is done by setting
+# the OVERRIDE_<THE METHOD> variable to True.
+# For example, if you want to override the on_player_load method, you would
+# set OVERRIDE_on_player_load to True.
+# This is useful if you want to do something instead of the overlay doing it.
+#
+# [!] WARNING: Only one plugin can override a method, if two plugins override
+# the same method, the overlay will only load the first one!
+#
+# [>] NOTE: You don't need to override methods if you only want to do something 
+# after the overlay has done it, you can just implement the method.
+#
+# If you have any questions, feel free to ask in the discord server!
+# https://discord.polsu.xyz
+
 class Plugin:
     """
     The base plugin class
     """
-    name = "Plugin"
+    name = "Plugin Example"
 
     disabled = False
 
@@ -57,6 +81,8 @@ class Plugin:
     notification: Type[TypeVar('PluginNotification')]
     table: Type[TypeVar('PluginTable')]
     api: Type[TypeVar('PluginAPI')]
+    settings: Type[TypeVar('PluginSettings')]
+    window: Type[TypeVar('PluginWindow')]
 
     def __init__(self) -> None:
         """

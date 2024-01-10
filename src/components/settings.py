@@ -126,3 +126,39 @@ class Settings:
 
         with open(self.win.pathConfig, "w") as f:
             json.dump(config, f, indent=6)
+
+    
+    def updateSetting(self, key: str, setting: Union[str, bool, list, dict]) -> None:
+        """
+        Update a plugin setting
+
+        :param key: Setting key (e.g. 'APIKey')
+        :param setting: Setting value
+        """
+        with open(self.win.pathConfig, "r") as f:
+            config = json.load(f)
+
+        if not "plugins" in config:
+            config["plugins"] = {}
+
+        config["plugins"][key] = setting
+
+        with open(self.win.pathConfig, "w") as f:
+            json.dump(config, f, indent=6)
+
+        
+    def getSetting(self, key: str) -> Union[str, bool, list, dict, None]:
+        """
+        Get a plugin setting
+        
+        :param key: Setting key
+        :return: Setting value
+        """
+        with open(self.win.pathConfig, "r") as f:
+            config = json.load(f)
+
+        if "plugins" in config:
+            if key in config["plugins"]:
+                return config["plugins"][key]
+            
+        return None
