@@ -126,3 +126,52 @@ class Plugin:
         Called when a message is sent
         """
         raise NotImplementedError("on_message() is not implemented!")
+    
+
+    def on_join(self, player: str) -> None:
+        """
+        Called when a player joins the game
+        """
+        raise NotImplementedError("on_join() is not implemented!")
+    
+
+    def on_leave(self, player: str) -> None:
+        """
+        Called when a player leaves the game
+        """
+        raise NotImplementedError("on_leave() is not implemented!")
+    
+
+    def on_final_kill(self, player: str) -> None:
+        """
+        Called when a player gets a final kill
+        """
+        raise NotImplementedError("on_final_kill() is not implemented!")
+    
+
+    def on_final_death(self, player: str) -> None:
+        """
+        Called when a player gets final killed
+        """
+        raise NotImplementedError("on_final_death() is not implemented!")
+    
+
+    def on_who(self) -> None:
+        """
+        Called when a player uses /who
+        """
+        raise NotImplementedError("on_who() is not implemented!")
+    
+
+    def on_list(self) -> None:
+        """
+        Called when a player uses /list
+        """
+        raise NotImplementedError("on_list() is not implemented!")
+    
+
+    def on_game_start(self) -> None:
+        """
+        Called when a game starts
+        """
+        raise NotImplementedError("on_game_start() is not implemented!")
