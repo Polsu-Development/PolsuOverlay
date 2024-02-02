@@ -47,6 +47,7 @@ from .plugins.logs import PluginLogs
 from .plugins.api import PluginAPI
 from .plugins.settings import PluginSettings
 from .plugins.window import PluginWindow
+from .plugins.player import PluginPlayer
 from .utils.path import resource_path
 from .utils.log import LoginWorker, LogoutWorker
 from .utils.colours import setColor
@@ -238,6 +239,7 @@ class Overlay(FramelessMainWindow):
             PluginAPI(self.player.client),
             PluginSettings(self.settings),
             PluginWindow(self.ask),
+            PluginPlayer(self.player),
         )
         self.plugins.load_plugins(self.pluginsConfig)
         self.logger.info(f"There are {len(self.plugins.getPlugins())} plugins loaded.")
