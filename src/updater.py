@@ -109,89 +109,103 @@ class Updater(FramelessDialog):
 
             try:
                 latest_version = requests.get('https://api.polsu.xyz/internal/overlay/version')
-                latest_version = latest_version.json()['version'].replace("v", "")
+                latest_version = latest_version.json().get("data", {}).get("version", None)
 
-                self.logger.info(f"Latest version available: {latest_version}")
-                if version.parse(__version__) < version.parse(latest_version):
-                    if EXECUTABLE:
-                        self.logger.info(f"Found a new version! Downloading...")
-                        self.label.setText(f"v{latest_version} - Found a new version! Updating...")
+                if not latest_version:
+                    self.logger.error(f"An error occurred while checking for updates! The server didn't respond.")
+                    self.label.setText(f"Can't check for updates. Please try again later.")
 
-                        os.rename(sys.argv[0], os.path.join(os.getcwd(), f"[{__version__} - Outdated] PolsuOverlay.exe"))
+                    self.value = False
 
-                        sleep(2)
-
-                        download_url = f"https://github.com/Polsu-Development/PolsuOverlay/releases/download/v{latest_version}/Polsu-Overlay.exe"
-
-                        directory = os.path.join(os.getcwd(), "Polsu Overlay.exe")
-
-                        self.label.setText(f"v{latest_version} - Downloading the latest version...")
-
-                        # Download the file and save it
-                        with requests.get(download_url, stream=True) as response:
-                            if response.status_code == 404:
-                                self.logger.error(f"An error occurred while downloading the latest version!\n\nTracebak: {traceback.format_exc()}")
-                                self.label.setText(f"[404] Found a new version, but an error occurred while downloading it!")
-
-                                self.value = False
-                                self.ended.emit(self, self.logger)
-
-                                return
-                            else:
-                                response.raise_for_status()
-
-                            total_size = int(response.headers.get('Content-Length', 0))
-
-                            bytes_downloaded = 0
-                            with open(directory, 'wb') as f:
-                                for chunk in response.iter_content(chunk_size=8192):
-                                    if chunk:
-                                        f.write(chunk)
-                                        f.flush()
-                                        bytes_downloaded += len(chunk)
-                                        
-                                        # Calculate and update the progress
-                                        progress = int((bytes_downloaded / total_size) * 100)
-                                        self.label.setText(f"v{latest_version} - Download in progress... ({progress}%)")
-
-                        self.logger.info(f"Download complete! Launching the new version...")
-                        self.label.setText(f"v{latest_version} - Download complete!")
-
-                        sleep(2)
-
-                        self.label.setText(f"v{latest_version} - Launching the new version...")
-
-                        sleep(2)
-
-                        self.value = None
-                        self.ended.emit(self, self.logger)
-
-                        path = lambda *p: __module__+'\\'.join(p)
-                        subprocess.call([directory, '-p', path().replace("\\", "/"), '-v', latest_version])
-                    else:
-                        self.logger.info(f"Found a new version! Download it from GitHub.")
-                        self.label.setText(f"v{latest_version} - A new version is available! Download it from GitHub.")
-
-                        self.value = False
-                        self.ended.emit(self, self.logger)
+                    self.progressBar.setMaximum(100)
+                    self.progressBar.setValue(1)
                 else:
-                    self.logger.info(f"No updates found. Lauching the overlay (v{__version__})")
-                    self.label.setText(f"No updates found.")
+                    latest_version = latest_version.replace("v", "")
 
-                    self.value = True
-                    self.ended.emit(self, self.logger)
+                    self.logger.info(f"Latest version available: {latest_version}")
+                    if version.parse(__version__) < version.parse(latest_version):
+                        if EXECUTABLE:
+                            self.logger.info(f"Found a new version! Downloading...")
+                            self.label.setText(f"v{latest_version} - Found a new version! Updating...")
+
+                            os.rename(sys.argv[0], os.path.join(os.getcwd(), f"[{__version__} - Outdated] PolsuOverlay.exe"))
+
+                            sleep(2)
+
+                            download_url = f"https://github.com/Polsu-Development/PolsuOverlay/releases/download/v{latest_version}/Polsu-Overlay.exe"
+
+                            directory = os.path.join(os.getcwd(), "Polsu Overlay.exe")
+
+                            self.label.setText(f"v{latest_version} - Downloading the latest version...")
+
+                            # Download the file and save it
+                            with requests.get(download_url, stream=True) as response:
+                                if response.status_code == 404:
+                                    self.logger.error(f"An error occurred while downloading the latest version!\n\nTracebak: {traceback.format_exc()}")
+                                    self.label.setText(f"[404] Found a new version, but an error occurred while downloading it!")
+
+                                    self.value = False
+                                    self.ended.emit(self, self.logger)
+
+                                    return
+                                else:
+                                    response.raise_for_status()
+
+                                total_size = int(response.headers.get('Content-Length', 0))
+
+                                bytes_downloaded = 0
+                                with open(directory, 'wb') as f:
+                                    for chunk in response.iter_content(chunk_size=8192):
+                                        if chunk:
+                                            f.write(chunk)
+                                            f.flush()
+                                            bytes_downloaded += len(chunk)
+                                            
+                                            # Calculate and update the progress
+                                            progress = int((bytes_downloaded / total_size) * 100)
+                                            self.label.setText(f"v{latest_version} - Download in progress... ({progress}%)")
+
+                            self.logger.info(f"Download complete! Launching the new version...")
+                            self.label.setText(f"v{latest_version} - Download complete!")
+
+                            sleep(2)
+
+                            self.label.setText(f"v{latest_version} - Launching the new version...")
+
+                            sleep(2)
+
+                            self.value = "Clean"
+                            self.ended.emit(self, self.logger)
+
+                            path = lambda *p: __module__+'\\'.join(p)
+                            subprocess.call([directory, '-p', path().replace("\\", "/"), '-v', latest_version])
+                        else:
+                            self.logger.info(f"Found a new version! Download it from GitHub.")
+                            self.label.setText(f"v{latest_version} - A new version is available! Download it from GitHub.")
+
+                            self.value = False
+                    else:
+                        self.logger.info(f"No updates found. Lauching the overlay (v{__version__})")
+                        self.label.setText(f"No updates found.")
+
+                        self.value = True
+                        self.ended.emit(self, self.logger)
             except requests.exceptions.ConnectionError:
                 self.logger.warning(f"An error occurred while updating the overlay! No internet connection!")
                 self.label.setText(f"Can't check for updates. Please try again later.")
 
+                self.progressBar.setMaximum(100)
+                self.progressBar.setValue(1)
+
                 self.value = False
-                self.ended.emit(self, self.logger)
             except:
                 self.logger.error(f"An error occurred while updating the overlay!\n\nTracebak: {traceback.format_exc()}")
                 self.label.setText(f"Someting went wrong... Please try again later.")
 
+                self.progressBar.setMaximum(100)
+                self.progressBar.setValue(1)
+
                 self.value = False
-                self.ended.emit(self, self.logger)
 
         self.logger.debug(f"Running on Windows: {'yes' if WINDOWS else 'no'}")
         self.logger.debug(f"Running as executable: {'yes' if EXECUTABLE else 'no'}")
