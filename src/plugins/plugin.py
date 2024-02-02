@@ -45,7 +45,7 @@ from typing import Type, TypeVar
 # since your plugin is outside of the Posu Overlay package.
 #
 # All methods are optional & parameters are optional.
-# You musn't change the name of your class, it must be "Plugin", instead you
+# You mustn't change the name of your class, it must be "Plugin", instead you
 # can change the name variable to whatever you want.
 # The name variable is used to identify your plugin and is mandatory.
 # All other variables are optional.
