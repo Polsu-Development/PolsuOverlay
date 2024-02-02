@@ -41,7 +41,7 @@ from aiohttp import ClientSession
 rewardsData = {
     "adsense_token": "Reward Token",
     "housing_package": "Housing Block",
-    "specialoccasion_reward_card_skull_green_treasure_chest": "Green Treassure Chest"
+    "specialoccasion_reward_card_skull_green_treasure_chest": "Green Treasure Chest"
 }
 
 appdata_regex = re.compile(r"window\.appData = '(.+)';")
