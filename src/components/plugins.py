@@ -40,10 +40,12 @@ from ..plugins.logs import PluginLogs
 from ..plugins.api import PluginAPI
 from ..plugins.settings import PluginSettings
 from ..plugins.window import PluginWindow
+from ..plugins.player import PluginPlayer
 
 
 import os
 import importlib.util
+import traceback
 
 from logging import Logger
 from typing import Type, TypeVar
@@ -64,6 +66,7 @@ class PluginCore:
         api: PluginAPI,
         settings: PluginSettings,
         window: PluginWindow,
+        player: PluginPlayer,
     ) -> None:
         """
         Initialise the class
@@ -74,6 +77,9 @@ class PluginCore:
         :param table: The table
         :param logs: The logs
         :param api: The API
+        :param settings: The settings
+        :param window: The window
+        :param player: The player
         """
         self.logger = logger
         self.blacklist = blacklist
@@ -83,6 +89,7 @@ class PluginCore:
         self.api = api
         self.settings = settings
         self.window = window
+        self.player = player
 
         self.__plugins = []
 
@@ -126,6 +133,7 @@ class PluginCore:
                         "api": self.api,
                         "settings": self.settings,
                         "window": self.window,
+                        "player": self.player,
                     }
 
                     types = {
@@ -137,6 +145,7 @@ class PluginCore:
                         "api": Type[TypeVar('PluginAPI')],
                         "settings": Type[TypeVar('PluginSettings')],
                         "window": Type[TypeVar('PluginWindow')],
+                        "player": Type[TypeVar('PluginPlayer')],
                     }
 
                     plugin_arguments = {}
@@ -227,9 +236,12 @@ class PluginCore:
         if DEV_MODE:
             self.logger.debug(f"Broadcasting method, {method}, to all plugins")
 
-        for plugin in self.__plugins:
-            kwargs["override"] = override
-            self.send(plugin.__name__, method, *args, **kwargs)
+        try:
+            for plugin in self.__plugins:
+                kwargs["override"] = override
+                self.send(plugin.__name__, method, *args, **kwargs)
+        except:
+            self.logger.error(f"An error occurred while broadcasting method, {method}, to all plugins!\n\nTraceback: {traceback.format_exc()}")
 
 
     def send(self, plugin: str, method: str, *args, **kwargs) -> None:
@@ -261,6 +273,8 @@ class PluginCore:
                         getattr(p, method)(*args, **new_kwargs)
                     except NotImplementedError:
                         pass
+                    except:
+                        self.logger.error(f"An error occurred while sending method, {method}, to plugin: {plugin}\n\nTraceback: {traceback.format_exc()}")
                 break
         else:
             self.logger.warning(f"Plugin: {plugin}, does not exist!")
@@ -301,7 +315,7 @@ class PluginCore:
             self.disable_plugin(plugin) 
             return False
 
-        if hasattr(plugin, override):
+        if hasattr(plugin, f"OVERRIDE_{override}"):
             if getattr(plugin, f"OVERRIDE_{override}", False):
                 if DEV_MODE:
                     self.logger.debug(f"Plugin: {plugin.__name__}, responded to override: {override}")

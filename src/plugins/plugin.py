@@ -76,13 +76,20 @@ class Plugin:
     OVERRIDE_on_player_load = False
     OVERRIDE_on_search = False
 
+    # Custom override, this doesn't override any overlay method but a small part
+    # of the overlay code checks. If False it will use Polsu's global blacklist. 
+    # If True, the plugin will handle the blacklist.
+    OVERRIDE_global_blacklist = False
+
     logger: Logger
     blacklist: Type[TypeVar('PluginBlacklist')]
     notification: Type[TypeVar('PluginNotification')]
     table: Type[TypeVar('PluginTable')]
+    logs: Type[TypeVar('PluginLogs')]
     api: Type[TypeVar('PluginAPI')]
     settings: Type[TypeVar('PluginSettings')]
     window: Type[TypeVar('PluginWindow')]
+    player: Type[TypeVar('PluginPlayer')]
 
     def __init__(self) -> None:
         """

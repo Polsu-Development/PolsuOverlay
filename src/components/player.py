@@ -259,6 +259,21 @@ class Player:
             self.win.settings.update("APIKey", "")
 
 
+    def getCache(self, player: str) -> Union[Pl, None]:
+        """
+        Get a player from the cache
+        
+        :param player: The player to get
+        :return: The player object if found, else None
+        """
+        cleaned = player.lower()
+
+        if cleaned in self.cache:
+            return self.cache[cleaned]
+        else:
+            return None
+
+
 class Worker(QThread):
     """
     The worker class, used to get players from the API

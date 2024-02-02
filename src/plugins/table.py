@@ -47,3 +47,4 @@ class PluginTable:
         self.getHeaders = table.getHeaders
         self.sort = table.sort
         self.setGlobalBlacklist = table.setGlobalBlacklist
+        self.setLineColour = table.setLineColour
