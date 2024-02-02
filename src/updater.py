@@ -141,7 +141,7 @@ class Updater(FramelessDialog):
                             # Download the file and save it
                             with requests.get(download_url, stream=True) as response:
                                 if response.status_code == 404:
-                                    self.logger.error(f"An error occurred while downloading the latest version!\n\nTracebak: {traceback.format_exc()}")
+                                    self.logger.error(f"An error occurred while downloading the latest version!\n\nTraceback: {traceback.format_exc()}")
                                     self.label.setText(f"[404] Found a new version, but an error occurred while downloading it!")
 
                                     self.value = False
@@ -185,7 +185,7 @@ class Updater(FramelessDialog):
 
                             self.value = False
                     else:
-                        self.logger.info(f"No updates found. Lauching the overlay (v{__version__})")
+                        self.logger.info(f"No updates found. Launching the overlay (v{__version__})")
                         self.label.setText(f"No updates found.")
 
                         self.value = True
@@ -200,7 +200,7 @@ class Updater(FramelessDialog):
                 self.value = False
             except:
                 self.logger.error(f"An error occurred while updating the overlay!\n\nTracebak: {traceback.format_exc()}")
-                self.label.setText(f"Someting went wrong... Please try again later.")
+                self.label.setText(f"Something went wrong... Please try again later.")
 
                 self.progressBar.setMaximum(100)
                 self.progressBar.setValue(1)
