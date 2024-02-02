@@ -48,7 +48,7 @@ class Colours:
         """
         Get a colour from the configuration set in: C:\\Users\\USER\\Polsu\\settings\\data.json
 
-        :param nb: Player reqeueue level index
+        :param nb: Player requeue level index
         :return: A string representing a colour code (hex, e.g. #FFFFFF)
         """
         return self.data[str(nb)]
