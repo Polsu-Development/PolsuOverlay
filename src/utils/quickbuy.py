@@ -71,6 +71,8 @@ class QuickbuyImage():
         self.threads = {}
         self.cache = {}
 
+        self.loading = []
+
 
     def run(self, player) -> None:
         """
@@ -78,15 +80,20 @@ class QuickbuyImage():
         
         :param player: The player to get the quickbuy image
         """
-        if player.username in self.cache:
-            self.setPixmap(player, self.cache[player.username], False)
+        if player.username in self.loading:
+            return
         else:
-            try:
-                self.threads[player.username] = Worker(self.win.player.client, player)
-                self.threads[player.username].update.connect(self.setPixmap)
-                self.threads[player.username].start()
-            except:
-                self.win.logger.error(f"An error occurred while loading the quickbuy image!\n\nTraceback: {traceback.format_exc()}")
+            if player.username in self.cache:
+                self.setPixmap(player, self.cache[player.username], False)
+            else:
+                try:
+                    self.threads[player.username] = Worker(self.win.player.client, player)
+                    self.threads[player.username].update.connect(self.setPixmap)
+                    self.threads[player.username].start()
+
+                    self.loading.append(player.username)
+                except:
+                    self.win.logger.error(f"An error occurred while loading the quickbuy image!\n\nTraceback: {traceback.format_exc()}")
 
 
     def setPixmap(self, player, pixmap: QPixmap, cache: bool = True)  -> None:
@@ -100,8 +107,14 @@ class QuickbuyImage():
         if not pixmap.isNull():
             if cache:
                 self.cache[player.username] = pixmap
+                self.loading.remove(player.username)
 
             pixmap = pixmap.scaledToHeight(1000).scaledToWidth(800)
+
+            if not self.win.quickbuyWindow:
+                self.win.quickbuyWindow = QuickbuyWindow(self.win, player, self)
+                self.win.quickbuyWindow.run()
+
             self.win.quickbuyWindow.label.setPixmap(pixmap)
             self.win.quickbuyWindow.label.setGeometry(0, 0, pixmap.size().width(), pixmap.size().height())
 

@@ -63,6 +63,7 @@ class Settings:
         self.win.dirConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'settings')
         self.win.themesConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'themes')
         self.win.blacklistConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'blacklist')
+        self.win.pluginsConfig = os.path.join(f"C:\\Users\\{getuser()}", 'Polsu', 'plugins')
 
         if not os.path.exists(self.win.dirConfig):
             os.makedirs(self.win.dirConfig)
@@ -76,6 +77,9 @@ class Settings:
 
         if not os.path.exists(self.win.blacklistConfig):
             os.makedirs(self.win.blacklistConfig)
+
+        if not os.path.exists(self.win.pluginsConfig):
+            os.makedirs(self.win.pluginsConfig)
 
         # Create the blacklist
         self.win.blacklist = Blacklist(self.win)
@@ -122,3 +126,39 @@ class Settings:
 
         with open(self.win.pathConfig, "w") as f:
             json.dump(config, f, indent=6)
+
+    
+    def updateSetting(self, key: str, setting: Union[str, bool, list, dict]) -> None:
+        """
+        Update a plugin setting
+
+        :param key: Setting key (e.g. 'APIKey')
+        :param setting: Setting value
+        """
+        with open(self.win.pathConfig, "r") as f:
+            config = json.load(f)
+
+        if not "plugins" in config:
+            config["plugins"] = {}
+
+        config["plugins"][key] = setting
+
+        with open(self.win.pathConfig, "w") as f:
+            json.dump(config, f, indent=6)
+
+        
+    def getSetting(self, key: str) -> Union[str, bool, list, dict, None]:
+        """
+        Get a plugin setting
+        
+        :param key: Setting key
+        :return: Setting value
+        """
+        with open(self.win.pathConfig, "r") as f:
+            config = json.load(f)
+
+        if "plugins" in config:
+            if key in config["plugins"]:
+                return config["plugins"][key]
+            
+        return None

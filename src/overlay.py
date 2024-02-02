@@ -38,14 +38,24 @@ from .components.logger import Logger
 from .components.rpc import openRPC, startRPC
 from .components.components import setupComponents, updateComponents, updateGeometry
 from .components.reward import closeRewards
+from .components.plugins import PluginCore
+from .components.blacklist import Blacklist
+from .plugins.blacklist import PluginBlacklist
+from .plugins.notification import PluginNotification
+from .plugins.table import PluginTable
+from .plugins.logs import PluginLogs
+from .plugins.api import PluginAPI
+from .plugins.settings import PluginSettings
+from .plugins.window import PluginWindow
+from .plugins.player import PluginPlayer
 from .utils.path import resource_path
 from .utils.log import LoginWorker, LogoutWorker
 from .utils.colours import setColor
 
 
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QInputDialog
 from PyQt5.QtCore import Qt, QRectF, QEvent, QTimer, QVariantAnimation, QAbstractAnimation, QEventLoop
-from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFontDatabase, QFont, QPixmap
+from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QPainterPath, QBrush, QFontDatabase, QFont
 from pyqt_frameless_window import FramelessMainWindow
 
 
@@ -97,6 +107,9 @@ class Overlay(FramelessMainWindow):
         self.reward = None
         self.auto_minimize = False
         self.RPC = None
+        self.user = None
+        self.tray = None
+        self.blacklist: Blacklist = None
 
 
         if DEV_MODE:
@@ -215,6 +228,25 @@ class Overlay(FramelessMainWindow):
         self.logger.info("Polsu Overlay is running!")
 
 
+        # Plugins
+        self.logger.debug("Loading the Plugins...")
+        self.plugins = PluginCore(
+            self.logger,
+            PluginBlacklist(self.blacklist),
+            PluginNotification(self.notif),
+            PluginTable(self.table),
+            PluginLogs(self.logs),
+            PluginAPI(self.player.client),
+            PluginSettings(self.settings),
+            PluginWindow(self.ask),
+            PluginPlayer(self.player),
+        )
+        self.plugins.load_plugins(self.pluginsConfig)
+        self.logger.info(f"There are {len(self.plugins.getPlugins())} plugins loaded.")
+        self.logger.debug(f"Plugins: {', '.join([plugin.__name__ for plugin in self.plugins.getPlugins()])}")
+        self.logger.debug("Plugins loaded!")
+
+
     def loginEnded(self, user: User) -> None:
         """
         Called when the login thread ends
@@ -224,7 +256,30 @@ class Overlay(FramelessMainWindow):
         if user:
             self.logger.info(f"Logged in as: {user.username} ({user.uuid})")
             self.user = user
+
+            self.plugins.broadcast("on_login", user)
+
             self.player.loadPlayer(user.username, user.uuid)
+
+
+    def ask(self, title: str, message: str) -> str:
+        """
+        Ask the user a question
+        """
+        dialog = QInputDialog(self)
+        dialog.setWindowFlags(dialog.windowFlags() & ~Qt.WindowContextHelpButtonHint | Qt.MSWindowsFixedSizeDialogHint)
+        dialog.setInputMode(QInputDialog.TextInput)
+        dialog.setWindowTitle(title)
+        dialog.setLabelText(message)
+        dialog.setWindowOpacity(100)
+        dialog.setAttribute(Qt.WA_TranslucentBackground, False)
+        dialog.setStyleSheet("background: white")
+        dialog.setFixedSize(400, 100)
+
+        if dialog.exec_():
+            return dialog.textValue()
+        else:
+            return ""
 
 
     def showGameTime(self):
@@ -573,6 +628,7 @@ class Overlay(FramelessMainWindow):
         Minimise the window
         """
         self.win = True
+        self.showMinimized()
         self.window().showMinimized()
         self.win = False
         
@@ -587,56 +643,57 @@ class Overlay(FramelessMainWindow):
 
             self.minimizeNotif = True
 
-        self.tray = Icon(
-            name = 'polsu', 
-            icon = Image.open(f"{self.pathAssets}/polsu/Polsu_.ico"),
-            title = f"Polsu Overlay v{__version__}",
-            menu = Mn(
-                MenuItem(
-                    text=f"Polsu Overlay",
-                    action=lambda: webbrowser.open('https://overlay.polsu.xyz'),
-                    default=False,
-                    visible=True,
-                    enabled=False,
-                    
-                ),
-                Mn.SEPARATOR,
-                MenuItem(
-                    text="Github",
-                    action=lambda: webbrowser.open('https://github.com/PolsuDevelopment'),
-                    default=False,
-                    visible=True
-                ),
-                MenuItem(
-                    text="Website",
-                    action=lambda: webbrowser.open('https://polsu.xyz'),
-                    default=False,
-                    visible=True
-                ),
-                MenuItem(
-                    text="Discord",
-                    action=lambda: webbrowser.open('https://discord.polsu.xyz'),
-                    default=False,
-                    visible=True
-                ),
-                Mn.SEPARATOR,
-                Mn.SEPARATOR,
-                MenuItem(
-                    text="Show",
-                    action=self.show_window,
-                    default=True,
-                    visible=True
-                ),
-                MenuItem(
-                    text="Quit",
-                    action=self.destroy_window,
-                    default=False,
-                    visible=True
+        if self.tray is None or not self.tray._running:
+            self.tray = Icon(
+                name = 'polsu', 
+                icon = Image.open(f"{self.pathAssets}/polsu/Polsu_.ico"),
+                title = f"Polsu Overlay v{__version__}",
+                menu = Mn(
+                    MenuItem(
+                        text=f"Polsu Overlay",
+                        action=lambda: webbrowser.open('https://overlay.polsu.xyz'),
+                        default=False,
+                        visible=True,
+                        enabled=False,
+                        
+                    ),
+                    Mn.SEPARATOR,
+                    MenuItem(
+                        text="Github",
+                        action=lambda: webbrowser.open('https://github.com/PolsuDevelopment'),
+                        default=False,
+                        visible=True
+                    ),
+                    MenuItem(
+                        text="Website",
+                        action=lambda: webbrowser.open('https://polsu.xyz'),
+                        default=False,
+                        visible=True
+                    ),
+                    MenuItem(
+                        text="Discord",
+                        action=lambda: webbrowser.open('https://discord.polsu.xyz'),
+                        default=False,
+                        visible=True
+                    ),
+                    Mn.SEPARATOR,
+                    Mn.SEPARATOR,
+                    MenuItem(
+                        text="Show",
+                        action=self.show_window,
+                        default=True,
+                        visible=True
+                    ),
+                    MenuItem(
+                        text="Quit",
+                        action=self.destroy_window,
+                        default=False,
+                        visible=True
+                    )
                 )
             )
-        )
 
-        self.tray.run()
+            self.tray.run()
 
 
     def paintEvent(self, event) -> None:
@@ -770,5 +827,13 @@ class Overlay(FramelessMainWindow):
                 self.threads["logout"].wait()
             except:
                 self.logger.error(f"An error occurred while logging out!\nTraceback: {traceback.format_exc()}")
+
+
+            if self.user:
+                self.plugins.broadcast("on_logout", self.user)
+
+
+        self.plugins.unload_plugins()
+
 
         self.logger.info("Polsu Overlay is now closed!")

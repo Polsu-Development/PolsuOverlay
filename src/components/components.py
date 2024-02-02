@@ -186,15 +186,14 @@ def updateComponents(win) -> None:
     for i in range(0, win.table.rowCount()):
         for j in range(0, win.table.columnCount()):
             item = win.table.cellWidget(i, j)
-            if type(item) == QPushButton and item.property("name") == "dots":
-                item.setIcon(QIcon(win.getIconPath("dots")))
-            if type(item) == QPushButton and item.property("name") == "blacklist":
-                item.setIcon(QIcon(win.getIconPath("blacklist")))
-            if type(item) == QPushButton and item.property("name") == "global-blacklist":
-                item.setIcon(QIcon(win.getIconPath("global-blacklist")))
+            if type(item) == QLabel and item.property("name") == "mcfont":
+                item.setFont(win.minecraftFont)
+            elif type(item) == QPushButton and item.property("name") in ["dots", "blacklist", "global-blacklist", "custom-blacklist", "remove", "verified", "annoying", "info"]:
+                item.setIcon(QIcon(win.getIconPath(item.property("name"))))
             else:
-                item.setFont(win.getFont())
-        
+                if item:
+                    item.setFont(win.getFont())
+
     win.table.update()
 
     win.minimizebutton.setStyleSheet(win.themeStyle.buttonsStyle)
@@ -288,6 +287,10 @@ def enterPress(win) -> None:
     
     :param win: The Overlay window
     """
+    if win.plugins.askPlugins("on_search"):
+        win.plugins.broadcast("on_search", win.searchBox.text(), override=True)
+        return
+
     win.searchBox.setDisabled(True)
 
     av = False
@@ -300,21 +303,25 @@ def enterPress(win) -> None:
 
             for i in range(0, win.table.columnCount()):
                 __item = win.table.item(row, i)
-                __item.setData(Qt.UserRole, 2)
 
-                anim = QVariantAnimation(
-                    win,
-                    duration=400,
-                    startValue=QColor("transparent"),
-                    endValue=QColor(win.themeStyle.table_highlight)
-                )
-                anim.valueChanged.connect(partial(setColor, __item))
-                anim.start(QAbstractAnimation.DeleteWhenStopped)
+                if __item:
+                    __item.setData(Qt.UserRole, 2)
+
+                    anim = QVariantAnimation(
+                        win,
+                        duration=400,
+                        startValue=QColor("transparent"),
+                        endValue=QColor(win.themeStyle.table_highlight)
+                    )
+                    anim.valueChanged.connect(partial(setColor, __item))
+                    anim.start(QAbstractAnimation.DeleteWhenStopped)
 
             av = True
 
     if not av:
         win.player.getPlayer([win.searchBox.text()], True)
+    
+    win.plugins.broadcast("on_search", win.searchBox.text())
 
     win.searchBox.setText("")
     win.searchBox.setDisabled(False)

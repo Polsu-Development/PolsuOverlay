@@ -76,7 +76,7 @@ def run(window: Updater, logger: Logger) -> None:
             errorWindow.setDetailedText(traceback.format_exc())
             errorWindow.setFocus()
             errorWindow.exec_()
-    elif not window.value:
+    elif window.value == "Clean":
         window.progressBar.setMaximum(100)
         window.progressBar.setValue(100)
 

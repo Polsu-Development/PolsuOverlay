@@ -38,11 +38,11 @@ This is the second version of Polsu's Overlay, a powerful Hypixel Bedwars Overla
 
 # 📥 Installation
 
-Download the latest version of Polsu's Overlay as an executable file (`.exe`) [here]().  
+Download the latest version of Polsu's Overlay as an executable file (`.exe`) [here](https://github.com/Polsu-Development/PolsuOverlay/releases).  
 
-You can also download the source code and run it with Python (see [Development](#💻-development)).
+You can also download the source code and run it with Python (see [Development](#-development)).
 
-Or even download the source code and compile it yourself with [`PyInstaller`](https://www.pyinstaller.org/) (see [Development](#💻-development)).
+Or even download the source code and compile it yourself with [`PyInstaller`](https://www.pyinstaller.org/) (see [Development](#-development)).
 
 
 # 📄 Usage
@@ -228,7 +228,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 # ┃    documentation and/or other materials provided       ┃
 # ┃    with the distribution.                              ┃
 # ┃                                                        ┃
-# ┃ 3. Neither the name of the <organization> nor the      ┃
+# ┃ 3. Neither the name of Polsu Overlay nor the           ┃
 # ┃    names of its contributors may be used to endorse    ┃
 # ┃    or promote products derived from this software      ┃
 # ┃    without specific prior written permission.          ┃
