@@ -199,7 +199,7 @@ class Updater(FramelessDialog):
 
                 self.value = False
             except:
-                self.logger.error(f"An error occurred while updating the overlay!\n\nTracebak: {traceback.format_exc()}")
+                self.logger.error(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
                 self.label.setText(f"Something went wrong... Please try again later.")
 
                 self.progressBar.setMaximum(100)
