@@ -2,8 +2,8 @@
 
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(2, 0, 6, 0),
-    prodvers=(2, 0, 6, 0),
+    filevers=(2, 0, 6, 1),
+    prodvers=(2, 0, 6, 1),
     mask=0x3f,
     flags=0x0,
     OS=0x4,
@@ -18,7 +18,7 @@ VSVersionInfo(
         u'040904B0',
         [StringStruct(u'CompanyName', u'Polsu Development'),
         StringStruct(u'FileDescription', u'Polsu Overlay'),
-        StringStruct(u'FileVersion', u'2.0.6.0'),
+        StringStruct(u'FileVersion', u'2.0.6.1'),
         StringStruct(u'InternalName', u'Polsu Overlay'),
         StringStruct(u'LegalCopyright', u'Copyright © 2022 - 2024 Polsu Development'),
         StringStruct(u'OriginalFilename', u'Polsu Overlay.exe'),

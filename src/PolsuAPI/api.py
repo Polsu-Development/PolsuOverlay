@@ -300,7 +300,7 @@ class Polsu:
                         raise APIError
                     else:
                         data = []
-                        for i, p in enumerate(json):
+                        for i, p in enumerate(json.get('data')):
                             if isinstance(p, bool):
                                 f = open(f"{resource_path('src/PolsuAPI')}/schemas/nicked.json", mode="r", encoding="utf-8")
                                 p = Player(load(f))
