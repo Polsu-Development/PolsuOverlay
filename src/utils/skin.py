@@ -42,6 +42,7 @@ from PyQt5.QtGui import QIcon, QPixmap, QColor
 
 
 import asyncio
+import traceback
 
 
 class SkinIcon():
@@ -72,11 +73,51 @@ class SkinIcon():
         :param player: The player to load the skin
         :param count: The position of the player in the table
         """
-        if player.username in self.cache:
-            self.setSkin(self.cache[player.username], player, count)
-        else:
+        try:
+            if player.username in self.cache:
+                self.setSkin(self.cache[player.username], player, count)
+            else:
+                button = QPushButton(self.table)
+                button.setIcon(self.default)
+                if not player.nicked:
+                    button.setStyleSheet(self.win.themeStyle.buttonsStyle)
+                    button.clicked.connect(lambda: displayQuickbuy(self.win, player))
+                button.setProperty("name", "head")
+
+                for row in range(self.table.rowCount()):
+                    _item = self.table.item(row, 2)
+
+                    if _item and _item.value == player.username:
+                        self.table.setCellWidget(row, 0, button)
+                        self.table.setItem(row, 0, TableSortingItem(count))
+
+                self.threads[player.username] = Worker(player, self.win.player.client, self.default, count)
+                self.threads[player.username].update.connect(self.setSkin)
+                self.threads[player.username].start()
+        except:
+            self.win.logger.critical(f"An error occurred while loading the skin of {player.username}!\n\nTraceback: {traceback.format_exc()}")
+
+
+    def rgba_to_hex(self, rgba):
+        rgba = tuple(int(x) for x in rgba)
+        return "#{:02X}{:02X}{:02X}{:02X}".format(*rgba)
+
+
+    def setSkin(self, icon: QIcon, player: Player, count: int, cache: bool = True) -> None:
+        """
+        Callback function to set the skin of the player
+        
+        :param icon: The icon to set
+        :param player: The player
+        :param count: The position of the player in the table
+        :param cache: Whether to cache the skin or not
+        """
+        try:
+            if cache:
+                self.cache[player.username] = icon
+
             button = QPushButton(self.table)
-            button.setIcon(self.default)
+            button.setIcon(icon)
             if not player.nicked:
                 button.setStyleSheet(self.win.themeStyle.buttonsStyle)
                 button.clicked.connect(lambda: displayQuickbuy(self.win, player))
@@ -89,43 +130,14 @@ class SkinIcon():
                     self.table.setCellWidget(row, 0, button)
                     self.table.setItem(row, 0, TableSortingItem(count))
 
-            self.threads[player.username] = Worker(player, self.win.player.client, self.default, count)
-            self.threads[player.username].update.connect(self.setSkin)
-            self.threads[player.username].start()
-
-
-    def setSkin(self, icon: QIcon, player: Player, count: int, cache: bool = True) -> None:
-        """
-        Callback function to set the skin of the player
-        
-        :param icon: The icon to set
-        :param player: The player
-        :param count: The position of the player in the table
-        :param cache: Whether to cache the skin or not
-        """
-        if cache:
-            self.cache[player.username] = icon
-
-        button = QPushButton(self.table)
-        button.setIcon(icon)
-        if not player.nicked:
-            button.setStyleSheet(self.win.themeStyle.buttonsStyle)
-            button.clicked.connect(lambda: displayQuickbuy(self.win, player))
-        button.setProperty("name", "head")
-
-        for row in range(self.table.rowCount()):
-            _item = self.table.item(row, 2)
-
-            if _item and _item.value == player.username:
-                self.table.setCellWidget(row, 0, button)
-                self.table.setItem(row, 0, TableSortingItem(count))
-
-                if player.blacklisted.status or player.local.status:
-                    color = QColor("#FF0000")
-                    color.setAlpha(50)
-                    
-                    item = self.table.item(row, 0)
-                    item.setBackground(color)
+                    it = self.table.item(row, 1)
+                    if it.background().color().getRgb() != (0, 0, 0, 255):
+                        color = QColor(self.rgba_to_hex(it.background().color().getRgb()))
+                        color.setAlpha(50)
+                        item = self.table.item(row, 0)
+                        item.setBackground(color)
+        except:
+            self.win.logger.critical(f"An error occurred while setting the skin of {player.username}!\n\nTraceback: {traceback.format_exc()}")
 
 
 class Worker(QThread):

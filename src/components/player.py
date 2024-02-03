@@ -78,6 +78,11 @@ class Player:
         :param manual: If the player is manually added
         """
         self.win.logger.debug(f"Loading {len(players)} player{'s' if len(players)>1 else ''}!")
+
+        if self.win.plugins.askPlugins("on_player_load"):
+            self.win.plugins.broadcast("on_player_load", players, override=True)
+            return
+
         new = []
         for player in players:
             player = player.split(" ")[0]
@@ -117,6 +122,8 @@ class Player:
                 self.threads[cleaned] = Worker(self.client, new[0], manual)
                 self.threads[cleaned].playerObject.connect(self.update)
                 self.threads[cleaned].start()
+
+                self.win.plugins.broadcast("on_player_load", new[0])
             except:
                 self.win.logger.error(f"Error while loading a player ({new[0]}).\n\nTraceback: {traceback.format_exc()}")
         else:
@@ -140,6 +147,9 @@ class Player:
                     self.threads[uuid] = Worker(self.client, s, manual)
                     self.threads[uuid].playerObject.connect(self.update)
                     self.threads[uuid].start()
+
+                    for p in s:
+                        self.win.plugins.broadcast("on_player_load", p)
                 except:
                     self.win.logger.error(f"Error while loading a player slice ({s}).\n\nTraceback: {traceback.format_exc()}")
 
@@ -156,12 +166,18 @@ class Player:
         if cleaned not in self.loading:
             self.loading.append(cleaned)
 
+            if self.win.plugins.askPlugins("on_player_load"):
+                self.win.plugins.broadcast("on_player_load", player, override=True)
+                return
+
             self.win.logger.info(f"Requesting: {player}. (Connection)")
 
             try:
                 self.threads[cleaned] = Worker(self.client, uuid, True)
                 self.threads[cleaned].playerObject.connect(self.setRPCPlayer)
                 self.threads[cleaned].start()
+
+                self.win.plugins.broadcast("on_player_load", player)
             except:
                 self.win.logger.error(f"Error while loading a player ({player}) [Manual].\n\nTraceback: {traceback.format_exc()}")
 
@@ -241,6 +257,21 @@ class Player:
         else:
             self.win.configAPIKey = ""
             self.win.settings.update("APIKey", "")
+
+
+    def getCache(self, player: str) -> Union[Pl, None]:
+        """
+        Get a player from the cache
+        
+        :param player: The player to get
+        :return: The player object if found, else None
+        """
+        cleaned = player.lower()
+
+        if cleaned in self.cache:
+            return self.cache[cleaned]
+        else:
+            return None
 
 
 class Worker(QThread):
