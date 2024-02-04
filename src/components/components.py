@@ -283,7 +283,7 @@ def updateGeometry(win) -> None:
 
 def enterPress(win) -> None:
     """
-    When the user press enter in the search box
+    When the user presses enter in the search box
     
     :param win: The Overlay window
     """

@@ -111,7 +111,7 @@ class Polsu:
     ┃  > This means you won't be able to use any of our Services anymore, including Polsu and Polsu's Overlay.     ┃\n
     ┃                                                                                                              ┃\n
     ┃  • Note: This warning applies to all endpoints starting with: '/internal'                                    ┃\n
-    ┃  > You are only allowed to use the pulbic endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
+    ┃  > You are only allowed to use the public endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
     ┃                                                                                                              ┃\n
     ┃                                                                                                              ┃\n
     ┃  • If you have any questions, don't hesitate to contact us on discord at: https://discord.polsu.xyz.         ┃\n
@@ -164,7 +164,7 @@ class Polsu:
     ┃  > This means you won't be able to use any of our Services anymore, including Polsu and Polsu's Overlay.     ┃\n
     ┃                                                                                                              ┃\n
     ┃  • Note: This warning applies to all endpoints starting with: '/internal'                                    ┃\n
-    ┃  > You are only allowed to use the pulbic endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
+    ┃  > You are only allowed to use the public endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
     ┃                                                                                                              ┃\n
     ┃                                                                                                              ┃\n
     ┃  • If you have any questions, don't hesitate to contact us on discord at: https://discord.polsu.xyz.         ┃\n
@@ -207,7 +207,7 @@ class Polsu:
     ┃  > This means you won't be able to use any of our Services anymore, including Polsu and Polsu's Overlay.     ┃\n
     ┃                                                                                                              ┃\n
     ┃  • Note: This warning applies to all endpoints starting with: '/internal'                                    ┃\n
-    ┃  > You are only allowed to use the pulbic endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
+    ┃  > You are only allowed to use the public endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
     ┃                                                                                                              ┃\n
     ┃                                                                                                              ┃\n
     ┃  • If you have any questions, don't hesitate to contact us on discord at: https://discord.polsu.xyz.         ┃\n
@@ -272,7 +272,7 @@ class Polsu:
     ┃  > This means you won't be able to use any of our Services anymore, including Polsu and Polsu's Overlay.     ┃\n
     ┃                                                                                                              ┃\n
     ┃  • Note: This warning applies to all endpoints starting with: '/internal'                                    ┃\n
-    ┃  > You are only allowed to use the pulbic endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
+    ┃  > You are only allowed to use the public endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
     ┃                                                                                                              ┃\n
     ┃                                                                                                              ┃\n
     ┃  • If you have any questions, don't hesitate to contact us on discord at: https://discord.polsu.xyz.         ┃\n
