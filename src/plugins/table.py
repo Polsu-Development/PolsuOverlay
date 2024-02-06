@@ -31,32 +31,20 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-class User:
-    """
-    A class representing a User.
-    """
-    def __init__(self, data: dict) -> None:
-        self.__username = data.get('username')
-        self.__uuid = data.get('uuid')
+from ..components.table import Table
 
 
-    @property
-    def username(self) -> str:
-        """
-        The username of the user.
-        """
-        return self.__username
-    
-    @property
-    def uuid(self) -> str:
-        """
-        The UUID of the user.
-        """
-        return self.__uuid
-
-    
-    def __repr__(self) -> str:
-        return f"<User username={self.username} uuid={self.uuid}>"
-    
-    def __str__(self) -> str:
-        return self.username
+class PluginTable:
+    def __init__(self, table: Table) -> None:
+        self.insert = table.insert
+        self.update = table.update
+        self.resetTable = table.resetTable
+        self.removePlayerFromUUID = table.removePlayerFromUUID
+        self.removePlayerFromName = table.removePlayerFromName
+        self.getPlayers = table.getPlayers
+        self.getUUIDs = table.getUUIDs
+        self.updateHeaders = table.updateHeaders
+        self.getHeaders = table.getHeaders
+        self.sort = table.sort
+        self.setGlobalBlacklist = table.setGlobalBlacklist
+        self.setLineColour = table.setLineColour

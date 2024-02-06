@@ -31,32 +31,22 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-class User:
+def getPingColour(ping: int) -> str:
     """
-    A class representing a User.
+    Get the colour of the ping based on the ping value
+    
+    :param ping: The ping value
+    :return: The colour of the ping
     """
-    def __init__(self, data: dict) -> None:
-        self.__username = data.get('username')
-        self.__uuid = data.get('uuid')
-
-
-    @property
-    def username(self) -> str:
-        """
-        The username of the user.
-        """
-        return self.__username
-    
-    @property
-    def uuid(self) -> str:
-        """
-        The UUID of the user.
-        """
-        return self.__uuid
-
-    
-    def __repr__(self) -> str:
-        return f"<User username={self.username} uuid={self.uuid}>"
-    
-    def __str__(self) -> str:
-        return self.username
+    if ping <= 50:
+        return "§a"
+    elif ping <= 100:
+        return "§2"
+    elif ping <= 150:
+        return "§e"
+    elif ping <= 200:
+        return "§6"
+    elif ping <= 300:
+        return "§c"
+    else:
+        return "§4"

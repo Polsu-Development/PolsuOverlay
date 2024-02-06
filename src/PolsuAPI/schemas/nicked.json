@@ -36,5 +36,9 @@
     "blacklisted": {
         "status": false,
         "reason": ""
+    },
+    "ping": {
+        "ping": 0,
+        "timestamp": -1
     }
 }

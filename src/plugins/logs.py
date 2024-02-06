@@ -31,32 +31,15 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-class User:
-    """
-    A class representing a User.
-    """
-    def __init__(self, data: dict) -> None:
-        self.__username = data.get('username')
-        self.__uuid = data.get('uuid')
+from ..components.logs import Logs
 
 
-    @property
-    def username(self) -> str:
-        """
-        The username of the user.
-        """
-        return self.__username
-    
-    @property
-    def uuid(self) -> str:
-        """
-        The UUID of the user.
-        """
-        return self.__uuid
-
-    
-    def __repr__(self) -> str:
-        return f"<User username={self.username} uuid={self.uuid}>"
-    
-    def __str__(self) -> str:
-        return self.username
+class PluginLogs:
+    def __init__(self, logs: Logs) -> None:
+        self.reset = logs.reset
+        self.isConnecting = logs.isConnecting
+        self.inGame = logs.inGame
+        self.isWaitingForGame = logs.isWaitingForGame
+        self.isInAParty = logs.isInAParty
+        self.getPartyMembers = logs.getPartyMembers
+        

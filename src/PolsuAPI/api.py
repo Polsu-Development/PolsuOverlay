@@ -40,6 +40,8 @@ from .objects.user import User
 from .exception import APIError, InvalidAPIKeyError, NotLinkedError
 
 
+import traceback
+
 from aiohttp import ClientSession, ContentTypeError
 from json import load
 
@@ -54,6 +56,9 @@ class Polsu:
 
         # The current API base url
         self.api = "https://api.polsu.xyz"
+
+        self.polsuHeaders = __header__
+        self.polsuHeaders["API-Key"] = self.key
     
 
     async def get_key_stats(self) -> APIKey:
@@ -67,7 +72,7 @@ class Polsu:
                 self.logger.info(f"GET /api/key?key={self.key}")
 
             async with ClientSession() as session:
-                async with session.get(f"{self.api}/api/key?key={self.key}", headers=__header__) as response:
+                async with session.get(f"{self.api}/api/key", headers=self.polsuHeaders) as response:
                     json = await response.json()
                     if response.status == 403:
                         raise InvalidAPIKeyError(self.key)
@@ -80,6 +85,9 @@ class Polsu:
                         return APIKey(json)
         except ContentTypeError:
             raise APIError
+        except Exception as e:
+            self.logger.error(f"An error occurred while getting the key stats!\n\nTraceback: {traceback.format_exc()} | {e}")
+            return None
         
 
     async def login(self) -> User:
@@ -103,7 +111,7 @@ class Polsu:
     ┃  > This means you won't be able to use any of our Services anymore, including Polsu and Polsu's Overlay.     ┃\n
     ┃                                                                                                              ┃\n
     ┃  • Note: This warning applies to all endpoints starting with: '/internal'                                    ┃\n
-    ┃  > You are only allowed to use the pulbic endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
+    ┃  > You are only allowed to use the public endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
     ┃                                                                                                              ┃\n
     ┃                                                                                                              ┃\n
     ┃  • If you have any questions, don't hesitate to contact us on discord at: https://discord.polsu.xyz.         ┃\n
@@ -112,10 +120,10 @@ class Polsu:
         """
         try:
             if DEV_MODE:
-                self.logger.info(f"GET /internal/overlay/login?key={self.key}&overlay=true")
+                self.logger.info(f"GET /internal/overlay/login?overlay=true")
 
             async with ClientSession() as session:
-                async with session.get(f"{self.api}/internal/overlay/login?key={self.key}&overlay=true", headers=__header__) as response:
+                async with session.get(f"{self.api}/internal/overlay/login?overlay=true", headers=self.polsuHeaders) as response:
                     json = await response.json()
                     if response.status == 403:
                         self.logger.error(f"An error occurred while logging in: {response.status}")
@@ -132,6 +140,9 @@ class Polsu:
                             return User(json.get('data'))
         except ContentTypeError:
             raise APIError
+        except Exception as e:
+            self.logger.error(f"An error occurred while logging in!\n\nTraceback: {traceback.format_exc()} | {e}")
+            return None
         
     
     async def logout(self, timestamp: int) -> None:
@@ -153,7 +164,7 @@ class Polsu:
     ┃  > This means you won't be able to use any of our Services anymore, including Polsu and Polsu's Overlay.     ┃\n
     ┃                                                                                                              ┃\n
     ┃  • Note: This warning applies to all endpoints starting with: '/internal'                                    ┃\n
-    ┃  > You are only allowed to use the pulbic endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
+    ┃  > You are only allowed to use the public endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
     ┃                                                                                                              ┃\n
     ┃                                                                                                              ┃\n
     ┃  • If you have any questions, don't hesitate to contact us on discord at: https://discord.polsu.xyz.         ┃\n
@@ -162,13 +173,16 @@ class Polsu:
         """
         try:
             if DEV_MODE:
-                self.logger.info(f"POST /internal/overlay/logout?key={self.key}&overlay=true")
+                self.logger.info(f"POST /internal/overlay/logout?overlay=true")
 
             async with ClientSession() as session:
-                async with session.post(f"{self.api}/internal/overlay/logout?key={self.key}&timestamp={timestamp}&overlay=true", headers=__header__):
+                async with session.post(f"{self.api}/internal/overlay/logout?timestamp={timestamp}&overlay=true", headers=self.polsuHeaders):
                     pass
         except ContentTypeError:
             raise APIError
+        except Exception as e:
+            self.logger.error(f"An error occurred while logging out!\n\nTraceback: {traceback.format_exc()} | {e}")
+            return None
         
 
     async def get_stats(self, player: str) -> Player:
@@ -193,7 +207,7 @@ class Polsu:
     ┃  > This means you won't be able to use any of our Services anymore, including Polsu and Polsu's Overlay.     ┃\n
     ┃                                                                                                              ┃\n
     ┃  • Note: This warning applies to all endpoints starting with: '/internal'                                    ┃\n
-    ┃  > You are only allowed to use the pulbic endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
+    ┃  > You are only allowed to use the public endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
     ┃                                                                                                              ┃\n
     ┃                                                                                                              ┃\n
     ┃  • If you have any questions, don't hesitate to contact us on discord at: https://discord.polsu.xyz.         ┃\n
@@ -202,10 +216,10 @@ class Polsu:
         """
         try:
             if DEV_MODE:
-                self.logger.info(f"GET /internal/overlay/player?key={self.key}&player={player}&overlay=true")
+                self.logger.info(f"GET /internal/overlay/player?player={player}&overlay=true")
 
             async with ClientSession() as session:
-                async with session.get(f"{self.api}/internal/overlay/player?key={self.key}&player={player}&overlay=true", headers=__header__) as response:
+                async with session.get(f"{self.api}/internal/overlay/player?player={player}&overlay=true", headers=self.polsuHeaders) as response:
                     json = await response.json()
 
                     if DEV_MODE:
@@ -231,6 +245,10 @@ class Polsu:
                             return Player(json.get('data'))
         except ContentTypeError:
             raise APIError
+        except Exception as e:
+            self.logger.error(f"An error occurred while getting the stats of {player}!\n\nTraceback: {traceback.format_exc()} | {e}")
+            return None
+
 
     async def post_stats(self, players: list) -> Player:
         """
@@ -254,7 +272,7 @@ class Polsu:
     ┃  > This means you won't be able to use any of our Services anymore, including Polsu and Polsu's Overlay.     ┃\n
     ┃                                                                                                              ┃\n
     ┃  • Note: This warning applies to all endpoints starting with: '/internal'                                    ┃\n
-    ┃  > You are only allowed to use the pulbic endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
+    ┃  > You are only allowed to use the public endpoints, listed in the documentation at: https://api.polsu.xyz   ┃\n
     ┃                                                                                                              ┃\n
     ┃                                                                                                              ┃\n
     ┃  • If you have any questions, don't hesitate to contact us on discord at: https://discord.polsu.xyz.         ┃\n
@@ -267,10 +285,10 @@ class Polsu:
 
         try:
             if DEV_MODE:
-                self.logger.info(f"POST /internal/overlay/player?key={self.key}&overlay=true")
+                self.logger.info(f"POST /internal/overlay/player?overlay=true")
 
             async with ClientSession() as session:
-                async with session.post(f"{self.api}/internal/overlay/player?key={self.key}&overlay=true", headers=__header__, json=json) as response:
+                async with session.post(f"{self.api}/internal/overlay/player?overlay=true", headers=self.polsuHeaders, json=json) as response:
                     json = await response.json()
                     if response.status == 403:
                         self.logger.error(f"An error occurred while logging in: {response.status}")
@@ -282,7 +300,7 @@ class Polsu:
                         raise APIError
                     else:
                         data = []
-                        for i, p in enumerate(json):
+                        for i, p in enumerate(json.get('data')):
                             if isinstance(p, bool):
                                 f = open(f"{resource_path('src/PolsuAPI')}/schemas/nicked.json", mode="r", encoding="utf-8")
                                 p = Player(load(f))
@@ -294,8 +312,11 @@ class Polsu:
                         return data
         except ContentTypeError:
             raise APIError
-        
-    
+        except Exception as e:
+            self.logger.error(f"An error occurred while getting the stats of {players}!\n\nTraceback: {traceback.format_exc()} | {e}")
+            return None
+
+
     async def load_quickbuy(self, uuid: str) -> None:
         """
         Load the Player quickbuy
@@ -304,10 +325,10 @@ class Polsu:
         """
         try:
             if DEV_MODE:
-                self.logger.info(f"GET /polsu/bedwars/quickbuy?key={self.key}&uuid={uuid}")
+                self.logger.info(f"GET /polsu/bedwars/quickbuy?uuid={uuid}")
 
             async with ClientSession() as session:
-                async with session.get(f"{self.api}/polsu/bedwars/quickbuy?key={self.key}&uuid={uuid}", headers=__header__) as response:
+                async with session.get(f"{self.api}/polsu/bedwars/quickbuy?uuid={uuid}", headers=self.polsuHeaders) as response:
                     json = await response.json()
                     if response.status == 403:
                         self.logger.error(f"An error occurred while logging in: {response.status}")
@@ -319,12 +340,15 @@ class Polsu:
                         raise APIError
                     else:
                         if json.get('data', {}).get('image', None):
-                            async with session.get(json.get('data', {}).get('image'), headers=__header__) as response:
+                            async with session.get(json.get('data', {}).get('image'), headers=self.polsuHeaders) as response:
                                 return await response.read()
                         else:
                             raise APIError
         except ContentTypeError:
             raise APIError
+        except Exception as e:
+            self.logger.error(f"An error occurred while getting the quickbuy of {uuid}!\n\nTraceback: {traceback.format_exc()} | {e}")
+            return None
 
     
     async def load_skin(self, player: Player) -> None:
@@ -345,3 +369,6 @@ class Polsu:
                         raise APIError
         except ContentTypeError:
             raise APIError
+        except Exception as e:
+            self.logger.error(f"An error occurred while getting the skin of {player.uuid}!\n\nTraceback: {traceback.format_exc()} | {e}")
+            return None

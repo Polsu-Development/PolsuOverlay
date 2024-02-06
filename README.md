@@ -5,6 +5,10 @@
 # Polsu's Overlay
 A Hypixel Bedwars Overlay in Python, 100% free and open source!
 
+<a href="https://github.com/Polsu-Development/PolsuOverlay/releases"><img src="https://img.shields.io/github/downloads/Polsu-Development/PolsuOverlay/total" alt="Downloads"></a>
+<a href="https://discord.polsu.xyz"><img src="https://img.shields.io/discord/761623845119328257?color=7289DA&label=Discord" alt="Discord"></a>
+<a><img src="https://wakatime.com/badge/user/ae13d286-a127-41f2-b631-4c4b2e09d04c/project/bdf90bf4-bb4f-4adb-8305-c4523e188b2c.svg" alt="Wakatime"></a>
+
 </div>
   
   
@@ -34,11 +38,11 @@ This is the second version of Polsu's Overlay, a powerful Hypixel Bedwars Overla
 
 # 📥 Installation
 
-Download the latest version of Polsu's Overlay as an executable file (`.exe`) [here]().  
+Download the latest version of Polsu's Overlay as an executable file (`.exe`) [here](https://github.com/Polsu-Development/PolsuOverlay/releases).  
 
-You can also download the source code and run it with Python (see [Development](#💻-development)).
+You can also download the source code and run it with Python (see [Development](#-development)).
 
-Or even download the source code and compile it yourself with [`PyInstaller`](https://www.pyinstaller.org/) (see [Development](#💻-development)).
+Or even download the source code and compile it yourself with [`PyInstaller`](https://www.pyinstaller.org/) (see [Development](#-development)).
 
 
 # 📄 Usage
@@ -224,7 +228,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 # ┃    documentation and/or other materials provided       ┃
 # ┃    with the distribution.                              ┃
 # ┃                                                        ┃
-# ┃ 3. Neither the name of the <organization> nor the      ┃
+# ┃ 3. Neither the name of Polsu Overlay nor the           ┃
 # ┃    names of its contributors may be used to endorse    ┃
 # ┃    or promote products derived from this software      ┃
 # ┃    without specific prior written permission.          ┃

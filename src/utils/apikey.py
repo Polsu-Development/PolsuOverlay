@@ -110,7 +110,7 @@ def apikeyUpdate(parent, data) -> None:
 
         parent.apikeyBox.setText("")
         parent.apikeyBox.setPlaceholderText(newString)
-        parent.win.notif.send(title="Valid API Key", message="Your Polsu API Key is valid you can now launch a Bedwars game!")
+        parent.win.notif.send(title="Valid API Key", message="Your Polsu API Key is valid, you can now launch a Bedwars game!")
 
         loop = QEventLoop()
         QTimer.singleShot(3000, loop.quit)

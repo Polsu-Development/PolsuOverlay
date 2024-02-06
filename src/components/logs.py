@@ -64,13 +64,10 @@ class Logs:
         self.win = win
 
         self.oldString = ""
-        self.connected = False
         self.timeIconIndex = 1
         self.error_sent = False
 
-        self.inAParty = False
         self.waitingForGame = False
-
         self.isInGame = False
         self.gameStart = None
 
@@ -85,6 +82,51 @@ class Logs:
 
         self.keyboard = Controller()
 
+    
+    def isConnecting(self) -> bool:
+        """
+        Returns if the player is connecting to Hypixel
+        
+        :return: A boolean representing if the player is connecting to Hypixel
+        """
+        return self.connecting
+
+
+    def inGame(self) -> bool:
+        """
+        Returns if the player is in a game
+
+        :return: A boolean representing if the player is in a game
+        """
+        return self.isInGame
+
+
+    def isWaitingForGame(self) -> bool:
+        """
+        Returns if the player is waiting for a game
+
+        :return: A boolean representing if the player is waiting for a game
+        """
+        return self.waitingForGame
+
+
+    def isInAParty(self) -> bool:
+        """
+        Returns if the player is in a party
+
+        :return: A boolean representing if the player is in a party
+        """
+        return self.party
+    
+
+    def getPartyMembers(self) -> int:
+        """
+        Returns the number of party members
+
+        :return: An integer representing the number of party members
+        """
+        return self.partyMembers
+    
 
     def reset(self, autowho: bool = False) -> None:
         """
@@ -216,8 +258,8 @@ class Logs:
 
             players = []
 
-
             if PLAYER_MESSAGE_PATTERN.findall(line.replace("[CHAT] ", "")):
+                self.win.plugins.broadcast("on_player_message", line.replace("[CHAT] ", ""))
                 return
 
 
@@ -276,9 +318,13 @@ class Logs:
                     self.hideOverlay = True
                     self.hideOverlayTimer = 0
 
+                self.win.plugins.broadcast("on_game_start")
+
             elif "[CHAT] You have been eliminated!" == line:
                 self.hideOverlay = False
                 self.hideOverlayTimer = 0
+
+                self.win.plugins.broadcast("on_final_death")
 
             # Detects when a player joins a started game
             elif line.startswith("To leave ") or "[CHAT]        " == line:
@@ -308,6 +354,7 @@ class Logs:
                 self.autoWho = True
 
                 self.win.player.getPlayer(players)
+                self.win.plugins.broadcast("on_who", players)
                 players = []
 
             # Detects when /list is executed
@@ -321,6 +368,8 @@ class Logs:
                         players.append(x[1])
                     else:
                         players.append(x[0])
+
+                self.win.plugins.broadcast("on_list", players)
 
             # Detects when /msg +PLAYER is executed
             elif "Can't find a player by the name of '+" in line:
@@ -489,6 +538,8 @@ class Logs:
                 self.queue.append(player)
                 players.append(removeRank(player))
 
+                self.win.plugins.broadcast("on_join", player)
+
             # Detects when a player leaves the lobby
             elif " has quit!" in line:
                 player = line.split("[CHAT] ")[1].split(" has quit!")[0]
@@ -497,6 +548,21 @@ class Logs:
                     self.queue.remove(player)
                     self.win.table.removePlayerFromName(player)
 
+                self.win.plugins.broadcast("on_quit", player)
+
+            elif line.endswith("FINAL KILL!"):
+                player = line.replace("[CHAT] ", "").split(" ")[0]
+                
+                if player in self.queue:
+                    self.queue.remove(player)
+                    self.win.table.removePlayerFromName(player)
+
+                self.win.plugins.broadcast("on_final_kill", player)
+
+
             # If some players where detected, add them to the queue
             if players:
                 self.win.player.getPlayer(players)
+
+
+            self.win.plugins.broadcast("on_message", line)
