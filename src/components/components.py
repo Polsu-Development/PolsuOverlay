@@ -37,6 +37,7 @@ from .apikey import openSettings
 from .reward import openRewards
 from ..utils.colours import setColor
 from ..utils.constants import GAMEMODES
+from ..utils.username import isValidPlayer
 
 from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit, QComboBox
 from PyQt5.QtCore import Qt, QSize, QVariantAnimation, QAbstractAnimation
@@ -304,6 +305,13 @@ def enterPress(win) -> None:
     
     :param win: The Overlay window
     """
+    if not isValidPlayer(win.searchBox.text()):
+        win.notif.send(
+            title="Invalid player",
+            message="The player you entered is invalid!",
+        )
+        return
+
     if win.plugins.askPlugins("on_search"):
         win.plugins.broadcast("on_search", win.searchBox.text(), override=True)
         return

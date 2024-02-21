@@ -45,7 +45,7 @@ def isValidPlayer(player: str) -> bool:
     :param player: The player
     :return: Whether the player is valid
     """
-    if len(player)>16:
+    if len(player) > 16:
         return False
     else:
         return all(char in characters for char in player)
