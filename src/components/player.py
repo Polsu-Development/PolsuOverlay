@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -188,10 +188,10 @@ class Player:
 
         :param player: The player to set
         """
-        if self.win.RPC and player:
+        if self.win.RPC and not isinstance(self.win.RPC, int) and player and isinstance(player, Pl):
             self.win.RPC.setPlayer(player)
 
-        if player:
+        if player and player != -1:
             self.update(player)
 
 
@@ -238,7 +238,17 @@ class Player:
                 message="Something went wrong while loading the player! Is the API Key valid?"
             )
         elif player:
-            player.bedwars.requeue.colour = self.rqColour[player.bedwars.requeue.index]
+            STATS = {
+                "Overall": player.bedwars,
+                "Core": player.bedwars.core,
+                "Solos": player.bedwars.solos,
+                "Doubles": player.bedwars.doubles,
+                "Threes": player.bedwars.threes,
+                "Fours": player.bedwars.fours,
+                "4v4": player.bedwars.four_v_four,
+            }
+            for stat in STATS:
+                STATS[stat].requeue.colour = self.rqColour[STATS[stat].requeue.index]
 
             if cache:
                 self.cache[player.cleaned] = player
@@ -274,11 +284,25 @@ class Player:
             return None
 
 
+    def getCacheFromUUID(self, uuid: str) -> Union[Pl, None]:
+        """
+        Get a player from the cache
+        
+        :param player: The player to get
+        :return: The player object if found, else None
+        """
+        for cleaned in self.cache:
+            if self.cache[cleaned].uuid == uuid:
+                return self.cache[cleaned]
+
+        return None
+
+
 class Worker(QThread):
     """
     The worker class, used to get players from the API
     """
-    playerObject = pyqtSignal(object, str)
+    playerObject = pyqtSignal(object)
 
     def __init__(self, client, query: Union[list, str], manual: bool = False) -> None:
         """
@@ -303,22 +327,22 @@ class Worker(QThread):
                 players = asyncio.run(self.client.player.post(self.query))
 
                 if players == None:
-                    self.playerObject.emit(False, "")
+                    self.playerObject.emit(False)
                 else:
                     for player in players:
                         player.manual = self.manual
-                        self.playerObject.emit(player, "")
+                        self.playerObject.emit(player)
             else:
                 player = asyncio.run(self.client.player.get(self.query))
 
                 if player == None:
-                    self.playerObject.emit(False, self.query)
+                    self.playerObject.emit(False)
                 else:
                     player.manual = self.manual
-                    self.playerObject.emit(player, self.query)
+                    self.playerObject.emit(player)
         except APIError:
             pass
         except InvalidAPIKeyError:
-            self.playerObject.emit(None, self.query)
+            self.playerObject.emit(None)
         except:
-            self.playerObject.emit(False, self.query)
+            self.playerObject.emit(False)
