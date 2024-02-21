@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -420,7 +420,7 @@ class Overlay(FramelessMainWindow):
         self.setStyleSheet("background: transparent")
 
         self.setGeometry(self.configXY[0], self.configXY[1], self.configWH[0], self.configWH[1])
-        self.setMinimumSize(880, 150)
+        self.setMinimumSize(770, 150)
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
@@ -429,6 +429,33 @@ class Overlay(FramelessMainWindow):
         # Setup the window components
         setupComponents(self)
         updateComponents(self)
+
+
+    def changeGameMode(self, value: str) -> None:
+        """
+        Change the Bedwars game mode
+        
+        :param value: The new game mode
+        """
+        settings = {
+            "game": "BedWars",
+            "mode": value
+        }
+    
+        self.configGameMode = settings
+        self.settings.update("gamemode", settings)
+
+        uuids = self.table.getUUIDs()
+
+        self.table.resetTable()
+
+        for uuid in uuids:
+            try:
+                player = self.player.getCacheFromUUID(uuid)
+                if player:
+                    self.table.insert(player)
+            except:
+                continue
 
 
     def getIconPath(self, item: str, path: str = None) -> str:
@@ -814,8 +841,6 @@ class Overlay(FramelessMainWindow):
         if self.quickbuyWindow is not None:
             self.quickbuyWindow.close()
 
-        event.accept()
-
         if self.configAPIKey != "":
             self.setCursor(Qt.WaitCursor)
 
@@ -837,3 +862,5 @@ class Overlay(FramelessMainWindow):
 
 
         self.logger.info("Polsu Overlay is now closed!")
+
+        event.accept()

@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -110,6 +110,7 @@ class ThemeStyle:
         self.settingsLogPathStyle = self.getSettingsLogPathStyle()
         self.switchButtonStyle = self.getSwitchButtonStyle()
         self.sliderStyle = self.getSliderStyle()
+        self.menuGameModeStyle = self.getMenuGameModeStyle()
 
 
     def getTitleStyle(self) -> str:
@@ -655,4 +656,48 @@ class ThemeStyle:
         QSlider::handle:horizontal:hover {
             background: qradialgradient(cx:0.5, cy:0.5, radius:0.3, fx:0.5, fy:0.5, stop:0 rgba(39, 148, 255, 0.7));
         }
+        """
+
+    def getMenuGameModeStyle(self) -> str:
+        """
+        Get the menu game mode style
+        
+        :return: The menu game mode style
+        """
+        return f"""
+            QComboBox {{
+                background-color: transparent; 
+                border-radius: {self.config.get('menu', {}).get('menu', {}).get('border-radius', '8px')};
+                border-width: 2px; 
+                border-style: {self.config.get('menu', {}).get('menu', {}).get('border-style', 'solid')}; 
+                border-color: {self.config.get('menu', {}).get('menu', {}).get('border-color', 'gray')};
+                color: {self.config.get('menu', {}).get('menu', {}).get('color', 'white')};
+            }}
+            QComboBox:editable {{
+                background: white;
+            }}
+            QComboBox::drop-down {{
+                width: 0px;
+            }}
+            QComboBox::down-arrow {{
+                image: '';
+                height: 20px;
+                width: 20px;
+                padding-right: 20px;
+            }}
+            QComboBox::down-arrow:on {{
+                image: '';
+            }}
+            QComboBox::hover {{
+                background-color : {self.config.get('menu', {}).get('menu', {}).get('hover', {}).get('background-color', '#73737391')};
+            }}
+            QComboBox QAbstractItemView {{
+                background-color: {self.config.get('menu', {}).get('menu', {}).get('hover', {}).get('background-color', '#73737391')};
+                selection-background-color: gray;
+                selection-color: black;
+                outline: none;
+            }}
+            QComboBox:disabled {{
+                background-color: {self.config.get('menu', {}).get('menu', {}).get('disabled-color', 'gray')};
+            }}
         """

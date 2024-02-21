@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -47,6 +47,10 @@ CONFIG = {
     "who": True,
     "status": True,
     "hideOverlay": True,
+    "gamemode": {
+        "game": "BedWars",
+        "mode": "Overall"
+    },
     "xy": [0, 0],
     "wh": [820, 400],
     "sorting": [2, 0],
@@ -84,3 +88,32 @@ CLIENT_NAMES = [
     "Badlion Client",
     "Badlion",
 ]
+
+GAMEMODES = [
+    "Overall",
+    "Core",
+    "Solos",
+    "Doubles",
+    "Threes",
+    "Fours",
+    "4v4",
+]
+
+COLORS = {
+    "0": (0, 0, 0),
+    "1": (0, 0, 170),
+    "2": (0, 170, 0),
+    "3": (0, 170, 170),
+    "4": (170, 0, 0),
+    "5": (170, 0, 170),
+    "6": (255, 170, 0),
+    "7": (170, 170, 170),
+    "8": (85, 85, 85),
+    "9": (85, 85, 255),
+    "a": (85, 255, 85),
+    "b": (85, 255, 255),
+    "c": (255, 85, 85),
+    "d": (255, 85, 255),
+    "e": (255, 255, 85),
+    "f": (255, 255, 255),
+}

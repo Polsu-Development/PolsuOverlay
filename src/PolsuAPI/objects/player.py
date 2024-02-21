@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -36,7 +36,6 @@ from ...utils.constants import TAGS
 
 
 from time import time
-
 
 
 class RequeueLevel:
@@ -111,6 +110,155 @@ class RequeueLevel:
         return f"<RequeueLevel index={self.index} level={self.level} text={self.text} colour={self.colour} raw={self.raw}>"
 
 
+class Mode:
+    """
+    A class representing a Bedwars mode
+    """
+    def __init__(self, data: dict, mode: str) -> None:
+        self._data = data
+        self._mode = mode
+
+        self._games_played = data.get('games_played')
+        self._winstreak = data.get('winstreak')
+        self._kills = data.get('kills')
+        self._deaths = data.get('deaths')
+        self._kdr = data.get('kdr')
+        self._fkills = data.get('fkills')
+        self._fdeaths = data.get('fdeaths')
+        self._fkdr = data.get('fkdr')
+        self._wins = data.get('wins')
+        self._losses = data.get('losses')
+        self._wlr = data.get('wlr')
+        self._broken = data.get('broken')
+        self._lost = data.get('lost')
+        self._bblr = data.get('bblr')
+        self._requeue = RequeueLevel(data.get('rqlevel'))
+
+
+    @property
+    def data(self) -> dict:
+        """
+        The data of the user.
+        """
+        return self._data
+
+    @property
+    def mode(self) -> str:
+        """
+        The Bedwars mode
+        """
+        return self._mode
+    
+    @property
+    def games_played(self) -> int:
+        """
+        The Bedwars games played
+        """
+        return self._games_played
+    
+    @property
+    def winstreak(self) -> int:
+        """
+        The Bedwars winstreak
+        """
+        return self._winstreak
+    
+    @property
+    def kills(self) -> int:
+        """
+        The Bedwars kills
+        """
+        return self._kills
+    
+    @property
+    def deaths(self) -> int:
+        """
+        The Bedwars deaths
+        """
+        return self._deaths
+    
+    @property
+    def kdr(self) -> float:
+        """
+        The Bedwars KDR
+        """
+        return self._kdr
+    
+    @property
+    def fkills(self) -> int:
+        """
+        The Bedwars final kills
+        """
+        return self._fkills
+    
+    @property
+    def fdeaths(self) -> int:
+        """
+        The Bedwars final deaths
+        """
+        return self._fdeaths
+    
+    @property
+    def fkdr(self) -> float:
+        """
+        The Bedwars final KDR
+        """
+        return self._fkdr
+    
+    @property
+    def wins(self) -> int:
+        """
+        The Bedwars wins
+        """
+        return self._wins
+    
+    @property
+    def losses(self) -> int:
+        """
+        The Bedwars losses
+        """
+        return self._losses
+    
+    @property
+    def wlr(self) -> float:
+        """
+        The Bedwars WLR
+        """
+        return self._wlr
+    
+    @property
+    def broken(self) -> int:
+        """
+        The Bedwars beds broken
+        """
+        return self._broken
+    
+    @property
+    def lost(self) -> int:
+        """
+        The Bedwars beds lost
+        """
+        return self._lost
+    
+    @property
+    def bblr(self) -> float:
+        """
+        The Bedwars BBLR
+        """
+        return self._bblr
+    
+    @property
+    def requeue(self) -> RequeueLevel:
+        """
+        The Bedwars Requeue Level
+        """
+        return self._requeue
+    
+
+    def __repr__(self) -> str:
+        return f"<Bedwars formatted={self.formatted} stars={self.stars} games_played={self.games_played} winstreak={self.winstreak} kills={self.kills} deaths={self.deaths} kdr={self.kdr} fkills={self.fkills} fdeaths={self.fdeaths} fkdr={self.fkdr} wins={self.wins} losses={self.losses} wlr={self.wlr} beds={self.broken} broken={self.broken} bblr={self.bblr} requeue={self.requeue}>"
+
+
 class Bedwars:
     """
     A class representing a Hypixel Bedwars Player
@@ -135,6 +283,13 @@ class Bedwars:
         self._lost = data.get('lost')
         self._bblr = data.get('bblr')
         self._requeue = RequeueLevel(data.get('rqlevel'))
+
+        self.core = Mode(data.get('core'), 'core')
+        self.solos = Mode(data.get('solos'), 'solos')
+        self.doubles = Mode(data.get('doubles'), 'doubles')
+        self.threes = Mode(data.get('threes'), 'threes')
+        self.fours = Mode(data.get('fours'), 'fours')
+        self.four_v_four = Mode(data.get('four_v_four'), '4v4')
 
 
     @property
