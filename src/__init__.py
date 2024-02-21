@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -41,7 +41,7 @@ from dotenv import load_dotenv
 __title__ = "PolsuOverlay"
 __author__ = "Polsulpicien"
 __license__ = "GPL-3.0 License"
-__version__ = "2.0.6"
+__version__ = "2.0.7"
 __description__ = "Polsu's Overlay"
 
 __module__ = getcwd()
