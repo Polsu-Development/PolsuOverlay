@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -98,7 +98,7 @@ class SkinIcon():
             self.win.logger.critical(f"An error occurred while loading the skin of {player.username}!\n\nTraceback: {traceback.format_exc()}")
 
 
-    def rgba_to_hex(self, rgba):
+    def rgbaToHex(self, rgba):
         rgba = tuple(int(x) for x in rgba)
         return "#{:02X}{:02X}{:02X}{:02X}".format(*rgba)
 
@@ -132,7 +132,7 @@ class SkinIcon():
 
                     it = self.table.item(row, 1)
                     if it.background().color().getRgb() != (0, 0, 0, 255):
-                        color = QColor(self.rgba_to_hex(it.background().color().getRgb()))
+                        color = QColor(it.background().color())
                         color.setAlpha(50)
                         item = self.table.item(row, 0)
                         item.setBackground(color)

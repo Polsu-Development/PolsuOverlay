@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -46,7 +46,6 @@ def loadThemes(win) -> None:
     if not os.path.exists(win.dirThemes):
         os.makedirs(win.dirThemes)
 
-        
     win.themes = []
     for theme in os.listdir(win.pathThemes):
         if os.path.isfile(f"{win.pathThemes}/{theme}/icon.png"):
