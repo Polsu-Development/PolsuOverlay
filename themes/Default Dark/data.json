@@ -18,6 +18,16 @@
             "background-color": "#73737391",
             "border-radius": "8px",
             "disabled-color": "#1B1ECFFF"
+        },
+        "menu": {
+            "color": "white",
+            "border-color": "white",
+            "border-radius": "8px",
+            "border-style": "solid",
+            "disabled-color": "gray",
+            "hover": {
+                "background-color": "#73737391"
+            }
         }
     },
     "buttons-hover": {
