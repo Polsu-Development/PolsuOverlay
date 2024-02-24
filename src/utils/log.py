@@ -70,32 +70,3 @@ class LoginWorker(QThread):
         except:
             data = None
             self.ended.emit(data)
-
-
-class LogoutWorker(QThread):
-    """
-    A QThread that will request the API when the user closes the overlay
-    """
-    def __init__(self, key: str, launch: int, logger) -> None:
-        """
-        Initialise the LogoutWorker
-        
-        :param key: The API Key
-        :param launch: The launch time
-        """
-        super(QThread, self).__init__()
-        self.client = Polsu(key, logger)
-        self.launch = launch
- 
-
-    def run(self) -> None:
-        """
-        Run the LogoutWorker
-        """
-        if DEV_MODE:
-            return
-
-        try:
-            asyncio.run(self.client.user.logout(self.launch))
-        except:
-            pass

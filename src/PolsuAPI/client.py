@@ -109,19 +109,6 @@ class User:
             raise APIError
 
 
-    async def logout(self, timestamp: int) -> None:
-        """
-        Logout of the Overlay
-
-        :param timestamp: The timestamp of the overlay launch
-        """
-        try:
-            async with timeout(timeout_time):
-                return await self.client.logout(timestamp)
-        except asyncio.TimeoutError:
-            raise APIError
-
-
 class Player:
     """
     A class representing a Hypixel Player

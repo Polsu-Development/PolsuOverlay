@@ -49,7 +49,7 @@ from .plugins.settings import PluginSettings
 from .plugins.window import PluginWindow
 from .plugins.player import PluginPlayer
 from .utils.path import resource_path
-from .utils.log import LoginWorker, LogoutWorker
+from .utils.log import LoginWorker
 from .utils.colours import setColor
 
 
@@ -834,6 +834,8 @@ class Overlay(FramelessMainWindow):
         
         :param event: The event
         """
+        self.setCursor(Qt.WaitCursor)
+
         if hasattr(self, "tray") and self.tray:
             self.tray.visible = False
             self.tray.stop()
@@ -841,21 +843,10 @@ class Overlay(FramelessMainWindow):
         if self.quickbuyWindow is not None:
             self.quickbuyWindow.close()
 
-        if self.configAPIKey != "":
-            self.setCursor(Qt.WaitCursor)
+        self.logger.info("Logging out...")
 
-            self.logger.info("Logging out...")
-
-            try:
-                self.threads["logout"] = LogoutWorker(self.configAPIKey, self.launch, self.logger)
-                self.threads["logout"].start()
-                self.threads["logout"].wait()
-            except:
-                self.logger.error(f"An error occurred while logging out!\nTraceback: {traceback.format_exc()}")
-
-
-            if self.user:
-                self.plugins.broadcast("on_logout", self.user)
+        if self.user:
+            self.plugins.broadcast("on_logout", self.user)
 
 
         self.plugins.unload_plugins()
