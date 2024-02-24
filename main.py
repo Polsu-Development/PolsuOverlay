@@ -48,6 +48,8 @@ import os
 import traceback
 import datetime
 
+from time import sleep
+
 
 if getattr(sys, 'frozen', False):
     import pyi_splash
@@ -60,7 +62,23 @@ def run(window: Updater, logger: Logger) -> None:
     :param window: The Updater window
     :param logger: The logger
     """
-    if window.value:
+    if window.value == "Clean":
+        window.progressBar.setMaximum(100)
+        window.progressBar.setValue(100)
+
+        sleep(1)
+
+        window.close()
+
+
+        errorWindow = QMessageBox()
+        errorWindow.setWindowTitle("Update successful!")
+        errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
+        errorWindow.setIcon(QMessageBox.Information)
+        errorWindow.setText("The overlay has been updated successfully!\n\nPlease restart the overlay to apply the changes.")
+        errorWindow.setFocus()
+        errorWindow.exec_()
+    elif window.value:
         window.close()
         try:
             Overlay(logger).show()
@@ -76,19 +94,6 @@ def run(window: Updater, logger: Logger) -> None:
             errorWindow.setDetailedText(traceback.format_exc())
             errorWindow.setFocus()
             errorWindow.exec_()
-    elif window.value == "Clean":
-        window.progressBar.setMaximum(100)
-        window.progressBar.setValue(100)
-
-        window.close()
-
-        # Cleanup, delete the old version
-        def cleanup():
-            with open("cleanup.bat", "w+") as file:
-                file.write(f"DEL /F \"{sys.argv[0]}\" \nDEL /F \"{os.getcwd()}\\cleanup.bat\"")
-            os.startfile(os.getcwd()+"\\cleanup.bat")
-
-        cleanup()
     else:
         window.close()
 
@@ -101,25 +106,44 @@ if __name__ == '__main__':
     # This is a fix for the DPI scaling on Windows
     # Removing this might break the overlay window.
 
-    logger = Logger()
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
-    logger.info(f"Python version: {sys.version}")
-    logger.info(f"OS: {sys.platform}")
-    logger.info(f"Running in: {'Development' if DEV_MODE else 'Production'} mode")
-    logger.info("-----------------------------------------------------------------------------------------------------")
-    logger.info("Starting Polsu Overlay...")
-
-    app = QApplication(sys.argv)
-
     try:
+        logger = Logger()
+    except PermissionError:
+        app = QApplication(sys.argv)
+
         if getattr(sys, 'frozen', False):
             pyi_splash.close()
 
-        window = Updater(logger)
-        window.ended.connect(run)
-        window.show()
-    except:
-        logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
+        errorWindow = QMessageBox()
+        errorWindow.setWindowTitle("An error occurred!")
+        errorWindow.setWindowIcon(QIcon(f"{resource_path('assets')}/polsu/Polsu_.png"))
+        errorWindow.setIcon(QMessageBox.Critical)
+        errorWindow.setText("An internal error occured...\nPlease make sure you have the required permissions to create files in the directory of the overlay.\n\nTo fix this issue, please run the overlay as an administrator for the first time.")
+        errorWindow.setInformativeText(traceback.format_exception_only(type(sys.exc_info()[1]), sys.exc_info()[1])[0])
+        errorWindow.setDetailedText(traceback.format_exc())
+        errorWindow.setFocus()
+        errorWindow.show()
 
-    sys.exit(app.exec_())
+        sys.exit(app.exec_())
+    else:
+        logger.info("-----------------------------------------------------------------------------------------------------")
+        logger.info(f"Polsu Overlay - {datetime.datetime.utcnow().strftime('%d/%m/%Y %H:%M:%S')}")
+        logger.info(f"Python version: {sys.version}")
+        logger.info(f"OS: {sys.platform}")
+        logger.info(f"Running in: {'Development' if DEV_MODE else 'Production'} mode")
+        logger.info("-----------------------------------------------------------------------------------------------------")
+        logger.info("Starting Polsu Overlay...")
+
+        app = QApplication(sys.argv)
+
+        try:
+            if getattr(sys, 'frozen', False):
+                pyi_splash.close()
+
+            window = Updater(logger)
+            window.ended.connect(run)
+            window.show()
+        except:
+            logger.critical(f"An error occurred while updating the overlay!\n\nTraceback: {traceback.format_exc()}")
+
+        sys.exit(app.exec_())

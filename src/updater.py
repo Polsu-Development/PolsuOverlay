@@ -188,6 +188,8 @@ class Updater(FramelessDialog):
                         self.logger.info(f"No updates found. Launching the overlay (v{__version__})")
                         self.label.setText(f"No updates found.")
 
+                        sleep(1)
+
                         self.value = True
                         self.ended.emit(self, self.logger)
             except requests.exceptions.ConnectionError:
