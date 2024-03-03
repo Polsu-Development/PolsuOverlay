@@ -64,7 +64,7 @@ class Table(QTableWidget):
         self.win = window
 
         # Header aka Columns title
-        self.header=['⠀', '˅ 0', 'Player⠀⠀⠀⠀⠀⠀ ', 'TAG', 'WS', 'FKDR', 'Finals', 'WLR', ' Wins', 'BBLR', 'Beds', 'Requeue', 'Ping', '⠀', '⠀', '⠀']
+        self.header=['\u2063', '˅ 0', 'Player\u2063\u2063\u2063\u2063\u2063\u2063 ', 'TAG', 'WS', 'FKDR', 'Finals', 'WLR', ' Wins', 'BBLR', 'Beds', 'Requeue', 'Ping', '\u2063', '\u2063', '\u2063']
 
         # Settings
         self.setSelectionMode(QAbstractItemView.NoSelection)
