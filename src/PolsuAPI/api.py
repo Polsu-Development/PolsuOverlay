@@ -198,7 +198,7 @@ class Polsu:
                             f = open(f"{resource_path('src/PolsuAPI')}/schemas/nicked.json", mode="r", encoding="utf-8")
                             p = Player(load(f))
                             p.username = player
-                            p.rank = f"§4[NICKED] §c{player}"
+                            p.rank = f"§c{player}"
                             p.nicked = True
                             return p
                         else:
@@ -265,7 +265,8 @@ class Polsu:
                                 f = open(f"{resource_path('src/PolsuAPI')}/schemas/nicked.json", mode="r", encoding="utf-8")
                                 p = Player(load(f))
                                 p.username = players[i]
-                                p.rank = f"§4[NICKED] §c{players[i]}"
+                                p.rank = f"§c{players[i]}"
+                                p.nicked = True
                                 data.append(p)
                             else:
                                 data.append(Player(p.get('data')))
