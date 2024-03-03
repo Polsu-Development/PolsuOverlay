@@ -307,10 +307,12 @@ class Table(QTableWidget):
                     button.setIcon(QIcon(self.win.getIconPath("global-blacklist")))
                     button.setToolTip(f"<b>Polsu Blacklisted</b><br><br><b>Reason:</b><br>{player.blacklisted.reason}")
                     button.setProperty("name", "global-blacklist")
+                    button.setStyleSheet("QPushButton {border: 0; background: transparent;}")
                     self.setCellWidget(self.count, 14, button)
                     self.setItem(self.count, 14, TableSortingItem(1))
             else:
                 button = QPushButton(self)
+                button.setStyleSheet("QPushButton {border: 0; background: transparent;}")
                 self.setCellWidget(self.count, 14, button)
                 self.setItem(self.count, 14, TableSortingItem(0))
 
@@ -325,10 +327,12 @@ class Table(QTableWidget):
                 button.setIcon(QIcon(self.win.getIconPath("blacklist")))
                 button.setToolTip(f"<b>Local Blacklisted</b><br><br><b>Reason:</b><br>{player.local.reason}<br><br><b>Blacklist:</b><br>{player.local.blacklist}")
                 button.setProperty("name", "blacklist")
+                button.setStyleSheet("QPushButton {border: 0; background: transparent;}")
                 self.setCellWidget(self.count, 15, button)
                 self.setItem(self.count, 15, TableSortingItem(1))
             else:
                 button = QPushButton(self)
+                button.setStyleSheet("QPushButton {border: 0; background: transparent;}")
                 self.setCellWidget(self.count, 15, button)
                 self.setItem(self.count, 15, TableSortingItem(0))
 
