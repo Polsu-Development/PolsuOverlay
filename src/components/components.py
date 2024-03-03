@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -36,8 +36,10 @@ from .timer import TimerBox, TimerIcon
 from .apikey import openSettings
 from .reward import openRewards
 from ..utils.colours import setColor
+from ..utils.constants import GAMEMODES
+from ..utils.username import isValidPlayer
 
-from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit
+from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit, QComboBox
 from PyQt5.QtCore import Qt, QSize, QVariantAnimation, QAbstractAnimation
 from PyQt5.QtGui import QIcon, QColor
 from functools import partial
@@ -107,6 +109,17 @@ def setupComponents(win) -> None:
     win.deliverybutton.setIconSize(QSize(12, 12))
     win.deliverybutton.clicked.connect(lambda: openRewards(win))
 
+    win.gamemodeSelect = QComboBox(win)
+
+    for mode in GAMEMODES:
+        win.gamemodeSelect.addItem(QIcon(f"{win.pathAssets}/game-icons/BedWars.png"), mode)
+
+        if mode == win.configGameMode.get("mode", "Overall"):
+            win.gamemodeSelect.setCurrentIndex(GAMEMODES.index(mode))
+
+    win.gamemodeSelect.setStyleSheet(win.themeStyle.settingsMenuStyle)
+    win.gamemodeSelect.currentTextChanged.connect(win.changeGameMode)
+
 
     # TODO: Add the profile button and menu
 
@@ -169,6 +182,10 @@ def updateComponents(win) -> None:
 
     win.deliveryBox.setStyleSheet(win.themeStyle.timerBarStyle)
     win.deliveryBox.update()
+
+    win.gamemodeSelect.setStyleSheet(win.themeStyle.menuGameModeStyle)
+    win.gamemodeSelect.setFont(win.getFont())
+    win.gamemodeSelect.update()
 
     #win.profilebutton.setStyleSheet(win.themeStyle.buttonsStyle)
     #win.profilebutton.setIcon(QIcon(win.getIconPath("user")))
@@ -239,6 +256,7 @@ def updateGeometry(win) -> None:
     win.timerBox.setGeometry(440, 8, 90, 23)
     win.deliverybutton.setGeometry(541, 9, 20, 20)
     win.deliveryBox.setGeometry(540, 8, 22, 22)
+    win.gamemodeSelect.setGeometry(573, 8, 100, 23)
     #win.profilebutton.setGeometry(571, 9, 20, 20)
     #win.profileBox.setGeometry(570, 8, 22, 22)
     win.table.setGeometry(5, 45, win.size().width()-10, win.size().height()-50)
@@ -287,6 +305,13 @@ def enterPress(win) -> None:
     
     :param win: The Overlay window
     """
+    if not isValidPlayer(win.searchBox.text()):
+        win.notif.send(
+            title="Invalid player",
+            message="The player you entered is invalid!",
+        )
+        return
+
     if win.plugins.askPlugins("on_search"):
         win.plugins.broadcast("on_search", win.searchBox.text(), override=True)
         return

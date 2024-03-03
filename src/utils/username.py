@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -45,7 +45,7 @@ def isValidPlayer(player: str) -> bool:
     :param player: The player
     :return: Whether the player is valid
     """
-    if len(player)>16:
+    if len(player) > 16:
         return False
     else:
         return all(char in characters for char in player)

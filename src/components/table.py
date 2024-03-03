@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -37,7 +37,7 @@ from ..utils.quickbuy import QuickbuyImage
 from ..utils.sorting import TableSortingItem
 from ..utils.ping import getPingColour
 
-from ..PolsuAPI.objects.player import Player
+from ..PolsuAPI.objects.player import Player, Mode
 
 
 from PyQt5.QtWidgets import QTableWidget, QAbstractItemView, QHeaderView, QScrollBar, QLabel, QPushButton, QHBoxLayout, QWidget
@@ -64,7 +64,7 @@ class Table(QTableWidget):
         self.win = window
 
         # Header aka Columns title
-        self.header=['⠀', '˅ 0', 'Player⠀⠀⠀⠀⠀⠀ ', 'TAG', 'WS', 'FKDR', 'Finals', 'WLR', ' Wins', 'BBLR', 'Beds', 'Requeue', 'Ping', '⠀', '⠀', '⠀']
+        self.header=['\u2063', '˅ 0', 'Player\u2063\u2063\u2063\u2063\u2063\u2063 ', 'TAG', 'WS', 'FKDR', 'Finals', 'WLR', ' Wins', 'BBLR', 'Beds', 'Requeue', 'Ping', '\u2063', '\u2063', '\u2063']
 
         # Settings
         self.setSelectionMode(QAbstractItemView.NoSelection)
@@ -152,10 +152,23 @@ class Table(QTableWidget):
             self.count += 1
             self.insertRow(self.count)
 
-            if player.bedwars.winstreak == -1:
+
+            STATS = {
+                "Overall": player.bedwars,
+                "Core": player.bedwars.core,
+                "Solos": player.bedwars.solos,
+                "Doubles": player.bedwars.doubles,
+                "Threes": player.bedwars.threes,
+                "Fours": player.bedwars.fours,
+                "4v4": player.bedwars.four_v_four,
+            }
+            stats: Mode = STATS.get(self.win.configGameMode.get('mode'), player.bedwars)
+
+
+            if stats.winstreak == -1 or isinstance(stats.winstreak, str):
                 ws = "§7-"
             else:
-                ws = f"§f{player.bedwars.winstreak:,d}"
+                ws = f"§f{stats.winstreak:,d}"
 
             label = QLabel(text2html(player.bedwars.formatted + " "), self)
             label.setFont(self.win.minecraftFont)
@@ -210,53 +223,53 @@ class Table(QTableWidget):
             label.setFont(self.win.getFont())
             label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.setCellWidget(self.count, 4, label)
-            self.setItem(self.count, 4, TableSortingItem(player.bedwars.winstreak))
+            self.setItem(self.count, 4, TableSortingItem(stats.winstreak))
 
-            label = QLabel(text2html(f"{player.bedwars.fkdr} ", colour=player.bedwars.requeue.colour), self)
+            label = QLabel(text2html(f"{stats.fkdr} ", colour=stats.requeue.colour), self)
             label.setFont(self.win.getFont())
             label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.setCellWidget(self.count, 5, label)
-            self.setItem(self.count, 5, TableSortingItem(player.bedwars.fkdr))
+            self.setItem(self.count, 5, TableSortingItem(stats.fkdr))
 
-            label = QLabel(text2html(f"{player.bedwars.fkills:,d} ", colour=player.bedwars.requeue.colour), self)
+            label = QLabel(text2html(f"{stats.fkills:,d} ", colour=stats.requeue.colour), self)
             label.setFont(self.win.getFont())
             label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.setCellWidget(self.count, 6, label)
-            self.setItem(self.count, 6, TableSortingItem(player.bedwars.fkills))
+            self.setItem(self.count, 6, TableSortingItem(stats.fkills))
 
-            label = QLabel(text2html(f"{player.bedwars.wlr} ", colour=player.bedwars.requeue.colour), self)
+            label = QLabel(text2html(f"{stats.wlr} ", colour=stats.requeue.colour), self)
             label.setFont(self.win.getFont())
             label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.setCellWidget(self.count, 7, label)
-            self.setItem(self.count, 7, TableSortingItem(player.bedwars.wlr))
+            self.setItem(self.count, 7, TableSortingItem(stats.wlr))
 
-            label = QLabel(text2html(f"{player.bedwars.wins:,d} ", colour=player.bedwars.requeue.colour), self)
+            label = QLabel(text2html(f"{stats.wins:,d} ", colour=stats.requeue.colour), self)
             label.setFont(self.win.getFont())
             label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.setCellWidget(self.count, 8, label)
-            self.setItem(self.count, 8, TableSortingItem(player.bedwars.wins))
+            self.setItem(self.count, 8, TableSortingItem(stats.wins))
             
-            label = QLabel(text2html(f"{player.bedwars.bblr} ", colour=player.bedwars.requeue.colour), self)
+            label = QLabel(text2html(f"{stats.bblr} ", colour=stats.requeue.colour), self)
             label.setFont(self.win.getFont())
             label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.setCellWidget(self.count, 9, label)
-            self.setItem(self.count, 9, TableSortingItem(player.bedwars.bblr))
+            self.setItem(self.count, 9, TableSortingItem(stats.bblr))
 
-            label = QLabel(text2html(f"{player.bedwars.broken:,d} ", colour=player.bedwars.requeue.colour), self)
+            label = QLabel(text2html(f"{stats.broken:,d} ", colour=stats.requeue.colour), self)
             label.setFont(self.win.getFont())
             label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.setCellWidget(self.count, 10, label)
-            self.setItem(self.count, 10, TableSortingItem(player.bedwars.broken))
+            self.setItem(self.count, 10, TableSortingItem(stats.broken))
 
             if player.nicked:
                 label = QLabel(text2html(f"§7- "), self)
             else:
-                label = QLabel(text2html(f"{player.bedwars.requeue.index} ", colour=player.bedwars.requeue.colour), self)
+                label = QLabel(text2html(f"{stats.requeue.index} ", colour=stats.requeue.colour), self)
 
             label.setFont(self.win.getFont())
             label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.setCellWidget(self.count, 11, label)
-            self.setItem(self.count, 11, TableSortingItem(player.bedwars.requeue.raw))
+            self.setItem(self.count, 11, TableSortingItem(stats.requeue.raw))
 
             if player.ping.ping == 0:
                 label = QLabel(text2html(f"§7-"), self)
@@ -294,10 +307,12 @@ class Table(QTableWidget):
                     button.setIcon(QIcon(self.win.getIconPath("global-blacklist")))
                     button.setToolTip(f"<b>Polsu Blacklisted</b><br><br><b>Reason:</b><br>{player.blacklisted.reason}")
                     button.setProperty("name", "global-blacklist")
+                    button.setStyleSheet("QPushButton {border: 0; background: transparent;}")
                     self.setCellWidget(self.count, 14, button)
                     self.setItem(self.count, 14, TableSortingItem(1))
             else:
                 button = QPushButton(self)
+                button.setStyleSheet("QPushButton {border: 0; background: transparent;}")
                 self.setCellWidget(self.count, 14, button)
                 self.setItem(self.count, 14, TableSortingItem(0))
 
@@ -312,10 +327,12 @@ class Table(QTableWidget):
                 button.setIcon(QIcon(self.win.getIconPath("blacklist")))
                 button.setToolTip(f"<b>Local Blacklisted</b><br><br><b>Reason:</b><br>{player.local.reason}<br><br><b>Blacklist:</b><br>{player.local.blacklist}")
                 button.setProperty("name", "blacklist")
+                button.setStyleSheet("QPushButton {border: 0; background: transparent;}")
                 self.setCellWidget(self.count, 15, button)
                 self.setItem(self.count, 15, TableSortingItem(1))
             else:
                 button = QPushButton(self)
+                button.setStyleSheet("QPushButton {border: 0; background: transparent;}")
                 self.setCellWidget(self.count, 15, button)
                 self.setItem(self.count, 15, TableSortingItem(0))
 
@@ -471,9 +488,9 @@ class Table(QTableWidget):
                 button.setFont(self.win.getFont())
                 button.setText(text)
                 button.setStyleSheet("""
-                QPushButton {
-                    color:white;
-                }                
+                    QPushButton {
+                        color:white;
+                    }                
                 """)
 
                 if icon not in ["custom-blacklist", "verified", "annoying", "info"]:
@@ -481,7 +498,7 @@ class Table(QTableWidget):
                 else:
                     button.setIcon(QIcon(self.win.getIconPath(icon)))
                 button.setToolTip(tooltip)
-                button.setProperty("name", "custom-blacklist")
+                button.setProperty("name", icon)
                 self.setCellWidget(row, 14, button)
                 self.setItem(row, 14, TableSortingItem(0))
 
@@ -509,3 +526,19 @@ class Table(QTableWidget):
                         item.setBackground(color)
 
         self.setSortingEnabled(True)
+
+
+    def tableToUUIDs(self) -> list[str]:
+        """
+        Convert the table to UUIDs
+        
+        :return: The UUIDs
+        """
+        uuids = []
+        for row in range(self.rowCount()):
+            _item = self.item(row, 13)
+
+            if _item and _item.value:
+                uuids.append(_item.value)
+
+        return uuids

@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -226,10 +226,10 @@ class Polsu:
                         self.logger.debug(f"[{response.status}] {player} > {json}")
 
                     if response.status == 403:
-                        self.logger.error(f"An error occurred while logging in: {response.status}")
+                        self.logger.error(f"An error occurred while getting player stats: {response.status}")
                         raise InvalidAPIKeyError(self.key)
                     elif response.status in [404, 422, 500]:
-                        self.logger.error(f"An error occurred while logging in: {response.status}")
+                        self.logger.error(f"An error occurred while getting player stats: {response.status}")
                         return response.status
                     elif not json["success"]:
                         raise APIError
@@ -291,10 +291,10 @@ class Polsu:
                 async with session.post(f"{self.api}/internal/overlay/player?overlay=true", headers=self.polsuHeaders, json=json) as response:
                     json = await response.json()
                     if response.status == 403:
-                        self.logger.error(f"An error occurred while logging in: {response.status}")
+                        self.logger.error(f"An error occurred while getting player stats: {response.status}")
                         raise InvalidAPIKeyError(self.key)
                     elif response.status in [404, 422, 500]:
-                        self.logger.error(f"An error occurred while logging in: {response.status}")
+                        self.logger.error(f"An error occurred while getting player stats: {response.status}")
                         return response.status
                     elif not json:
                         raise APIError
@@ -331,10 +331,10 @@ class Polsu:
                 async with session.get(f"{self.api}/polsu/bedwars/quickbuy?uuid={uuid}", headers=self.polsuHeaders) as response:
                     json = await response.json()
                     if response.status == 403:
-                        self.logger.error(f"An error occurred while logging in: {response.status}")
+                        self.logger.error(f"An error occurred while getting player quickbuy: {response.status}")
                         raise InvalidAPIKeyError(self.key)
                     elif response.status in [404, 422, 500]:
-                        self.logger.error(f"An error occurred while logging in: {response.status}")
+                        self.logger.error(f"An error occurred while getting player quickbuy {response.status}")
                         return response.status
                     elif not json["success"]:
                         raise APIError
@@ -366,9 +366,12 @@ class Polsu:
                     if response.status == 200:
                         return await response.read()
                     else:
+                        self.logger.error(f"An error occurred while getting the skin of {player.uuid} ({response.status})!")
                         raise APIError
         except ContentTypeError:
             raise APIError
+        except APIError:
+            return None
         except Exception as e:
             self.logger.error(f"An error occurred while getting the skin of {player.uuid}!\n\nTraceback: {traceback.format_exc()} | {e}")
             return None

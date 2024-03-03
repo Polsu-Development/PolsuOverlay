@@ -212,7 +212,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 # ┃ • https://overlay.polsu.xyz                            ┃
 # ┃                                                        ┃
 # ┃                                                        ┃
-# ┃    © 2023, Polsu Development - All rights reserved     ┃
+# ┃ © 2023 - 2024, Polsu Development - All rights reserved ┃
 # ┃                                                        ┃
 # ┃ Redistribution and use in source and binary forms,     ┃
 # ┃ with or without modification, are permitted provided   ┃ 

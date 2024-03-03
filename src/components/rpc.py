@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -31,7 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from .. import __version__
+from .. import __version__, DEV_MODE
 
 
 import asyncio
@@ -204,10 +204,18 @@ class Presence:
             else:
                 state = "Looking to Play..."
                 small_image = "hypixel"
+
+            if DEV_MODE:
+                state = "Coding the next update..."
+                small_image = "vscode"
+                small_text = "code.visualstudio.com"
+            else:
+                small_text = "Playing on mc.hypixel.net"
         else:
             details = None
             state = None
             small_image = "hypixel"
+            small_text = "Playing on mc.hypixel.net"
             party = None
 
         try:
@@ -218,7 +226,7 @@ class Presence:
                 large_image="polsu", 
                 large_text=f"Polsu Overlay v{__version__}",
                 small_image=small_image, 
-                small_text="Playing on mc.hypixel.net",
+                small_text=small_text,
                 party_size=party,
                 buttons=[
                     {
@@ -231,5 +239,5 @@ class Presence:
                     }
                 ],
             )
-        except (AssertionError, ValueError):
+        except (AssertionError, ValueError, RuntimeError):
             pass

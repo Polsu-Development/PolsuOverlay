@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -91,7 +91,8 @@ class Settings:
                 config = json.load(f)
         except:
             with open(self.win.pathConfig, "w") as f:
-                json.dump(CONFIG, f, indent=6)
+                json.dump(CONFIG, f, indent=4)
+
             config = CONFIG
 
         self.win.configAPIKey = config.get("APIKey", CONFIG.get('APIKey'))
@@ -102,6 +103,7 @@ class Settings:
         self.win.configRPC = config.get("RPC", CONFIG.get('RPC'))
         self.win.configWho = config.get("who", CONFIG.get('who'))
         self.win.confighideOverlay = config.get("hideOverlay", CONFIG.get('hideOverlay'))
+        self.win.configGameMode = config.get("gamemode", CONFIG.get('gamemode'))
         self.win.configXY = config.get("xy", CONFIG.get('xy'))
         self.win.configWH = config.get("wh", CONFIG.get('wh'))
         self.win.configStatus = config.get("status", CONFIG.get('status'))
@@ -125,7 +127,7 @@ class Settings:
         config[key] = setting
 
         with open(self.win.pathConfig, "w") as f:
-            json.dump(config, f, indent=6)
+            json.dump(config, f, indent=4)
 
     
     def updateSetting(self, key: str, setting: Union[str, bool, list, dict]) -> None:
@@ -144,7 +146,7 @@ class Settings:
         config["plugins"][key] = setting
 
         with open(self.win.pathConfig, "w") as f:
-            json.dump(config, f, indent=6)
+            json.dump(config, f, indent=4)
 
         
     def getSetting(self, key: str) -> Union[str, bool, list, dict, None]:
