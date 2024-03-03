@@ -10,7 +10,7 @@
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
 ┃                                                                                                                      ┃
-┃                                   © 2023, Polsu Development - All rights reserved                                    ┃
+┃                               © 2023 - 2024, Polsu Development - All rights reserved                                 ┃
 ┃                                                                                                                      ┃
 ┃  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the    ┃
 ┃  following conditions are met:                                                                                       ┃
@@ -166,16 +166,18 @@ class PluginCore:
                                     self.logger.error(f"Unexpected argument, {arg_name}, in Plugin class of module: {module_name}")
                                     break
                     else:
+                        # Check if the plugin is disabled or not
+                        if hasattr(plugin_class, "disabled") and plugin_class.disabled:
+                            p = getattr(module, "Plugin")
+                            self.logger.warning(f"Plugin: {p.name}, is disabled")
+                            continue
+
                         # Create the plugin
                         try:
                             plugin: Plugin = plugin_class(**plugin_arguments)
                             plugin.__name__ = plugin.name
                         except TypeError:
                             self.logger.error(f"Invalid arguments for Plugin class of module: {module_name}")
-                            continue
-
-                        if hasattr(plugin, "disabled") and plugin.disabled:
-                            self.logger.warning(f"Plugin: {plugin.__name__}, is disabled")
                             continue
 
 
