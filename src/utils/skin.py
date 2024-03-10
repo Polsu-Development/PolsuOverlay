@@ -92,8 +92,8 @@ class SkinIcon():
                         self.table.setItem(row, 0, TableSortingItem(count))
 
                 # FIXME: This is a temporary fix for the skin loading issue with players loaded via the websocket
-                if player.websocket:
-                    return
+                #if player.websocket:
+                #    return
                         
                 self.threads[player.uuid] = Worker(player, self.win.player.client, self.default, count)
                 self.threads[player.uuid].update.connect(self.setSkin)
@@ -105,6 +105,20 @@ class SkinIcon():
     def rgbaToHex(self, rgba):
         rgba = tuple(int(x) for x in rgba)
         return "#{:02X}{:02X}{:02X}{:02X}".format(*rgba)
+    
+
+    def deleteWorker(self, uuid: str) -> None:
+        """
+        Delete the worker
+        
+        :param uuid: The UUID of the player
+        """
+        if uuid in self.threads:
+            try:
+                self.threads[uuid].terminate()
+                self.threads.pop(uuid)
+            except:
+                self.win.logger.error(f"An error occurred while deleting the worker of {uuid}!\n\nTraceback: {traceback.format_exc()}")
 
 
     def setSkin(self, icon: QIcon, player: Player, count: int, cache: bool = True) -> None:
@@ -140,6 +154,10 @@ class SkinIcon():
                         color.setAlpha(50)
                         item = self.table.item(row, 0)
                         item.setBackground(color)
+
+            self.deleteWorker(player.uuid)
+
+            self.win.logger.info(f"Skin of {player.username} has been set.")
         except:
             self.win.logger.critical(f"An error occurred while setting the skin of {player.username}!\n\nTraceback: {traceback.format_exc()}")
 

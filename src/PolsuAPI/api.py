@@ -155,6 +155,9 @@ class Polsu:
         """
         self.logger.info(f"[WS] Creating a WebSocket connection...")
 
+        # Wait for messages
+        expired = False
+
         try:
             # Create a WebSocket connection
             async with ClientSession() as session:
@@ -202,9 +205,6 @@ class Polsu:
 
                         self.logger.info(f"[WS] WebSocket connection established!")
 
-                        # Wait for messages
-                        expired = False
-
                         async for msg in ws:
                             if msg.type in (WSMsgType.CLOSED, WSMsgType.ERROR):
                                 return
@@ -223,11 +223,15 @@ class Polsu:
                                             await callback(player)
                                         else:
                                             if isinstance(data.get("data", {}), str):
-                                                if data.get("data", {}) == "Expired websocket!":
+                                                if data.get("data", {}) == "Expired websocket!" or data.get("data", {}) == "Packet limit reached!":
                                                     self.logger.warning(f"[WS] WebSocket connection expired!")
                                                     expired = True
+                                                elif data.get("data", {}) == "Malformed JSON" or data.get("data", {}) == "Missing query" or data.get("data", {}) == "Invalid query":
+                                                    self.logger.error(f"[WS] An error occurred while sending some data: {data.get('data', {})}")
+                                                elif data.get("data", {}) == "Too many players":
+                                                    self.logger.error(f"[WS] Oops we reached the maximum amount of players!")
                                                 else:
-                                                    self.logger.error(f"[WS] An error occurred while receiving data: {data.get('data', {})}")
+                                                    self.logger.error(f"[WS] An error occurred with the websocket connection: {data.get('data', {})}")
 
                                                 break
                                             else:
@@ -239,8 +243,8 @@ class Polsu:
                                                 player.nicked = True
                                                 player.websocket = True
                                                 await callback(player)
-                                except:
-                                    pass
+                                except Exception as e:
+                                    self.logger.error(f"An error occurred while receiving a WebSocket message!\n\nTraceback: {traceback.format_exc()} | {e}")
         except Exception as e:
             self.logger.error(f"An error occurred while creating a WebSocket connection!\n\nTraceback: {traceback.format_exc()} | {e}")
         

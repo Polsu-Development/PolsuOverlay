@@ -31,7 +31,7 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src import CACHE, DEV_MODE
+from src import CACHE, DEV_MODE, USE_WEBSOCKET
 from ..PolsuAPI import Polsu
 from ..PolsuAPI.exception import APIError, InvalidAPIKeyError
 from ..PolsuAPI.objects.player import Player as Pl
@@ -69,9 +69,12 @@ class Player:
         self.loading = []
 
 
-        self.websocket = WebSocket(self.client)
-        self.websocket.playerObject.connect(self.update)
-        self.websocket.start()
+        if USE_WEBSOCKET:
+            self.websocket = WebSocket(self.client)
+            self.websocket.playerObject.connect(self.update)
+            self.websocket.start()
+        else:
+            self.websocket = None
 
 
     def getPlayer(self, players: list, manual: bool = False) -> None:
@@ -122,7 +125,7 @@ class Player:
         if len(new) == 1:
             self.win.logger.info(f"Requesting: {new[0]}.")
 
-            if self.websocket.websocket:
+            if self.websocket and self.websocket.websocket:
                 asyncio.run(
                     self.websocket.query(
                         [
@@ -143,7 +146,7 @@ class Player:
                 except:
                     self.win.logger.error(f"Error while loading a player ({new[0]}).\n\nTraceback: {traceback.format_exc()}")
         else:
-            if self.websocket.websocket:
+            if self.websocket and self.websocket.websocket:
                 asyncio.run(
                     self.websocket.query(
                         [
@@ -224,6 +227,22 @@ class Player:
             self.update(player)
 
 
+    def deleteWorker(self, player: str) -> None:
+        """
+        Delete the worker
+        
+        :param player: The player to delete
+        """
+        cleaned = player.lower()
+
+        if cleaned in self.threads:
+            try:
+                self.threads[cleaned].terminate()
+                self.threads.pop(cleaned)
+            except:
+                self.win.logger.error(f"An error occurred while deleting the worker of {cleaned}!\n\nTraceback: {traceback.format_exc()}")
+
+
     def update(self, player: Pl, cache: bool = True) -> None:
         """
         Insert a player into the table
@@ -296,6 +315,9 @@ class Player:
         else:
             self.win.configAPIKey = ""
             self.win.settings.update("APIKey", "")
+
+
+        self.deleteWorker(player.cleaned)
 
 
     def getCache(self, player: str) -> Union[Pl, None]:
