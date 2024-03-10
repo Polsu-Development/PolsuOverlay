@@ -151,7 +151,7 @@ class Logs:
         self.hideOverlayTimer = 0
 
 
-    def who(self, force: False) -> None:
+    def who(self, force: bool = False) -> None:
         """
         Runs /who
 
