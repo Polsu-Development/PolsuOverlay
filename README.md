@@ -1,3 +1,10 @@
+> ![!WARNING]
+> DO NOT USE THIS BRANCH!
+> WEBSOCKETS ARE IN EARLY BETA AND REQUIRE A SPECIAL AUTHENTICATION ON THE API
+> LAUNCHING THIS VERSION MIGHT RESULT IN A BAN FROM THE API
+>
+> PLEASE USE THE `main` BRANCH INSTEAD!
+
 <div align="center">
 
 <img src="./assets/polsu/Polsu.png" alt="Polsu" width="100" height="100" style="border-radius:20px"/>

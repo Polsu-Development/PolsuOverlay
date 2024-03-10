@@ -32,7 +32,7 @@
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
 from .PolsuAPI import User
-from src import Menu, Notif, Settings, Logs, Player, loadThemes, openSettings, __version__, DEV_MODE
+from src import Menu, Notif, Settings, Logs, Player, loadThemes, openSettings, __version__, DEV_MODE, PLUGINS_DEV_MODE
 from .components.theme import ThemeStyle
 from .components.logger import Logger
 from .components.rpc import openRPC, startRPC
@@ -241,10 +241,13 @@ class Overlay(FramelessMainWindow):
             PluginWindow(self.ask),
             PluginPlayer(self.player),
         )
-        self.plugins.load_plugins(self.pluginsConfig)
-        self.logger.info(f"There are {len(self.plugins.getPlugins())} plugins loaded.")
-        self.logger.debug(f"Plugins: {', '.join([plugin.__name__ for plugin in self.plugins.getPlugins()])}")
-        self.logger.debug("Plugins loaded!")
+        if PLUGINS_DEV_MODE:
+            self.plugins.load_plugins(self.pluginsConfig)
+            self.logger.info(f"There are {len(self.plugins.getPlugins())} plugins loaded.")
+            self.logger.debug(f"Plugins: {', '.join([plugin.__name__ for plugin in self.plugins.getPlugins()])}")
+            self.logger.debug("Plugins loaded!")
+        else:
+            self.logger.warning("You have disabled the plugins development mode! No plugins loaded.")
 
 
     def loginEnded(self, user: User) -> None:

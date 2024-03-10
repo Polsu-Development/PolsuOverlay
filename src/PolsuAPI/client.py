@@ -169,3 +169,15 @@ class Player:
                 return await self.client.load_skin(player)
         except asyncio.TimeoutError:
             raise APIError
+
+
+    async def WebSocket(self, setWebSocket, callback, closed) -> None:
+        """
+        Get a Player stats with a WebSocket connection
+
+        :param setWebSocket: A setWebSocket function
+        :param callback: A callback function
+        :param closed: A closed function
+        :return: An instance of Pl, representing the Player stats
+        """
+        await self.client.WebSocketConnection(setWebSocket, callback, closed)

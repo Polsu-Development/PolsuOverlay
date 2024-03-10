@@ -163,7 +163,7 @@ class Logs:
                 self.autoWho = True
 
                 active = get_active_window_title()
-                if any(client in active for client in CLIENT_NAMES):
+                if active and any(client in active for client in CLIENT_NAMES):
                     keyboard.press_and_release('t')
                     sleep(0.2)
                     keyboard.write('/who')
@@ -279,7 +279,7 @@ class Logs:
             # If it's the first line after a player connects to Hypixel, the delivery command is executed
             elif self.connecting and "[CHAT] " in line:
                 active = get_active_window_title()
-                if any(client in active for client in CLIENT_NAMES):
+                if active and any(client in active for client in CLIENT_NAMES):
                     sleep(0.5)
                     keyboard.press_and_release('t')
                     sleep(0.3)

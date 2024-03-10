@@ -42,7 +42,7 @@ from .exception import APIError, InvalidAPIKeyError, NotLinkedError
 
 import traceback
 
-from aiohttp import ClientSession, ContentTypeError
+from aiohttp import ClientSession, ContentTypeError, WSMsgType
 from json import load
 
 
@@ -144,6 +144,110 @@ class Polsu:
             self.logger.error(f"An error occurred while logging in!\n\nTraceback: {traceback.format_exc()} | {e}")
             return None
         
+    
+    async def WebSocketConnection(self, setWebSocket, callback, closed) -> None:
+        """
+        Create a WebSocket connection
+
+        :param setWebSocket: A function to set the WebSocket
+        :param callback: A function to call when a player is received
+        :param closed: A function to call when the WebSocket is closed
+        """
+        self.logger.info(f"[WS] Creating a WebSocket connection...")
+
+        try:
+            # Create a WebSocket connection
+            async with ClientSession() as session:
+                async with session.ws_connect(
+                    url=f"{self.api}/internal/overlay/websocket", 
+                    headers=self.polsuHeaders, 
+                    timeout=1800, 
+                    receive_timeout=1800,
+                    heartbeat=1800,
+                    autoping=True,
+                    autoclose=False
+                ) as ws:
+                    if not ws.closed:
+                        self.logger.info(f"[WS] Starting websocket connection...")
+                        self.logger.debug(f"[WS] Sending handshake...")
+
+                        # Send a handshake
+                        await ws.send_json(
+                            {
+                                "protocol": "PolsuWebSocketProtocol - 1.0",
+                                "handshake": self.key
+                            }
+                        )
+
+                        self.logger.debug(f"[WS] Handshake sent!")
+
+                    if not ws.closed:
+                        # Wait for the handshake response
+                        async for msg in ws:
+                            try:
+                                data = msg.json()
+                                if data.get('success', False) and data.get('data', {}) == "Connection established.":
+                                    self.logger.info(f"[WS] New WebSocket connection established!")
+                                    break
+                                else:
+                                    self.logger.debug(f"[WS] Couldn't create a WebSocket connection! {msg}")
+                                    break
+                            except:
+                                self.logger.debug(f"[WS] Couldn't create a WebSocket connection! {msg}")
+                                break
+
+                    if not ws.closed:
+                        # Set the WebSocket so the overlay can send messages
+                        await setWebSocket(ws)
+
+                        self.logger.info(f"[WS] WebSocket connection established!")
+
+                        # Wait for messages
+                        expired = False
+
+                        async for msg in ws:
+                            if msg.type in (WSMsgType.CLOSED, WSMsgType.ERROR):
+                                return
+                            else:
+                                try:
+                                    data = msg.json()
+
+                                    if DEV_MODE:
+                                        self.logger.debug(f"[WS] Received data: {data}")
+
+                                    if data.get("data", {}) != {}:
+                                        if data.get("success", False):
+                                            player = Player(data.get("data"))
+                                            player.manual = data.get("data", {}).get("player", {}).get("manual", False)
+                                            player.websocket = True
+                                            await callback(player)
+                                        else:
+                                            if isinstance(data.get("data", {}), str):
+                                                if data.get("data", {}) == "Expired websocket!":
+                                                    self.logger.warning(f"[WS] WebSocket connection expired!")
+                                                    expired = True
+                                                else:
+                                                    self.logger.error(f"[WS] An error occurred while receiving data: {data.get('data', {})}")
+
+                                                break
+                                            else:
+                                                f = open(f"{resource_path('src/PolsuAPI')}/schemas/nicked.json", mode="r", encoding="utf-8")
+                                                player = Player(load(f))
+                                                player.username = data.get("data", {}).get("player", {}).get("username")
+                                                player.rank = f"§c{data.get('data', {}).get('player', {}).get('username')}"
+                                                player.manual = data.get("data", {}).get("player", {}).get("manual", False)
+                                                player.nicked = True
+                                                player.websocket = True
+                                                await callback(player)
+                                except:
+                                    pass
+        except Exception as e:
+            self.logger.error(f"An error occurred while creating a WebSocket connection!\n\nTraceback: {traceback.format_exc()} | {e}")
+        
+        closed(expired)
+
+        self.logger.info(f"[WS] WebSocket connection closed!")
+
 
     async def get_stats(self, player: str) -> Player:
         """
@@ -322,15 +426,19 @@ class Polsu:
             if DEV_MODE:
                 self.logger.info(f"GET skins.mcstats.com/face/{player.uuid}")
 
+            headers = {
+                "User-Agent": __header__["User-Agent"]
+            }
+
             async with ClientSession() as session:
-                async with session.get(f"https://skins.mcstats.com/face/{player.uuid}", headers=__header__) as response:
+                async with session.get(f"https://skins.mcstats.com/face/{player.uuid}", headers=headers) as response:
                     if response.status == 200:
                         return await response.read()
                     else:
                         self.logger.error(f"An error occurred while getting the skin of {player.uuid} ({response.status})!")
                         raise APIError
         except ContentTypeError:
-            raise APIError
+            return None
         except APIError:
             return None
         except Exception as e:
