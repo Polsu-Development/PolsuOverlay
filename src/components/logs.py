@@ -151,19 +151,21 @@ class Logs:
         self.hideOverlayTimer = 0
 
 
-    def who(self) -> None:
+    def who(self, force: False) -> None:
         """
         Runs /who
+
+        :param force: A boolean representing if the /who should be forced
         """
-        if not self.autoWho:
+        if force or not self.autoWho:
             self.leftGame()
             self.reset()
 
-            if self.win.configWho:
+            if force or self.win.configWho:
                 self.autoWho = True
 
                 active = get_active_window_title()
-                if active and any(client in active for client in CLIENT_NAMES):
+                if force or active and any(client in active for client in CLIENT_NAMES):
                     keyboard.press_and_release('t')
                     sleep(0.2)
                     keyboard.write('/who')
@@ -171,7 +173,7 @@ class Logs:
                     keyboard.press_and_release('enter')
                 else:
                     self.autoWho = False
-                
+
                 self.waitingForGame = True
 
 
