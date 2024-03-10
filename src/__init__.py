@@ -68,7 +68,7 @@ load_dotenv('.env')
 
 DEV_MODE = True if environ.get("DEV_MODE", "False") == "True" else False
 PLUGINS_DEV_MODE = True if environ.get("PLUGINS_DEV_MODE", "False") == "True" else False
-USE_WEBSOCKET = True if environ.get("USE_WEBSOCKET", "False") == "True" else False
+USE_WEBSOCKET = True if environ.get("USE_WEBSOCKET", "False") == "True" else True
 
 
 # This will only change the local cache, not the API cache
