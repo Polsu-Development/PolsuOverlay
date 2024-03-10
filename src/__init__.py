@@ -41,7 +41,7 @@ from dotenv import load_dotenv
 __title__ = "PolsuOverlay"
 __author__ = "Polsulpicien"
 __license__ = "GPL-3.0 License"
-__version__ = "2.0.7"
+__version__ = "2.0.8"
 __description__ = "Polsu's Overlay"
 
 __module__ = getcwd()
@@ -67,6 +67,8 @@ else:
 load_dotenv('.env')
 
 DEV_MODE = True if environ.get("DEV_MODE", "False") == "True" else False
+PLUGINS_DEV_MODE = True if environ.get("PLUGINS_DEV_MODE", "False") == "True" else False
+USE_WEBSOCKET = True if environ.get("USE_WEBSOCKET", "False") == "True" else False
 
 
 # This will only change the local cache, not the API cache
