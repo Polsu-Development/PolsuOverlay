@@ -466,7 +466,6 @@ class WebSocket(QThread):
         """
         self.websocket = None
 
-        print("Expired!", expired)
         if expired:
             self.client.logger.debug("The websocket expired! Creating a new one...")
             self.start()

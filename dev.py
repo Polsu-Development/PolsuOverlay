@@ -87,6 +87,15 @@ if __name__ == '__main__':
     else:
         logger.critical("You are running the development version of the overlay! However, you are not in development mode.")
 
-        print("You are running the development version of the overlay! However, you are not in development mode.")
+        print("\n")
+        print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+        print("┃                                                                                                   ┃")
+        print("┃                                             WARNING !                                             ┃")
+        print("┃                                                                                                   ┃")
+        print("┃ You are running the development version of the overlay! However, you are not in development mode. ┃")
+        print("┃ Please set the DEV_MODE variable to True in the environment file! Or run the main.py file.        ┃")
+        print("┃                                                                                                   ┃")
+        print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+        print("\n")
 
         sys.exit(1)
