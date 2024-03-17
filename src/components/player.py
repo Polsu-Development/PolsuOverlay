@@ -317,7 +317,8 @@ class Player:
             self.win.settings.update("APIKey", "")
 
 
-        self.deleteWorker(player.cleaned)
+        if not isinstance(player, bool):
+            self.deleteWorker(player.cleaned)
 
 
     def getCache(self, player: str) -> Union[Pl, None]:
@@ -465,5 +466,7 @@ class WebSocket(QThread):
         """
         self.websocket = None
 
+        print("Expired!", expired)
         if expired:
+            self.client.logger.debug("The websocket expired! Creating a new one...")
             self.start()

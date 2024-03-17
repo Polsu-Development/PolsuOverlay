@@ -128,6 +128,7 @@ class Overlay(FramelessMainWindow):
         self.logger.debug("Loading the Settings...")
         self.settings = Settings(self)
         conf = self.settings.loadConfig()
+        conf["APIKey"] = f"{conf.get('APIKey', '')[0:4]}XXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
         self.logger.debug(f"Settings: {conf}")
 
 
@@ -184,7 +185,7 @@ class Overlay(FramelessMainWindow):
         # Check Logs Task
         self.logger.debug("Loading the Check Logs Task...")
         checkLogsTask = QTimer(self)
-        checkLogsTask.setInterval(700) #1000 -> 1 sec | 0.7 sec
+        checkLogsTask.setInterval(100) #1000 -> 1 sec | 0.7 sec
         checkLogsTask.timeout.connect(self.logs.task)
         checkLogsTask.start()
         self.logger.debug(f"Check Logs Task active: {'yes' if checkLogsTask.isActive() else 'no'}")
@@ -238,7 +239,12 @@ class Overlay(FramelessMainWindow):
             PluginLogs(self.logs),
             PluginAPI(self.player.client),
             PluginSettings(self.settings),
-            PluginWindow(self.ask),
+            PluginWindow(
+                self.ask,
+                self.mini,
+                self.maxi,
+                self.window
+            ),
             PluginPlayer(self.player),
         )
         if PLUGINS_DEV_MODE:
