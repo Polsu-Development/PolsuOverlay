@@ -223,26 +223,36 @@ class Polsu:
                                             await callback(player)
                                         else:
                                             if isinstance(data.get("data", {}), str):
-                                                if data.get("data", {}) == "Expired websocket!" or data.get("data", {}) == "Packet limit reached!":
+                                                if data.get("data", {}) == "Expired websocket!":
                                                     self.logger.warning(f"[WS] WebSocket connection expired!")
                                                     expired = True
+
+                                                    raise Exception("Expired websocket!")
+                                                elif data.get("data", {}) == "Packet limit reached!":
+                                                    self.logger.error(f"[WS] Packet limit reached!")
+                                                    expired = True
+
+                                                    raise Exception("Packet limit reached!")
                                                 elif data.get("data", {}) == "Malformed JSON" or data.get("data", {}) == "Missing query" or data.get("data", {}) == "Invalid query":
                                                     self.logger.error(f"[WS] An error occurred while sending some data: {data.get('data', {})}")
                                                 elif data.get("data", {}) == "Too many players":
                                                     self.logger.error(f"[WS] Oops we reached the maximum amount of players!")
                                                 else:
                                                     self.logger.error(f"[WS] An error occurred with the websocket connection: {data.get('data', {})}")
-
-                                                break
                                             else:
-                                                f = open(f"{resource_path('src/PolsuAPI')}/schemas/nicked.json", mode="r", encoding="utf-8")
-                                                player = Player(load(f))
-                                                player.username = data.get("data", {}).get("player", {}).get("username")
-                                                player.rank = f"§c{data.get('data', {}).get('player', {}).get('username')}"
-                                                player.manual = data.get("data", {}).get("player", {}).get("manual", False)
-                                                player.nicked = True
-                                                player.websocket = True
-                                                await callback(player)
+                                                if data.get("cause", None).startswith("Rate Limited"):
+                                                    self.logger.error(f"[WS] Rate limited! {data.get('cause', None)}")
+
+                                                    raise Exception("Rate limited!")
+                                                else:
+                                                    f = open(f"{resource_path('src/PolsuAPI')}/schemas/nicked.json", mode="r", encoding="utf-8")
+                                                    player = Player(load(f))
+                                                    player.username = data.get("data", {}).get("player", {}).get("username")
+                                                    player.rank = f"§c{data.get('data', {}).get('player', {}).get('username')}"
+                                                    player.manual = data.get("data", {}).get("player", {}).get("manual", False)
+                                                    player.nicked = True
+                                                    player.websocket = True
+                                                    await callback(player)
                                 except Exception as e:
                                     self.logger.error(f"An error occurred while receiving a WebSocket message!\n\nTraceback: {traceback.format_exc()} | {e}")
         except Exception as e:
