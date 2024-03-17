@@ -74,8 +74,8 @@ class SkinIcon():
         :param count: The position of the player in the table
         """
         try:
-            if player.username in self.cache:
-                self.setSkin(self.cache[player.username], player, count)
+            if player.uuid in self.cache:
+                self.setSkin(self.cache[player.uuid], player, count)
             else:
                 button = QPushButton(self.table)
                 button.setIcon(self.default)
@@ -91,9 +91,13 @@ class SkinIcon():
                         self.table.setCellWidget(row, 0, button)
                         self.table.setItem(row, 0, TableSortingItem(count))
 
-                self.threads[player.username] = Worker(player, self.win.player.client, self.default, count)
-                self.threads[player.username].update.connect(self.setSkin)
-                self.threads[player.username].start()
+                # FIXME: This is a temporary fix for the skin loading issue with players loaded via the websocket
+                #if player.websocket:
+                #    return
+                        
+                self.threads[player.uuid] = Worker(player, self.win.player.client, self.default, count)
+                self.threads[player.uuid].update.connect(self.setSkin)
+                self.threads[player.uuid].start()
         except:
             self.win.logger.critical(f"An error occurred while loading the skin of {player.username}!\n\nTraceback: {traceback.format_exc()}")
 
@@ -101,6 +105,20 @@ class SkinIcon():
     def rgbaToHex(self, rgba):
         rgba = tuple(int(x) for x in rgba)
         return "#{:02X}{:02X}{:02X}{:02X}".format(*rgba)
+    
+
+    def deleteWorker(self, uuid: str) -> None:
+        """
+        Delete the worker
+        
+        :param uuid: The UUID of the player
+        """
+        if uuid in self.threads:
+            try:
+                self.threads[uuid].terminate()
+                self.threads.pop(uuid)
+            except:
+                self.win.logger.error(f"An error occurred while deleting the worker of {uuid}!\n\nTraceback: {traceback.format_exc()}")
 
 
     def setSkin(self, icon: QIcon, player: Player, count: int, cache: bool = True) -> None:
@@ -114,7 +132,7 @@ class SkinIcon():
         """
         try:
             if cache:
-                self.cache[player.username] = icon
+                self.cache[player.uuid] = icon
 
             button = QPushButton(self.table)
             button.setIcon(icon)
@@ -136,6 +154,10 @@ class SkinIcon():
                         color.setAlpha(50)
                         item = self.table.item(row, 0)
                         item.setBackground(color)
+
+            self.deleteWorker(player.uuid)
+
+            self.win.logger.info(f"Skin of {player.username} has been set.")
         except:
             self.win.logger.critical(f"An error occurred while setting the skin of {player.username}!\n\nTraceback: {traceback.format_exc()}")
 
@@ -153,14 +175,13 @@ class Worker(QThread):
         :param player: The player to load the skin
         :param client: The client to request the API
         :param default: The default icon
+        :param count: The position of the player in the table
         """
         super(QThread, self).__init__()
         self.player = player
         self.client = client
         self.default = default
         self.count = count
-
-        self.icon = QIcon()
 
 
     def run(self) -> None:
@@ -180,5 +201,4 @@ class Worker(QThread):
         except:
             icon = self.default
 
-        self.icon = icon
         self.update.emit(icon, self.player, self.count)

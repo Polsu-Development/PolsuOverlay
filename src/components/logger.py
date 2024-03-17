@@ -64,8 +64,6 @@ class Logger:
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
-        self.logger.info('Logger Initialised\n\n')
-    
 
     def info(self, message: str) -> None:
         """

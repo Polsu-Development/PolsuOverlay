@@ -96,35 +96,35 @@ class Plugin:
         Initialise the plugin
         """
         pass
-    
+
 
     def on_load(self) -> None:
         """
         Called when the plugin is loaded
         """
         raise NotImplementedError("on_load() is not implemented!")
-    
+
 
     def on_unload(self) -> None:
         """
         Called when the plugin is unloaded
         """
         raise NotImplementedError("on_unload() is not implemented!")
-    
+
 
     def on_login(self, user: User) -> None:
         """
         Called when the user logs in
         """
         raise NotImplementedError("on_login() is not implemented!")
-    
+
 
     def on_logout(self, user: User) -> None:
         """
         Called when the user logs out
         """
         raise NotImplementedError("on_logout() is not implemented!")
-    
+
 
     def on_search(self, player: str) -> None:
         """
@@ -138,7 +138,7 @@ class Plugin:
         Called when the player is loaded
         """
         raise NotImplementedError("on_player_load() is not implemented!")
-    
+
 
     def on_player_insert(self, player: Player) -> None:
         """
@@ -152,56 +152,56 @@ class Plugin:
         Called when the player sends a message
         """
         raise NotImplementedError("on_player_message() is not implemented!")
-    
+
 
     def on_message(self, message: str) -> None:
         """
         Called when a message is sent
         """
         raise NotImplementedError("on_message() is not implemented!")
-    
+
 
     def on_join(self, player: str) -> None:
         """
         Called when a player joins the game
         """
         raise NotImplementedError("on_join() is not implemented!")
-    
+
 
     def on_leave(self, player: str) -> None:
         """
         Called when a player leaves the game
         """
         raise NotImplementedError("on_leave() is not implemented!")
-    
+
 
     def on_final_kill(self, player: str) -> None:
         """
         Called when a player gets a final kill
         """
         raise NotImplementedError("on_final_kill() is not implemented!")
-    
+
 
     def on_final_death(self, player: str) -> None:
         """
         Called when a player gets final killed
         """
         raise NotImplementedError("on_final_death() is not implemented!")
-    
+
 
     def on_who(self) -> None:
         """
         Called when a player uses /who
         """
         raise NotImplementedError("on_who() is not implemented!")
-    
+
 
     def on_list(self) -> None:
         """
         Called when a player uses /list
         """
         raise NotImplementedError("on_list() is not implemented!")
-    
+
 
     def on_game_start(self) -> None:
         """

@@ -52,7 +52,7 @@ from time import sleep
 
 
 if getattr(sys, 'frozen', False):
-    import pyi_splash
+    import pyi_splash # type: ignore
 
 
 def run(window: Updater, logger: Logger) -> None:

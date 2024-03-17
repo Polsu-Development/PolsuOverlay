@@ -31,12 +31,11 @@
 ┃                                                                                                                      ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-from src import CACHE, DEV_MODE
+from src import CACHE, DEV_MODE, USE_WEBSOCKET
 from ..PolsuAPI import Polsu
 from ..PolsuAPI.exception import APIError, InvalidAPIKeyError
 from ..PolsuAPI.objects.player import Player as Pl
 from ..utils.colours import Colours
-
 
 import asyncio
 import traceback
@@ -68,6 +67,14 @@ class Player:
         self.cache = {}
 
         self.loading = []
+
+
+        if USE_WEBSOCKET:
+            self.websocket = WebSocket(self.client)
+            self.websocket.playerObject.connect(self.update)
+            self.websocket.start()
+        else:
+            self.websocket = None
 
 
     def getPlayer(self, players: list, manual: bool = False) -> None:
@@ -118,40 +125,65 @@ class Player:
         if len(new) == 1:
             self.win.logger.info(f"Requesting: {new[0]}.")
 
-            try:
-                self.threads[cleaned] = Worker(self.client, new[0], manual)
-                self.threads[cleaned].playerObject.connect(self.update)
-                self.threads[cleaned].start()
-
-                self.win.plugins.broadcast("on_player_load", new[0])
-            except:
-                self.win.logger.error(f"Error while loading a player ({new[0]}).\n\nTraceback: {traceback.format_exc()}")
-        else:
-            if len(new) > 40:
-                nb_slice = 10
-            elif len(new) > 20:
-                nb_slice = 6
+            if self.websocket and self.websocket.websocket:
+                asyncio.run(
+                    self.websocket.query(
+                        [
+                            {
+                                "player": new[0],
+                                "manual": manual
+                            }
+                        ]
+                    )
+                )
             else:
-                nb_slice = 3
-
-            slices = [new[i : i+nb_slice] for i in range(0, len(new), nb_slice)]
-
-            for s in slices:
-                self.win.logger.info(f"Requesting: {s}.")
-
-                uuid = str(uuid4())
-                while uuid in self.threads:
-                    uuid = str(uuid4())
-
                 try:
-                    self.threads[uuid] = Worker(self.client, s, manual)
-                    self.threads[uuid].playerObject.connect(self.update)
-                    self.threads[uuid].start()
+                    self.threads[cleaned] = Worker(self.client, new[0], manual)
+                    self.threads[cleaned].playerObject.connect(self.update)
+                    self.threads[cleaned].start()
 
-                    for p in s:
-                        self.win.plugins.broadcast("on_player_load", p)
+                    self.win.plugins.broadcast("on_player_load", new[0])
                 except:
-                    self.win.logger.error(f"Error while loading a player slice ({s}).\n\nTraceback: {traceback.format_exc()}")
+                    self.win.logger.error(f"Error while loading a player ({new[0]}).\n\nTraceback: {traceback.format_exc()}")
+        else:
+            if self.websocket and self.websocket.websocket:
+                asyncio.run(
+                    self.websocket.query(
+                        [
+                            {
+                                "player": p,
+                                "manual": manual
+                            }
+                            for p in new
+                        ]
+                    )
+                )
+            else:
+                if len(new) > 40:
+                    nb_slice = 10
+                elif len(new) > 20:
+                    nb_slice = 6
+                else:
+                    nb_slice = 3
+
+                slices = [new[i : i+nb_slice] for i in range(0, len(new), nb_slice)]
+
+                for s in slices:
+                    self.win.logger.info(f"Requesting: {s}.")
+
+                    uuid = str(uuid4())
+                    while uuid in self.threads:
+                        uuid = str(uuid4())
+
+                    try:
+                        self.threads[uuid] = Worker(self.client, s, manual)
+                        self.threads[uuid].playerObject.connect(self.update)
+                        self.threads[uuid].start()
+
+                        for p in s:
+                            self.win.plugins.broadcast("on_player_load", p)
+                    except:
+                        self.win.logger.error(f"Error while loading a player slice ({s}).\n\nTraceback: {traceback.format_exc()}")
 
 
     def loadPlayer(self, player: str, uuid: str) -> None:
@@ -193,6 +225,22 @@ class Player:
 
         if player and player != -1:
             self.update(player)
+
+
+    def deleteWorker(self, player: str) -> None:
+        """
+        Delete the worker
+        
+        :param player: The player to delete
+        """
+        cleaned = player.lower()
+
+        if cleaned in self.threads:
+            try:
+                self.threads[cleaned].terminate()
+                self.threads.pop(cleaned)
+            except:
+                self.win.logger.error(f"An error occurred while deleting the worker of {cleaned}!\n\nTraceback: {traceback.format_exc()}")
 
 
     def update(self, player: Pl, cache: bool = True) -> None:
@@ -269,6 +317,10 @@ class Player:
             self.win.settings.update("APIKey", "")
 
 
+        if not isinstance(player, bool):
+            self.deleteWorker(player.cleaned)
+
+
     def getCache(self, player: str) -> Union[Pl, None]:
         """
         Get a player from the cache
@@ -316,7 +368,7 @@ class Worker(QThread):
         self.client = client
         self.query = query
         self.manual = manual
- 
+
 
     def run(self) -> None:
         """
@@ -346,3 +398,74 @@ class Worker(QThread):
             self.playerObject.emit(None)
         except:
             self.playerObject.emit(False)
+
+
+class WebSocket(QThread):
+    """
+    The worker class, used to get players from the API
+    """
+    playerObject = pyqtSignal(object)
+
+    def __init__(self, client) -> None:
+        """
+        Initialise the class
+        
+        :param client: The Polsu client
+        :param query: The query to use
+        :param manual: If the player is manually added
+        """
+        super(QThread, self).__init__()
+        self.client = client
+        self.websocket = None
+
+
+    def run(self) -> None:
+        """
+        Run the thread
+        """
+        asyncio.run(self.client.player.WebSocket(self.setWebSocket, self.update, self.closed))
+
+
+    async def setWebSocket(self, ws) -> None:
+        """
+        Get a player from the websocket
+        
+        :param ws: The websocket
+        """
+        self.websocket = ws
+
+
+    async def query(self, query: list) -> None:
+        """
+        Query a player
+        
+        :param query: The query to use
+        """
+        if self.websocket:
+            await self.websocket.send_json(
+                {
+                    "query": query
+                }
+            )
+
+
+    async def update(self, player: Pl) -> None:
+        """
+        Insert a player into the table
+        
+        :param player: The player to update
+        """
+        self.playerObject.emit(player)
+
+
+    def closed(self, expired: bool) -> None:
+        """
+        Called when the websocket is closed
+
+        :param expired: If the websocket expired
+        """
+        self.websocket = None
+
+        if expired:
+            self.client.logger.debug("The websocket expired! Creating a new one...")
+            self.start()

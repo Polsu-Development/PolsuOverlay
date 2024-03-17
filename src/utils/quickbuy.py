@@ -96,7 +96,21 @@ class QuickbuyImage():
                     self.win.logger.error(f"An error occurred while loading the quickbuy image!\n\nTraceback: {traceback.format_exc()}")
 
 
-    def setPixmap(self, player, pixmap: QPixmap, cache: bool = True)  -> None:
+    def deleteWorker(self, player: Player) -> None:
+        """
+        Delete the Worker
+        
+        :param player: The player
+        """
+        if player.username in self.threads:
+            try:
+                self.threads[player.username].terminate()
+                self.threads.pop(player.username)
+            except:
+                self.win.logger.error(f"An error occurred while deleting the worker of {player.username}!\n\nTraceback: {traceback.format_exc()}")
+
+
+    def setPixmap(self, player: Player, pixmap: QPixmap, cache: bool = True)  -> None:
         """
         Callback function to set the pixmap of the quickbuy image
         
@@ -121,6 +135,8 @@ class QuickbuyImage():
             self.win.quickbuyWindow.resize(pixmap.size().width(), pixmap.size().height())
             self.win.quickbuyWindow.setFixedSize(pixmap.size().width(), pixmap.size().height())
             self.win.quickbuyWindow.show()
+
+            self.deleteWorker(player)
         else:
             self.win.notif.send(
                 title="Error...",

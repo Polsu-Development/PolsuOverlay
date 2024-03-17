@@ -515,6 +515,9 @@ class Player:
         self._ping = Ping(data.get('ping'))
         self._local = None
 
+        self._manual = False
+        self._websocket = False
+
 
     @property
     def data(self) -> dict:
@@ -642,6 +645,38 @@ class Player:
         Set the Player local blacklist status
         """
         self._local = value
+
+
+    @property
+    def manual(self) -> bool:
+        """
+        Whether the Player is manually requested or not
+        """
+        return self._manual
+
+
+    @manual.setter
+    def manual(self, value: bool) -> None:
+        """
+        Set whether the Player is manually requested or not
+        """
+        self._manual = value
+
+
+    @property
+    def websocket(self) -> bool:
+        """
+        Whether the Player was requested through the WebSocket or not
+        """
+        return self._websocket
+    
+
+    @websocket.setter
+    def websocket(self, value: bool) -> None:
+        """
+        Set whether the Player was requested through the WebSocket or not
+        """
+        self._websocket = value
 
     
     def __repr__(self) -> str:

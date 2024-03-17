@@ -32,5 +32,8 @@
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
 class PluginWindow:
-    def __init__(self, ask) -> None:
+    def __init__(self, ask, minimize, maximize, window) -> None:
         self.ask = ask
+        self.minimize = minimize
+        self.maximize = maximize
+        self.window = window

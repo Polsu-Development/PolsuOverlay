@@ -42,4 +42,5 @@ class PluginLogs:
         self.isWaitingForGame = logs.isWaitingForGame
         self.isInAParty = logs.isInAParty
         self.getPartyMembers = logs.getPartyMembers
+        self.who = logs.who
         

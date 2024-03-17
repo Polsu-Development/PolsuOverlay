@@ -63,9 +63,9 @@ class Logs:
         """
         self.win = win
 
-        self.oldString = ""
+        self.lastReadPosition = 0
         self.timeIconIndex = 1
-        self.error_sent = False
+        self.errorSent = False
 
         self.waitingForGame = False
         self.isInGame = False
@@ -151,19 +151,21 @@ class Logs:
         self.hideOverlayTimer = 0
 
 
-    def who(self) -> None:
+    def who(self, force: bool = False) -> None:
         """
         Runs /who
+
+        :param force: A boolean representing if the /who should be forced
         """
-        if not self.autoWho:
+        if force or not self.autoWho:
             self.leftGame()
             self.reset()
 
-            if self.win.configWho:
+            if force or self.win.configWho:
                 self.autoWho = True
 
                 active = get_active_window_title()
-                if any(client in active for client in CLIENT_NAMES):
+                if force or active and any(client in active for client in CLIENT_NAMES):
                     keyboard.press_and_release('t')
                     sleep(0.2)
                     keyboard.write('/who')
@@ -171,7 +173,7 @@ class Logs:
                     keyboard.press_and_release('enter')
                 else:
                     self.autoWho = False
-                
+
                 self.waitingForGame = True
 
 
@@ -179,7 +181,8 @@ class Logs:
         """
         The main task which reads the log file
         """
-        if self.oldString == "":
+        # Check if the log file has been read before or not
+        if self.lastReadPosition == 0:
             self.readLogFile()
         else:
             try:
@@ -188,24 +191,33 @@ class Logs:
                 self.win.logger.error(f"Error while reading logs.\n\nTraceback: {traceback.format_exc()}")
 
 
-    def readLogFile(self) -> str:
+    def readLogFile(self) -> list[str]:
         """
         Function which returns the new lines of the log file
 
         :return: A string containing the new lines of the log file
         """
         try:
-            with open(self.win.configLogPath, "r+") as logFile:
-                contents = logFile.read()
+            new_lines = []
+            with open(self.win.configLogPath, "r") as logFile:
+                logFile.seek(self.lastReadPosition)
 
-            new = contents[len(self.oldString):]
-            self.oldString = contents
+                if self.lastReadPosition > 0:
+                    for line in logFile:
+                        lastNewlineIdx = line.rfind('\n')
+                        cleaned = line[:lastNewlineIdx] + line[lastNewlineIdx + 1:]
+                        new_lines.append(self.rawLine(cleaned))
+                else:
+                    for line in logFile:
+                        new_lines.append(line)
 
-            self.error_sent = False
+                self.lastReadPosition = logFile.tell()
 
-            return new
+            self.errorSent = False
+
+            return new_lines
         except FileNotFoundError:
-            if not self.error_sent:
+            if not self.errorSent:
                 self.win.notif.send(
                     title="Warning!",
                     message="The log file you are currently using isn't valid.\nGo to: Settings -> Client, and choose a valid client.",
@@ -213,10 +225,10 @@ class Logs:
                 )
 
                 # To avoid multiple notifications
-                self.error_sent = True
-            return ""
+                self.errorSent = True
+            return []
         except:
-            return ""
+            return []
 
 
     def rawLine(self, string: str) -> str:
@@ -243,8 +255,7 @@ class Logs:
         Function which detected players in the new lines added in the log file
         Automatically add them to the queue, to get their stats and display them on the overlay
         """
-        line: str = self.readLogFile()
-        lines = self.rawLine(line).splitlines()
+        lines: list[str] = self.readLogFile()
 
         for l in lines:
             line = l.replace(" [System] ", "")
@@ -279,7 +290,7 @@ class Logs:
             # If it's the first line after a player connects to Hypixel, the delivery command is executed
             elif self.connecting and "[CHAT] " in line:
                 active = get_active_window_title()
-                if any(client in active for client in CLIENT_NAMES):
+                if active and any(client in active for client in CLIENT_NAMES):
                     sleep(0.5)
                     keyboard.press_and_release('t')
                     sleep(0.3)

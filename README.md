@@ -1,3 +1,10 @@
+> [!WARNING]
+> DO NOT USE THIS BRANCH!
+> WEBSOCKETS ARE IN EARLY BETA AND REQUIRE A SPECIAL AUTHENTICATION ON THE API
+> LAUNCHING THIS VERSION MIGHT RESULT IN A BAN FROM THE API
+>
+> PLEASE USE THE `main` BRANCH INSTEAD!
+
 <div align="center">
 
 <img src="./assets/polsu/Polsu.png" alt="Polsu" width="100" height="100" style="border-radius:20px"/>
@@ -10,8 +17,8 @@ A Hypixel Bedwars Overlay in Python, 100% free and open source!
 <a><img src="https://wakatime.com/badge/user/ae13d286-a127-41f2-b631-4c4b2e09d04c/project/bdf90bf4-bb4f-4adb-8305-c4523e188b2c.svg" alt="Wakatime"></a>
 
 </div>
-  
-  
+
+
 # 📖 Table of Contents
 
 - [📝 About](#-about)
