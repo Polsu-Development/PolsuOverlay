@@ -47,7 +47,7 @@ Or even download the source code and compile it yourself with [`PyInstaller`](ht
 
 # 📄 Usage
 
-![](https://polsu.xyz/assets/overlay/beautiful.png)
+![](https://assets.polsu.xyz/overlay/beautiful.png)
 
 Launch the Overlay and it will automatically ask you to enter your Polsu API Key (you can find it [here](https://polsu.xyz/api/apikey)).  
 
