@@ -32,7 +32,7 @@
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
 from .PolsuAPI import User
-from src import Menu, Notif, Settings, Logs, Player, loadThemes, openSettings, __version__, DEV_MODE
+from src import Menu, Notif, Settings, Logs, Player, loadThemes, openSettings, __version__, DEV_MODE, PLUGINS_DEV_MODE
 from .components.theme import ThemeStyle
 from .components.logger import Logger
 from .components.rpc import openRPC, startRPC
@@ -128,6 +128,7 @@ class Overlay(FramelessMainWindow):
         self.logger.debug("Loading the Settings...")
         self.settings = Settings(self)
         conf = self.settings.loadConfig()
+        conf["APIKey"] = f"{conf.get('APIKey', '')[0:4]}XXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
         self.logger.debug(f"Settings: {conf}")
 
 
@@ -184,7 +185,7 @@ class Overlay(FramelessMainWindow):
         # Check Logs Task
         self.logger.debug("Loading the Check Logs Task...")
         checkLogsTask = QTimer(self)
-        checkLogsTask.setInterval(700) #1000 -> 1 sec | 0.7 sec
+        checkLogsTask.setInterval(100) #1000 -> 1 sec | 0.7 sec
         checkLogsTask.timeout.connect(self.logs.task)
         checkLogsTask.start()
         self.logger.debug(f"Check Logs Task active: {'yes' if checkLogsTask.isActive() else 'no'}")
@@ -238,13 +239,21 @@ class Overlay(FramelessMainWindow):
             PluginLogs(self.logs),
             PluginAPI(self.player.client),
             PluginSettings(self.settings),
-            PluginWindow(self.ask),
+            PluginWindow(
+                self.ask,
+                self.mini,
+                self.maxi,
+                self.window
+            ),
             PluginPlayer(self.player),
         )
-        self.plugins.load_plugins(self.pluginsConfig)
-        self.logger.info(f"There are {len(self.plugins.getPlugins())} plugins loaded.")
-        self.logger.debug(f"Plugins: {', '.join([plugin.__name__ for plugin in self.plugins.getPlugins()])}")
-        self.logger.debug("Plugins loaded!")
+        if PLUGINS_DEV_MODE:
+            self.plugins.load_plugins(self.pluginsConfig)
+            self.logger.info(f"There are {len(self.plugins.getPlugins())} plugins loaded.")
+            self.logger.debug(f"Plugins: {', '.join([plugin.__name__ for plugin in self.plugins.getPlugins()])}")
+            self.logger.debug("Plugins loaded!")
+        else:
+            self.logger.warning("You have disabled the plugins development mode! No plugins loaded.")
 
 
     def loginEnded(self, user: User) -> None:

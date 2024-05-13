@@ -55,7 +55,7 @@ class LoginWorker(QThread):
         """
         super(QThread, self).__init__()
         self.client = Polsu(key, logger)
- 
+
 
     def run(self):
         """
