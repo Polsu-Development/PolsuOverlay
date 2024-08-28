@@ -12,8 +12,8 @@ A Hypixel Bedwars Overlay in Python, 100% free and open source!
 </div>
   
 > [!WARNING]
-> Hypixel pushed an update which hides player usernames in pre-game lobbies. This means the overlays can't get the player usernames before the game starts! 
-> However, Polsu Overlay still work in-game (run /who).
+> Hypixel pushed an update which hides player usernames in pre-game lobbies. This means the overlays can't get the player usernames before the game starts!  
+> However, Polsu Overlay still works in-game (run /who).
   
 # 📖 Table of Contents
 
